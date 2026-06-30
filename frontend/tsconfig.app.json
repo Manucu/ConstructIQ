@@ -5,7 +5,13 @@
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
     "types": ["vite/client"],
-    "skipLibCheck": true,
+
+      "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    
+    "skipLibCheck": true,   
 
     /* Bundler mode */
     "moduleResolution": "bundler",
