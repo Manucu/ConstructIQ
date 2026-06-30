@@ -6,9 +6,11 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Container } from "@/components/common/Container";
+import { FeatureCard } from "@/components/common/FeatureCard";
 import { Section } from "@/components/common/Section";
+import { SectionTitle } from "@/components/common/SectionTitle";
 
 const features = [
   {
@@ -53,46 +55,21 @@ export function Features() {
   return (
     <Section id="features" className="bg-white">
       <Container>
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">
-            Features
-          </p>
-
-          <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Everything construction teams need in one platform
-          </h2>
-
-          <p className="mt-6 text-lg text-slate-600">
-            ConstructIQ combines project management, construction knowledge and
-            business analytics into a single reusable SaaS platform.
-          </p>
-        </div>
+        <SectionTitle
+          label="Features"
+          title="Everything construction teams need in one platform"
+          description="ConstructIQ combines project management, construction knowledge and business analytics into a single reusable SaaS platform."
+        />
 
         <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-
-            return (
-              <Card
-                key={feature.title}
-                className="border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl"
-              >
-                <CardContent className="p-8">
-                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-                    <Icon className="h-6 w-6" />
-                  </div>
-
-                  <h3 className="text-xl font-bold text-slate-950">
-                    {feature.title}
-                  </h3>
-
-                  <p className="mt-4 leading-7 text-slate-600">
-                    {feature.description}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {features.map((feature) => (
+            <FeatureCard
+              key={feature.title}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+            />
+          ))}
         </div>
       </Container>
     </Section>
