@@ -1,46 +1,36 @@
 import { Link } from "react-router-dom";
+import { Logo } from "@/components/common/Logo";
+import { Container } from "@/components/common/Container";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <Container className="flex h-20 items-center justify-between">
+        <Logo />
 
-        <Link
-          to="/"
-          className="text-2xl font-bold tracking-tight text-slate-900"
-        >
-          ConstructIQ
-        </Link>
-
-        <nav className="hidden gap-8 md:flex">
-
-          <a href="#features" className="text-slate-600 hover:text-blue-900">
+        <nav className="hidden items-center gap-8 md:flex">
+          <a href="#features" className="text-sm font-medium text-slate-600 hover:text-blue-700">
             Features
           </a>
-
-          <a href="#pricing" className="text-slate-600 hover:text-blue-900">
+          <a href="#pricing" className="text-sm font-medium text-slate-600 hover:text-blue-700">
             Pricing
           </a>
-
-          <a href="#contact" className="text-slate-600 hover:text-blue-900">
+          <a href="#contact" className="text-sm font-medium text-slate-600 hover:text-blue-700">
             Contact
           </a>
-
         </nav>
 
-        <div className="flex gap-4">
-
-          <button className="rounded-lg px-4 py-2 hover:bg-slate-100">
+        <div className="flex items-center gap-3">
+          <Link to="/login" className="hidden text-sm font-medium text-slate-700 hover:text-blue-700 sm:block">
             Login
-          </button>
+          </Link>
 
-          <button className="rounded-lg bg-blue-900 px-5 py-2 font-semibold text-white">
-            Get Started
-          </button>
-
+          <Button asChild>
+            <Link to="/register">Get Started</Link>
+          </Button>
         </div>
-
-      </div>
+      </Container>
     </header>
   );
 }

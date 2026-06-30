@@ -6,13 +6,6 @@ interface SectionProps {
   className?: string;
 }
 
-export function Section({
-  children,
-  className,
-}: SectionProps) {
-  return (
-    <section className={cn("py-24", className)}>
-      {children}
-    </section>
-  );
+export function Section({ children, className }: SectionProps) {
+  return <section className={cn("py-24", className)}>{children}</section>;
 }
