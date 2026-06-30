@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
+import { Building2, Lock, Mail, User } from "lucide-react";
+
 import { AuthCard } from "@/features/auth/components/AuthCard";
 import { AuthLayout } from "@/features/auth/components/AuthLayout";
-import { Button } from "@/components/ui/button";
+
+import { AppButton } from "@/components/ui/AppButton";
+import { AppInput } from "@/components/ui/AppInput";
 
 export function RegisterPage() {
   return (
@@ -10,54 +14,57 @@ export function RegisterPage() {
       description="Start managing your construction projects with ConstructIQ."
     >
       <AuthCard>
-        <form className="space-y-5">
-          <div>
-            <label className="text-sm font-medium text-slate-700">
-              Company Name
-            </label>
-            <input
-              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-700"
-              placeholder="ConstructIQ SRL"
-            />
-          </div>
+        <form className="space-y-6">
+          <AppInput
+            label="Company Name"
+            icon={Building2}
+            placeholder="ConstructIQ SRL"
+          />
 
-          <div>
-            <label className="text-sm font-medium text-slate-700">
-              Owner Name
-            </label>
-            <input
-              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-700"
-              placeholder="Emanuel Niculai"
-            />
-          </div>
+          <AppInput
+            label="Owner Name"
+            icon={User}
+            placeholder="Emanuel Niculai"
+          />
 
-          <div>
-            <label className="text-sm font-medium text-slate-700">Email</label>
-            <input
-              type="email"
-              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-700"
-              placeholder="emanuel@example.com"
-            />
-          </div>
+          <AppInput
+            label="Email"
+            type="email"
+            icon={Mail}
+            placeholder="emanuel@example.com"
+          />
 
-          <div>
-            <label className="text-sm font-medium text-slate-700">
-              Password
-            </label>
-            <input
-              type="password"
-              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-700"
-              placeholder="••••••••"
-            />
-          </div>
+          <AppInput
+            label="Password"
+            type="password"
+            icon={Lock}
+            placeholder="••••••••"
+          />
 
-          <Button className="w-full" size="lg">
+          <AppButton className="w-full" size="lg">
             Create Account
-          </Button>
+          </AppButton>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-sm text-slate-500">or</span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <AppButton
+            variant="outline"
+            className="w-full"
+            type="button"
+          >
+            Continue with Google
+          </AppButton>
 
           <p className="text-center text-sm text-slate-600">
             Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-blue-700">
+            <Link
+              to="/login"
+              className="font-semibold text-blue-700 hover:text-blue-800"
+            >
               Login
             </Link>
           </p>

@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { Lock, Mail } from "lucide-react";
+
 import { AuthCard } from "@/features/auth/components/AuthCard";
 import { AuthLayout } from "@/features/auth/components/AuthLayout";
-import { Button } from "@/components/ui/button";
+import { AppButton } from "@/components/ui/AppButton";
+import { AppInput } from "@/components/ui/AppInput";
 
 export function LoginPage() {
   return (
@@ -10,34 +13,55 @@ export function LoginPage() {
       description="Login to access your construction dashboard."
     >
       <AuthCard>
-        <form className="space-y-5">
-          <div>
-            <label className="text-sm font-medium text-slate-700">Email</label>
-            <input
-              type="email"
-              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-700"
-              placeholder="emanuel@example.com"
-            />
-          </div>
+        <form className="space-y-6">
+          <AppInput
+            label="Email"
+            type="email"
+            icon={Mail}
+            placeholder="emanuel@example.com"
+          />
 
-          <div>
-            <label className="text-sm font-medium text-slate-700">
-              Password
+          <AppInput
+            label="Password"
+            type="password"
+            icon={Lock}
+            placeholder="••••••••"
+          />
+
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-slate-600">
+              <input type="checkbox" className="rounded border-slate-300" />
+              Remember me
             </label>
-            <input
-              type="password"
-              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-700"
-              placeholder="••••••••"
-            />
+
+            <Link
+              to="/forgot-password"
+              className="text-sm font-semibold text-blue-700 hover:text-blue-800"
+            >
+              Forgot password?
+            </Link>
           </div>
 
-          <Button className="w-full" size="lg">
+          <AppButton className="w-full" size="lg">
             Login
-          </Button>
+          </AppButton>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-sm text-slate-500">or</span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <AppButton variant="outline" className="w-full" type="button">
+            Continue with Google
+          </AppButton>
 
           <p className="text-center text-sm text-slate-600">
             Don&apos;t have an account?{" "}
-            <Link to="/register" className="font-semibold text-blue-700">
+            <Link
+              to="/register"
+              className="font-semibold text-blue-700 hover:text-blue-800"
+            >
               Create one
             </Link>
           </p>
