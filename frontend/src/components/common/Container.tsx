@@ -1,14 +1,21 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
-interface ContainerProps {
-  children: ReactNode;
-  className?: string;
-}
+type ContainerProps = ComponentPropsWithoutRef<"div">;
 
-export function Container({ children, className }: ContainerProps) {
+export function Container({
+  className,
+  children,
+  ...props
+}: ContainerProps) {
   return (
-    <div className={cn("mx-auto w-full max-w-7xl px-6 lg:px-8", className)}>
+    <div
+      className={cn(
+        "mx-auto w-full max-w-7xl px-6 lg:px-8",
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
