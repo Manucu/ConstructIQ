@@ -3,6 +3,8 @@ import { Building2, Euro, FolderKanban, TrendingUp } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AppStatCard } from "@/components/ui";
 
+import { DailyBrief } from "@/features/dashboard/components/DailyBrief";
+
 export function DashboardPage() {
   return (
     <DashboardLayout>
@@ -17,6 +19,8 @@ export function DashboardPage() {
           </p>
         </section>
 
+        <DailyBrief />
+        
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <AppStatCard
             title="Business Health"
