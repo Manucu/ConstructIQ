@@ -6,6 +6,7 @@ import { RegisterPage } from "@/pages/RegisterPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { ProjectsPage } from "@/pages/ProjectsPage";
 import { ProjectDetailsPage } from "@/pages/ProjectDetailsPage";
+import { StageDetailsPage } from "@/pages/StageDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
   path: "/projects/:projectId",
   element: <ProjectDetailsPage />,
+  },
+  {
+  path: "/projects/:projectId/stages/:stageId",
+  element: <StageDetailsPage />,
   },
 ]);
 
