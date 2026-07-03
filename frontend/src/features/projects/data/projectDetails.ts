@@ -1,0 +1,15 @@
+export const projectDetails = {
+  id: "1",
+  name: "Casa P+1 Cluj",
+  client: "Emanuel Niculai",
+  address: "Cluj-Napoca",
+  status: "ACTIVE",
+  health: 91,
+  progress: 76,
+  budget: 250000,
+  spent: 186000,
+  remaining: 64000,
+  workersToday: 12,
+  photosToday: 18,
+  currentStage: "Masonry",
+};

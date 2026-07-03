@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import { AppCard } from "@/components/ui";
 import { AppButton } from "@/components/ui";
+import { Link } from "react-router-dom";
 
 type ProjectCardProps = {
   project: {
@@ -68,7 +69,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
 
-      <AppButton className="mt-6 w-full">Open Project</AppButton>
+      <Link to={`/projects/${project.id}`}>
+        <AppButton className="mt-6 w-full">
+             Open Project
+        </AppButton>
+      </Link>
     </AppCard>
   );
 }
