@@ -1,75 +1,297 @@
-# React + TypeScript + Vite
+![React](https://img.shields.io/badge/React-19-blue)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
-Currently, two official plugins are available:
+![Express](https://img.shields.io/badge/Express-Node.js-green)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
 
-## React Compiler
+![Prisma](https://img.shields.io/badge/Prisma-ORM-darkblue)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![License](https://img.shields.io/badge/License-Private-red)
 
-## Expanding the ESLint configuration
+# 🏗️ ConstructIQ
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+> **Build once.**
+>
+> **Record once.**
+>
+> **Trust forever.**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+ConstructIQ is a **Digital Twin Platform for Construction Operations** designed to help construction companies manage projects, control costs, document site activities and make better business decisions.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Instead of scattered spreadsheets, paper notes and disconnected tools, ConstructIQ provides a single platform where operational, financial and project information work together.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
 
+# Vision
+
+ConstructIQ creates a **Digital Twin** for every construction project.
+
+Every important activity performed on-site becomes part of a trusted digital representation of the project.
+
+This allows companies to:
+
+- manage projects efficiently
+- control budgets
+- monitor progress
+- calculate real project costs
+- generate professional reports
+- improve collaboration
+- make informed decisions
+
+---
+
+# Core Principles
+
+- Build once.
+- Record once.
+- Trust forever.
+
+---
+
+# Main Features
+
+## Project Management
+
+- Project Dashboard
+- Project Stages
+- Timeline
+- Progress Tracking
+
+---
+
+## Site Operations
+
+- Working Days
+- Worker Attendance
+- Activities
+- Site Notes
+- Weather
+- Photos
+- Documents
+
+---
+
+## Financial Management
+
+- Budget Control
+- Labor Costs
+- Material Costs
+- Equipment Costs
+- Extra Works
+- Invoices
+- Cost Calculation Engine
+
+---
+
+## Reporting
+
+- Daily Reports
+- Stage Reports
+- Financial Reports
+- PDF Export
+
+---
+
+## Health Monitoring
+
+- Project Health
+- Business Health
+- Budget Indicators
+- KPI Dashboard
+
+---
+
+## Security
+
+- JWT Authentication
+- Permission-Based RBAC
+- Audit Trail
+- Approval Workflow
+
+---
+
+# Technology Stack
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- React Router
+
+---
+
+## Backend
+
+- Node.js
+- Express
+- TypeScript
+
+---
+
+## Database
+
+- PostgreSQL
+- Prisma ORM
+
+---
+
+## Storage
+
+- Supabase Storage (planned)
+
+---
+
+## Documentation
+
+ConstructIQ follows a **Documentation First** approach.
+
+Documentation includes:
+
+- Product Documentation
+- Business Documentation
+- Finance Documentation
+- Technical Documentation
+
+---
+
+# Project Structure
+
+```text
+docs/
+│
+├── 00_PROJECT_BIBLE.md
+├── SYSTEM_VISION.md
+│
+├── 01_PRODUCT/
+├── 02_BUSINESS/
+├── 03_FINANCE/
+├── 04_TECHNICAL/
+├── 05_AI/
+└── 06_RELEASES/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Development Philosophy
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+ConstructIQ is developed in the following order:
 
-```
+Business
+
+↓
+
+Finance
+
+↓
+
+Architecture
+
+↓
+
+Database
+
+↓
+
+Backend
+
+↓
+
+Frontend
+
+↓
+
+Testing
+
+↓
+
+Release
+
+Business rules drive implementation.
+
+---
+
+# Current Status
+
+Current phase:
+
+✅ Documentation
+
+Next phase:
+
+- Database Design
+- Prisma Schema
+- Backend Development
+- Frontend Integration
+
+---
+
+# Roadmap
+
+Version 1.0
+
+- Project Management
+- Working Days
+- Budget Tracking
+- Reports
+- Health Indicators
+
+Version 2.0
+
+- OCR Invoice Processing
+- AI Assistant
+- Mobile Application
+- BIM Integration
+
+---
+
+# Documentation
+
+Complete documentation is available inside the `docs` directory.
+
+Main sections:
+
+- Product
+- Business
+- Finance
+- Technical
+
+---
+
+# Contributing
+
+Please read:
+
+- DEVELOPMENT_GUIDE.md
+- CODING_STANDARDS.md
+- GIT_WORKFLOW.md
+
+before contributing.
+
+---
+
+# License
+
+License information will be added before the first public release.
+
+---
+
+# Author
+
+**ConstructIQ**
+
+Digital Twin Platform for Construction Operations.
+
+---
+
+# Motto
+
+> **Build once.**
+>
+> **Record once.**
+>
+> **Trust forever.**
