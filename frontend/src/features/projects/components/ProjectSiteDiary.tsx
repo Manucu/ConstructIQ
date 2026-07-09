@@ -7,9 +7,15 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
 const diaryEntries = [
   {
     id: "1",
+    projectId: "2",
+    stageId: "1",
+    workingDayId: "1",  
     date: "24 June 2026",
     stage: "Foundation",
     weather: "Sunny",
@@ -21,6 +27,9 @@ const diaryEntries = [
   },
   {
     id: "2",
+    projectId: "2",
+    stageId: "1",
+    workingDayId: "2",
     date: "23 June 2026",
     stage: "Foundation",
     weather: "Cloudy",
@@ -32,6 +41,9 @@ const diaryEntries = [
   },
   {
     id: "3",
+    projectId: "2",
+    stageId: "1",
+    workingDayId: "3",
     date: "22 June 2026",
     stage: "Foundation",
     weather: "Sunny",
@@ -92,6 +104,13 @@ export default function ProjectSiteDiary() {
             </div>
 
             <p className="text-sm">{entry.notes}</p>
+            <div className="mt-4 flex justify-end">
+              <Button asChild size="sm">
+                <Link to={`/projects/${entry.projectId}/stages/${entry.stageId}/working-days/${entry.workingDayId}`}>
+                  Open Working Day
+                </Link>
+              </Button>
+            </div>
           </div>
         ))}
       </CardContent>
