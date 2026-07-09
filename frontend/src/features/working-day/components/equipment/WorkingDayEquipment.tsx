@@ -1,25 +1,25 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { materials } from "@/features/company/data/materials";
+import { equipment } from "@/features/company/data/equipment";
 import SectionCard from "../shared/SectionCard";
 import type { WorkingDay } from "../../types/workingDay";
 
-type WorkingDayMaterialsProps = {
+type WorkingDayEquipmentProps = {
   workingDay: WorkingDay;
 };
 
-function getMaterial(materialId: string) {
-  return materials.find((material) => material.id === materialId);
+function getEquipment(equipmentId: string) {
+  return equipment.find((item) => item.id === equipmentId);
 }
 
-export default function WorkingDayMaterials({
+export default function WorkingDayEquipment({
   workingDay,
-}: WorkingDayMaterialsProps) {
+}: WorkingDayEquipmentProps) {
   return (
     <SectionCard
-      title="Materials"
-      icon="📦"
+      title="Equipment"
+      icon="🚜"
       actions={
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
@@ -27,13 +27,13 @@ export default function WorkingDayMaterials({
           </Button>
 
           <Button size="sm">
-            Add Material
+            Add Equipment
           </Button>
         </div>
       }
     >
-      {workingDay.materials.map((entry) => {
-        const material = getMaterial(entry.materialId);
+      {workingDay.equipment.map((entry) => {
+        const equipmentItem = getEquipment(entry.equipmentId);
 
         return (
           <div
@@ -42,11 +42,11 @@ export default function WorkingDayMaterials({
           >
             <div>
               <h3 className="font-semibold">
-                {material?.name ?? "Unknown Material"}
+                {equipmentItem?.name ?? "Unknown Equipment"}
               </h3>
 
               <p className="text-sm text-muted-foreground">
-                Quantity: {entry.quantity} {entry.unit}
+                Hours used: {entry.hoursUsed} 
               </p>
 
               {entry.notes && (
@@ -56,9 +56,7 @@ export default function WorkingDayMaterials({
               )}
             </div>
 
-            <Badge variant="outline">
-              {entry.quantity} {entry.unit}
-            </Badge>
+            <Badge variant="outline">{entry.hoursUsed} h</Badge>
           </div>
         );
       })}
