@@ -6,6 +6,10 @@ import { ProjectOverview } from "@/features/projects/components/ProjectOverview"
 import { ProjectTabs } from "@/features/projects/components/ProjectTabs";
 import { projectDetails } from "@/features/projects/data/projectDetails";
 import { ProjectStages } from "@/features/projects/components/ProjectStages";
+import ProjectBudget from "@/features/projects/components/ProjectBudget";
+import ProjectSiteDiary from "@/features/projects/components/ProjectSiteDiary";
+import ProjectPhotos from "@/features/projects/components/ProjectPhotos";
+import ProjectDocuments from "@/features/projects/components/ProjectDocuments";
 
 export function ProjectDetailsPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -21,29 +25,13 @@ export function ProjectDetailsPage() {
 
         {activeTab === "stages" && <ProjectStages />}
 
-        {activeTab === "budget" && (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
-            Budget module coming soon...
-          </div>
-        )}
+        {activeTab === "budget" && <ProjectBudget />}
 
-        {activeTab === "diary" && (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
-            Site Diary module coming soon...
-          </div>
-        )}
+        {activeTab === "diary" && <ProjectSiteDiary />}
 
-        {activeTab === "photos" && (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
-            Photos module coming soon...
-          </div>
-        )}
+        {activeTab === "photos" && <ProjectPhotos />}
 
-        {activeTab === "documents" && (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
-            Documents module coming soon...
-          </div>
-        )}
+        {activeTab === "documents" && <ProjectDocuments />}
       </div>
     </DashboardLayout>
   );
