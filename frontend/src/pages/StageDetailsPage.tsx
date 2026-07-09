@@ -5,7 +5,7 @@ import { StageOverview } from "@/features/projects/components/StageOverview";
 import StageWorkers from "@/features/projects/components/StageWorkers";
 import StageDailyTasks from "@/features/projects/components/StageDailyTasks";
 
-import { stageDetails } from "@/features/projects/data/stageDetails";
+import { stageDetails } from "../features/projects/data/stageDetails";
 
 export function StageDetailsPage() {
   return (
