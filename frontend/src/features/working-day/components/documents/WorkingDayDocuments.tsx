@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import SectionCard from "../shared/SectionCard";
+import SectionCard from "@/components/common/SectionCard";
 import type { WorkingDay } from "../../types/workingDay";
 
 type WorkingDayDocumentsProps = {

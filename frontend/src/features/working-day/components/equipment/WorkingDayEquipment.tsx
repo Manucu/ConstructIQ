@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 
 import { equipment } from "@/features/company/data/equipment";
-
-import EntityRow from "../shared/EntityRow";
-import EntityToolbar from "../shared/EntityToolbar";
-import SectionCard from "../shared/SectionCard";
-
 import type { WorkingDay } from "../../types/workingDay";
+
+import EmptyState from "@/components/common/EmptyState";
+import EntityRow from "@/components/common/EntityRow";
+import EntityToolbar from "@/components/common/EntityToolbar";
+import SectionCard from "@/components/common/SectionCard";
 
 type WorkingDayEquipmentProps = {
   workingDay: WorkingDay;
@@ -19,23 +19,33 @@ function getEquipment(equipmentId: string) {
 export default function WorkingDayEquipment({
   workingDay,
 }: WorkingDayEquipmentProps) {
-  return (
-    <SectionCard
-      title="Equipment"
-      icon="🚜"
-      actions={
-        <EntityToolbar
-          searchLabel="Search Equipment"
-          addLabel="Add Equipment"
-          onSearch={() => {
-            console.log("Search equipment");
-          }}
-          onAdd={() => {
-            console.log("Add equipment");
-          }}
+  const toolbar = (
+    <EntityToolbar
+      searchLabel="Search Equipment"
+      addLabel="Add Equipment"
+      onSearch={() => {
+        console.log("Search equipment");
+      }}
+      onAdd={() => {
+        console.log("Add equipment");
+      }}
+    />
+  );
+
+  if (workingDay.equipment.length === 0) {
+    return (
+      <SectionCard title="Equipment" icon="🚜" actions={toolbar}>
+        <EmptyState
+          icon="🚜"
+          title="No equipment added"
+          description="Add the equipment used during this working day."
         />
-      }
-    >
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title="Equipment" icon="🚜" actions={toolbar}>
       {workingDay.equipment.map((entry) => {
         const equipmentItem = getEquipment(entry.equipmentId);
 

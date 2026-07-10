@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 
 import { activityTemplates } from "@/features/company/data/activityTemplates";
-
-import EntityRow from "../shared/EntityRow";
-import EntityToolbar from "../shared/EntityToolbar";
-import SectionCard from "../shared/SectionCard";
-import StatusBadge from "../shared/StatusBadge";
-
 import type { WorkingDay } from "../../types/workingDay";
+
+import EmptyState from "@/components/common/EmptyState";
+import EntityRow from "@/components/common/EntityRow";
+import EntityToolbar from "@/components/common/EntityToolbar";
+import SectionCard from "@/components/common/SectionCard";
+import StatusBadge from "@/components/common/StatusBadge";
 
 type WorkingDayActivitiesProps = {
   workingDay: WorkingDay;
@@ -24,23 +24,33 @@ function getActivityName(activityTemplateId: string) {
 export default function WorkingDayActivities({
   workingDay,
 }: WorkingDayActivitiesProps) {
-  return (
-    <SectionCard
-      title="Activities"
-      icon="📋"
-      actions={
-        <EntityToolbar
-          searchLabel="Search Activity"
-          addLabel="Add Activity"
-          onSearch={() => {
-            console.log("Search activity");
-          }}
-          onAdd={() => {
-            console.log("Add activity");
-          }}
+  const toolbar = (
+    <EntityToolbar
+      searchLabel="Search Activity"
+      addLabel="Add Activity"
+      onSearch={() => {
+        console.log("Search activity");
+      }}
+      onAdd={() => {
+        console.log("Add activity");
+      }}
+    />
+  );
+
+  if (workingDay.activities.length === 0) {
+    return (
+      <SectionCard title="Activities" icon="📋" actions={toolbar}>
+        <EmptyState
+          icon="📋"
+          title="No activities added"
+          description="Add the first activity completed during this working day."
         />
-      }
-    >
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title="Activities" icon="📋" actions={toolbar}>
       {workingDay.activities.map((activity) => (
         <EntityRow
           key={activity.id}

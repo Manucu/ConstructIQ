@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
-import SectionCard from "../shared/SectionCard";
-import StatusBadge from "../shared/StatusBadge";
+import SectionCard from "@/components/common/SectionCard";
+import StatusBadge from "@/components/common/StatusBadge";
 
 import type { WorkingDay } from "../../types/workingDay";
 

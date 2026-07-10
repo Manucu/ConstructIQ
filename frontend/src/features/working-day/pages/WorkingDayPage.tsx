@@ -14,6 +14,7 @@ import WorkingDayPhotos from "../components/photos/WorkingDayPhotos";
 import WorkingDayDocuments from "../components/documents/WorkingDayDocuments";
 import WorkingDayNotes from "../components/notes/WorkingDayNotes";
 import WorkingDayApproval from "../components/approval/WorkingDayApproval";
+import WorkingDayWorkers from "../components/workers/WorkingDayWorkers";
 
 
 
@@ -26,6 +27,8 @@ export default function WorkingDayPage() {
         <WorkingDaySummary workingDay={workingDayMock} />
 
         <WorkingDayAttendance workingDay={workingDayMock} />
+
+        <WorkingDayWorkers workingDay={workingDayMock} />
 
         <WorkingDayActivities workingDay={workingDayMock} />
 

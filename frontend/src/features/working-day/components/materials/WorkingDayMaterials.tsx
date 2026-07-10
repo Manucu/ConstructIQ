@@ -3,10 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { materials } from "@/features/company/data/materials";
 import type { WorkingDay } from "../../types/workingDay";
 
-import EmptyState from "../shared/EmptyState";
-import EntityRow from "../shared/EntityRow";
-import EntityToolbar from "../shared/EntityToolbar";
-import SectionCard from "../shared/SectionCard";
+import EmptyState from "@/components/common/EmptyState";
+import EntityRow from "@/components/common/EntityRow";
+import EntityToolbar from "@/components/common/EntityToolbar";
+import SectionCard from "@/components/common/SectionCard";
 
 type WorkingDayMaterialsProps = {
   workingDay: WorkingDay;

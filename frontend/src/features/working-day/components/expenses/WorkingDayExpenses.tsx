@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
-import StatusBadge from "../shared/StatusBadge";
 
 import { expenseCategories } from "@/features/company/data/expenseCategories";
-
-import EntityRow from "../shared/EntityRow";
-import EntityToolbar from "../shared/EntityToolbar";
-import SectionCard from "../shared/SectionCard";
-
 import type { WorkingDay } from "../../types/workingDay";
+
+import EmptyState from "@/components/common/EmptyState";
+import EntityRow from "@/components/common/EntityRow";
+import EntityToolbar from "@/components/common/EntityToolbar";
+import SectionCard from "@/components/common/SectionCard";
+import StatusBadge from "@/components/common/StatusBadge";
 
 type WorkingDayExpensesProps = {
   workingDay: WorkingDay;
@@ -30,27 +30,35 @@ function formatCurrency(amount: number, currency: string) {
 export default function WorkingDayExpenses({
   workingDay,
 }: WorkingDayExpensesProps) {
-  return (
-    <SectionCard
-      title="Expenses"
-      icon="💰"
-      actions={
-        <EntityToolbar
-          searchLabel="Search Category"
-          addLabel="Add Expense"
-          onSearch={() => {
-            console.log("Search expense category");
-          }}
-          onAdd={() => {
-            console.log("Add expense");
-          }}
+  const toolbar = (
+    <EntityToolbar
+      searchLabel="Search Category"
+      addLabel="Add Expense"
+      onSearch={() => {
+        console.log("Search expense category");
+      }}
+      onAdd={() => {
+        console.log("Add expense");
+      }}
+    />
+  );
+
+  if (workingDay.expenses.length === 0) {
+    return (
+      <SectionCard title="Expenses" icon="💰" actions={toolbar}>
+        <EmptyState
+          icon="💰"
+          title="No expenses added"
+          description="Add the first expense recorded for this working day."
         />
-      }
-    >
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title="Expenses" icon="💰" actions={toolbar}>
       {workingDay.expenses.map((entry) => {
-        const category = getExpenseCategory(
-          entry.expenseCategoryId
-        );
+        const category = getExpenseCategory(entry.expenseCategoryId);
 
         return (
           <EntityRow
