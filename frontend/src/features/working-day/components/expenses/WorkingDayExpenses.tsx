@@ -1,8 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import StatusBadge from "../shared/StatusBadge";
 
 import { expenseCategories } from "@/features/company/data/expenseCategories";
+
+import EntityRow from "../shared/EntityRow";
+import EntityToolbar from "../shared/EntityToolbar";
 import SectionCard from "../shared/SectionCard";
+
 import type { WorkingDay } from "../../types/workingDay";
 
 type WorkingDayExpensesProps = {
@@ -10,7 +14,9 @@ type WorkingDayExpensesProps = {
 };
 
 function getExpenseCategory(categoryId: string) {
-  return expenseCategories.find((category) => category.id === categoryId);
+  return expenseCategories.find(
+    (category) => category.id === categoryId
+  );
 }
 
 function formatCurrency(amount: number, currency: string) {
@@ -29,47 +35,45 @@ export default function WorkingDayExpenses({
       title="Expenses"
       icon="💰"
       actions={
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Search
-          </Button>
-
-          <Button size="sm">
-            Add Expense
-          </Button>
-        </div>
+        <EntityToolbar
+          searchLabel="Search Category"
+          addLabel="Add Expense"
+          onSearch={() => {
+            console.log("Search expense category");
+          }}
+          onAdd={() => {
+            console.log("Add expense");
+          }}
+        />
       }
     >
       {workingDay.expenses.map((entry) => {
-        const category = getExpenseCategory(entry.expenseCategoryId);
+        const category = getExpenseCategory(
+          entry.expenseCategoryId
+        );
 
         return (
-          <div
+          <EntityRow
             key={entry.id}
-            className="flex items-center justify-between rounded-lg border p-4"
-          >
-            <div>
-              <h3 className="font-semibold">{entry.description}</h3>
-
-              <p className="text-sm text-muted-foreground">
-                {category?.name ?? "Unknown category"}
-              </p>
-
-              {entry.notes && (
+            title={entry.description}
+            subtitle={category?.name ?? "Unknown Category"}
+            description={
+              entry.notes ? (
                 <p className="mt-2 text-sm text-muted-foreground">
                   {entry.notes}
                 </p>
-              )}
-            </div>
+              ) : undefined
+            }
+            actions={
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">
+                  {formatCurrency(entry.amount, entry.currency)}
+                </Badge>
 
-            <div className="flex items-center gap-3">
-              <Badge variant="outline">
-                {formatCurrency(entry.amount, entry.currency)}
-              </Badge>
-
-              <Badge>{entry.status}</Badge>
-            </div>
-          </div>
+                <StatusBadge status={entry.status} />
+              </div>
+            }
+          />
         );
       })}
     </SectionCard>

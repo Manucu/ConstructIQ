@@ -1,9 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import { materials } from "@/features/company/data/materials";
-import SectionCard from "../shared/SectionCard";
 import type { WorkingDay } from "../../types/workingDay";
+
+import EmptyState from "../shared/EmptyState";
+import EntityRow from "../shared/EntityRow";
+import EntityToolbar from "../shared/EntityToolbar";
+import SectionCard from "../shared/SectionCard";
 
 type WorkingDayMaterialsProps = {
   workingDay: WorkingDay;
@@ -16,50 +19,54 @@ function getMaterial(materialId: string) {
 export default function WorkingDayMaterials({
   workingDay,
 }: WorkingDayMaterialsProps) {
-  return (
-    <SectionCard
-      title="Materials"
-      icon="📦"
-      actions={
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Search
-          </Button>
+  const toolbar = (
+    <EntityToolbar
+      searchLabel="Search Material"
+      addLabel="Add Material"
+      onSearch={() => {
+        console.log("Search material");
+      }}
+      onAdd={() => {
+        console.log("Add material");
+      }}
+    />
+  );
 
-          <Button size="sm">
-            Add Material
-          </Button>
-        </div>
-      }
-    >
+  if (workingDay.materials.length === 0) {
+    return (
+      <SectionCard title="Materials" icon="📦" actions={toolbar}>
+        <EmptyState
+          icon="📦"
+          title="No materials added"
+          description="Add the first material used during this working day."
+        />
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title="Materials" icon="📦" actions={toolbar}>
       {workingDay.materials.map((entry) => {
         const material = getMaterial(entry.materialId);
 
         return (
-          <div
+          <EntityRow
             key={entry.id}
-            className="flex items-center justify-between rounded-lg border p-4"
-          >
-            <div>
-              <h3 className="font-semibold">
-                {material?.name ?? "Unknown Material"}
-              </h3>
-
-              <p className="text-sm text-muted-foreground">
-                Quantity: {entry.quantity} {entry.unit}
-              </p>
-
-              {entry.notes && (
+            title={material?.name ?? "Unknown Material"}
+            subtitle={`Quantity: ${entry.quantity} ${entry.unit}`}
+            description={
+              entry.notes ? (
                 <p className="mt-2 text-sm text-muted-foreground">
                   {entry.notes}
                 </p>
-              )}
-            </div>
-
-            <Badge variant="outline">
-              {entry.quantity} {entry.unit}
-            </Badge>
-          </div>
+              ) : undefined
+            }
+            actions={
+              <Badge variant="outline">
+                {entry.quantity} {entry.unit}
+              </Badge>
+            }
+          />
         );
       })}
     </SectionCard>

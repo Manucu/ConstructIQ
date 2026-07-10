@@ -1,8 +1,11 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import { equipment } from "@/features/company/data/equipment";
+
+import EntityRow from "../shared/EntityRow";
+import EntityToolbar from "../shared/EntityToolbar";
 import SectionCard from "../shared/SectionCard";
+
 import type { WorkingDay } from "../../types/workingDay";
 
 type WorkingDayEquipmentProps = {
@@ -21,43 +24,39 @@ export default function WorkingDayEquipment({
       title="Equipment"
       icon="🚜"
       actions={
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Search
-          </Button>
-
-          <Button size="sm">
-            Add Equipment
-          </Button>
-        </div>
+        <EntityToolbar
+          searchLabel="Search Equipment"
+          addLabel="Add Equipment"
+          onSearch={() => {
+            console.log("Search equipment");
+          }}
+          onAdd={() => {
+            console.log("Add equipment");
+          }}
+        />
       }
     >
       {workingDay.equipment.map((entry) => {
         const equipmentItem = getEquipment(entry.equipmentId);
 
         return (
-          <div
+          <EntityRow
             key={entry.id}
-            className="flex items-center justify-between rounded-lg border p-4"
-          >
-            <div>
-              <h3 className="font-semibold">
-                {equipmentItem?.name ?? "Unknown Equipment"}
-              </h3>
-
-              <p className="text-sm text-muted-foreground">
-                Hours used: {entry.hoursUsed} 
-              </p>
-
-              {entry.notes && (
+            title={equipmentItem?.name ?? "Unknown Equipment"}
+            subtitle={`Hours used: ${entry.hoursUsed} h`}
+            description={
+              entry.notes ? (
                 <p className="mt-2 text-sm text-muted-foreground">
                   {entry.notes}
                 </p>
-              )}
-            </div>
-
-            <Badge variant="outline">{entry.hoursUsed} h</Badge>
-          </div>
+              ) : undefined
+            }
+            actions={
+              <Badge variant="outline">
+                {entry.hoursUsed} h
+              </Badge>
+            }
+          />
         );
       })}
     </SectionCard>

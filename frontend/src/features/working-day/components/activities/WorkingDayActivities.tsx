@@ -1,7 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { activityTemplates } from "@/features/company/data/activityTemplates";
+
+import EntityRow from "../shared/EntityRow";
+import EntityToolbar from "../shared/EntityToolbar";
+import SectionCard from "../shared/SectionCard";
+import StatusBadge from "../shared/StatusBadge";
+
 import type { WorkingDay } from "../../types/workingDay";
 
 type WorkingDayActivitiesProps = {
@@ -13,69 +18,54 @@ function getActivityName(activityTemplateId: string) {
     (item) => item.id === activityTemplateId
   );
 
-  return activity?.name ?? "Unknown activity";
-}
-
-function getStatusVariant(status: string) {
-  switch (status) {
-    case "COMPLETED":
-      return "default";
-    case "IN_PROGRESS":
-      return "secondary";
-    case "PLANNED":
-      return "outline";
-    case "BLOCKED":
-      return "destructive";
-    default:
-      return "outline";
-  }
+  return activity?.name ?? "Unknown Activity";
 }
 
 export default function WorkingDayActivities({
   workingDay,
 }: WorkingDayActivitiesProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>📋 Activities</CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-3">
-        {workingDay.activities.map((activity) => (
-          <div
-            key={activity.id}
-            className="flex items-center justify-between rounded-lg border p-4"
-          >
-            <div>
-              <h3 className="font-semibold">
-                {getActivityName(activity.activityTemplateId)}
-              </h3>
-
-              <p className="text-sm text-muted-foreground">
-                {activity.workersAssigned} workers • {activity.hoursWorked} h
+    <SectionCard
+      title="Activities"
+      icon="📋"
+      actions={
+        <EntityToolbar
+          searchLabel="Search Activity"
+          addLabel="Add Activity"
+          onSearch={() => {
+            console.log("Search activity");
+          }}
+          onAdd={() => {
+            console.log("Add activity");
+          }}
+        />
+      }
+    >
+      {workingDay.activities.map((activity) => (
+        <EntityRow
+          key={activity.id}
+          title={getActivityName(activity.activityTemplateId)}
+          subtitle={`${activity.workersAssigned} workers • ${activity.hoursWorked} h`}
+          description={
+            activity.notes ? (
+              <p className="mt-2 text-sm text-muted-foreground">
+                {activity.notes}
               </p>
-
-              {activity.notes && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {activity.notes}
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3">
+            ) : undefined
+          }
+          actions={
+            <div className="flex items-center gap-2">
               {typeof activity.progressPercentage === "number" && (
                 <Badge variant="outline">
                   {activity.progressPercentage}%
                 </Badge>
               )}
 
-              <Badge variant={getStatusVariant(activity.status)}>
-                {activity.status}
-              </Badge>
+              <StatusBadge status={activity.status} />
             </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+          }
+        />
+      ))}
+    </SectionCard>
   );
 }
