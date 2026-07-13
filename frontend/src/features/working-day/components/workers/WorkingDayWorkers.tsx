@@ -17,13 +17,9 @@ import {
 import { activityTemplates } from "@/features/company/data/activityTemplates";
 
 import { useWorkingDayWorkers } from "../../hooks/useWorkingDayWorkers";
-import type { WorkingDay } from "../../types/workingDay";
 
 import WorkerDialog from "./WorkerDialog";
 
-type WorkingDayWorkersProps = {
-  workingDay: WorkingDay;
-};
 
 function getWorker(workerId: string) {
   return workers.find((worker) => worker.id === workerId);
@@ -41,9 +37,7 @@ function getActivityName(activityTemplateId?: string) {
   );
 }
 
-export default function WorkingDayWorkers({
-  workingDay,
-}: WorkingDayWorkersProps) {
+export default function WorkingDayWorkers() {
   const {
     workerEntries,
     selectedWorker,
@@ -57,7 +51,7 @@ export default function WorkingDayWorkers({
     saveWorker,
     deleteWorker,
     editWorker,
-  } = useWorkingDayWorkers({ workingDay });
+  } = useWorkingDayWorkers();
 
   const toolbar = (
     <EntityToolbar

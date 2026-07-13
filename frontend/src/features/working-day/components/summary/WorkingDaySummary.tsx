@@ -1,13 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { WorkingDay } from "../../types/workingDay";
 
-type WorkingDaySummaryProps = {
-  workingDay: WorkingDay;
-};
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
-export default function WorkingDaySummary({
-  workingDay,
-}: WorkingDaySummaryProps) {
+export default function WorkingDaySummary() {
+  const {
+    workingDay,
+    photos,
+  } = useWorkingDayContext();
+
   const totalWorkers = workingDay.attendance.filter(
     (entry) => entry.present
   ).length;
@@ -54,7 +54,7 @@ export default function WorkingDaySummary({
     },
     {
       label: "Photos",
-      value: workingDay.photos.length,
+      value: photos.length,
     },
     {
       label: "Documents",
@@ -67,8 +67,13 @@ export default function WorkingDaySummary({
       {summaryItems.map((item) => (
         <Card key={item.label}>
           <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground">{item.label}</p>
-            <p className="text-2xl font-bold">{item.value}</p>
+            <p className="text-sm text-muted-foreground">
+              {item.label}
+            </p>
+
+            <p className="text-2xl font-bold">
+              {item.value}
+            </p>
           </CardContent>
         </Card>
       ))}

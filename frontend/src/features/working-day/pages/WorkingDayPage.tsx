@@ -15,38 +15,41 @@ import WorkingDayDocuments from "../components/documents/WorkingDayDocuments";
 import WorkingDayNotes from "../components/notes/WorkingDayNotes";
 import WorkingDayApproval from "../components/approval/WorkingDayApproval";
 import WorkingDayWorkers from "../components/workers/WorkingDayWorkers";
+import { WorkingDayProvider } from "../context/WorkingDayContext";
 
 
 
 export default function WorkingDayPage() {
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <WorkingDayHeader workingDay={workingDayMock} />
+    <WorkingDayProvider initialWorkingDay={workingDayMock}>
+      <DashboardLayout>
+        <div className="space-y-6">
+          <WorkingDayHeader workingDay={workingDayMock} />
 
-        <WorkingDaySummary workingDay={workingDayMock} />
+          <WorkingDaySummary />
 
-        <WorkingDayAttendance workingDay={workingDayMock} />
+          <WorkingDayAttendance workingDay={workingDayMock} />
 
-        <WorkingDayWorkers workingDay={workingDayMock} />
+          <WorkingDayWorkers />
 
-        <WorkingDayActivities workingDay={workingDayMock} />
+          <WorkingDayActivities />
 
-        <WorkingDayMaterials workingDay={workingDayMock} />
+          <WorkingDayMaterials />
 
-        <WorkingDayEquipment workingDay={workingDayMock} />
+          <WorkingDayEquipment />
 
-        <WorkingDayExpenses workingDay={workingDayMock} />
+          <WorkingDayExpenses  />
 
-        <WorkingDayPhotos workingDay={workingDayMock} />
+          <WorkingDayPhotos  />
 
-        <WorkingDayDocuments workingDay={workingDayMock} />
+          <WorkingDayDocuments workingDay={workingDayMock} />
 
-        <WorkingDayNotes workingDay={workingDayMock} />
+          <WorkingDayNotes />
 
-        <WorkingDayApproval workingDay={workingDayMock} />
+          <WorkingDayApproval workingDay={workingDayMock} />
 
-      </div>
-    </DashboardLayout>
+        </div>
+      </DashboardLayout>
+    </WorkingDayProvider>
   );
 }

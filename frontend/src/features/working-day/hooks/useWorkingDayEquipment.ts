@@ -5,21 +5,15 @@ import {
   type Equipment,
 } from "@/features/company/data/equipment";
 
-import type {
-  EquipmentEntry,
-  WorkingDay,
-} from "../types/workingDay";
+import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
-type UseWorkingDayEquipmentParams = {
-  workingDay: WorkingDay;
-};
+import type { EquipmentEntry } from "../types/workingDay";
 
-export function useWorkingDayEquipment({
-  workingDay,
-}: UseWorkingDayEquipmentParams) {
-  const [equipmentEntries, setEquipmentEntries] = useState<EquipmentEntry[]>(
-    workingDay.equipment
-  );
+export function useWorkingDayEquipment() {
+  const {
+    equipmentEntries,
+    setEquipmentEntries,
+  } = useWorkingDayContext();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isHoursOpen, setIsHoursOpen] = useState(false);
@@ -32,6 +26,7 @@ export function useWorkingDayEquipment({
 
   function openSearchDialog() {
     setEditingEntry(null);
+    setSelectedEquipment(null);
     setIsSearchOpen(true);
   }
 
@@ -114,6 +109,7 @@ export function useWorkingDayEquipment({
     equipmentEntries,
     selectedEquipment,
     editingEntry,
+
     isSearchOpen,
     isHoursOpen,
 

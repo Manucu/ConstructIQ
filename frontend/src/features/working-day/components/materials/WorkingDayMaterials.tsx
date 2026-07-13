@@ -15,21 +15,17 @@ import {
 } from "@/features/company/data/materials";
 
 import { useWorkingDayMaterials } from "../../hooks/useWorkingDayMaterials";
-import type { WorkingDay } from "../../types/workingDay";
+
 
 import MaterialQuantityDialog from "./MaterialQuantityDialog";
 
-type WorkingDayMaterialsProps = {
-  workingDay: WorkingDay;
-};
+
 
 function getMaterial(materialId: string) {
   return materials.find((material) => material.id === materialId);
 }
 
-export default function WorkingDayMaterials({
-  workingDay,
-}: WorkingDayMaterialsProps) {
+export default function WorkingDayMaterials() {
   const {
     materialEntries,
     selectedMaterial,
@@ -42,7 +38,7 @@ export default function WorkingDayMaterials({
     saveMaterial,
     deleteMaterial,
     editMaterial,
-  } = useWorkingDayMaterials({ workingDay });
+  } = useWorkingDayMaterials();
 
   const toolbar = (
     <EntityToolbar

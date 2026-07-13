@@ -5,21 +5,15 @@ import {
   type CompanyMaterial,
 } from "@/features/company/data/materials";
 
-import type {
-  MaterialEntry,
-  WorkingDay,
-} from "../types/workingDay";
+import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
-type UseWorkingDayMaterialsParams = {
-  workingDay: WorkingDay;
-};
+import type { MaterialEntry } from "../types/workingDay";
 
-export function useWorkingDayMaterials({
-  workingDay,
-}: UseWorkingDayMaterialsParams) {
-  const [materialEntries, setMaterialEntries] = useState<MaterialEntry[]>(
-    workingDay.materials
-  );
+export function useWorkingDayMaterials() {
+  const {
+    materialEntries,
+    setMaterialEntries,
+  } = useWorkingDayContext();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isQuantityOpen, setIsQuantityOpen] = useState(false);
@@ -32,6 +26,7 @@ export function useWorkingDayMaterials({
 
   function openSearchDialog() {
     setEditingEntry(null);
+    setSelectedMaterial(null);
     setIsSearchOpen(true);
   }
 
@@ -116,6 +111,7 @@ export function useWorkingDayMaterials({
     materialEntries,
     selectedMaterial,
     editingEntry,
+
     isSearchOpen,
     isQuantityOpen,
 

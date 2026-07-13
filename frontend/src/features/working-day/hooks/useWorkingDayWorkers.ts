@@ -5,21 +5,15 @@ import {
   type Worker,
 } from "@/features/company/data/workers";
 
-import type {
-  WorkerEntry,
-  WorkingDay,
-} from "../types/workingDay";
+import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
-type UseWorkingDayWorkersParams = {
-  workingDay: WorkingDay;
-};
+import type { WorkerEntry } from "../types/workingDay";
 
-export function useWorkingDayWorkers({
-  workingDay,
-}: UseWorkingDayWorkersParams) {
-  const [workerEntries, setWorkerEntries] = useState<WorkerEntry[]>(
-    workingDay.attendance
-  );
+export function useWorkingDayWorkers() {
+  const {
+    workerEntries,
+    setWorkerEntries,
+  } = useWorkingDayContext();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isWorkerDialogOpen, setIsWorkerDialogOpen] = useState(false);
@@ -32,6 +26,7 @@ export function useWorkingDayWorkers({
 
   function openSearchDialog() {
     setEditingEntry(null);
+    setSelectedWorker(null);
     setIsSearchOpen(true);
   }
 
@@ -93,6 +88,7 @@ export function useWorkingDayWorkers({
     );
 
     if (alreadyAdded) {
+      closeWorkerDialog();
       return;
     }
 
@@ -140,6 +136,7 @@ export function useWorkingDayWorkers({
     workerEntries,
     selectedWorker,
     editingEntry,
+
     isSearchOpen,
     isWorkerDialogOpen,
 

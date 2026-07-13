@@ -1,46 +1,90 @@
-import { Button } from "@/components/ui/button";
+import { useRef } from "react";
+import { Upload } from "lucide-react";
 
+import EmptyState from "@/components/common/EmptyState";
 import SectionCard from "@/components/common/SectionCard";
-import type { WorkingDay } from "../../types/workingDay";
 
-type WorkingDayPhotosProps = {
-  workingDay: WorkingDay;
-};
+import { AppButton } from "@/components/ui/AppButton";
 
-export default function WorkingDayPhotos({
-  workingDay,
-}: WorkingDayPhotosProps) {
+import { useWorkingDayPhotos } from "../../hooks/useWorkingDayPhotos";
+
+import PhotoGrid from "./PhotoGrid";
+import PhotoPreviewDialog from "./PhotoPreviewDialog";
+
+export default function WorkingDayPhotos() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const {
+    photos,
+    selectedPhoto,
+    uploadPhotos,
+    deletePhoto,
+    openPreview,
+    closePreview,
+  } = useWorkingDayPhotos();
+
+  function openFilePicker() {
+    fileInputRef.current?.click();
+  }
+
   return (
-    <SectionCard
-      title="Photos"
-      icon="📷"
-      actions={
-        <Button size="sm">
-          Upload Photo
-        </Button>
-      }
-    >
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {workingDay.photos.map((photo) => (
-          <div key={photo.id} className="rounded-lg border p-4">
-            <div className="mb-4 flex h-32 items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground">
-              Photo Preview
-            </div>
+    <>
+      <SectionCard
+        title="Photos"
+        icon="📷"
+        actions={
+          <AppButton
+            type="button"
+            onClick={openFilePicker}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Photos
+          </AppButton>
+        }
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(event) => {
+            uploadPhotos(event.target.files);
 
-            <h3 className="font-semibold">{photo.title}</h3>
+            event.target.value = "";
+          }}
+        />
 
-            {photo.description && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                {photo.description}
-              </p>
-            )}
+        {photos.length === 0 ? (
+          <EmptyState
+            icon="📷"
+            title="No photos uploaded"
+            description="Upload site photos for this working day."
+            action={
+              <AppButton
+                type="button"
+                variant="outline"
+                onClick={openFilePicker}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Upload First Photo
+              </AppButton>
+            }
+          />
+        ) : (
+          <PhotoGrid
+            photos={photos}
+            onPreview={openPreview}
+            onDelete={deletePhoto}
+          />
+        )}
+      </SectionCard>
 
-            <p className="mt-3 text-xs text-muted-foreground">
-              Uploaded by {photo.uploadedBy} • {photo.uploadedAt}
-            </p>
-          </div>
-        ))}
-      </div>
-    </SectionCard>
+      <PhotoPreviewDialog
+        photo={selectedPhoto}
+        onClose={closePreview}
+        onDelete={deletePhoto}
+      />
+    </>
   );
 }

@@ -1,28 +1,81 @@
-import { Button } from "@/components/ui/button";
+import { Edit3, Save, X } from "lucide-react";
 
+import EmptyState from "@/components/common/EmptyState";
 import SectionCard from "@/components/common/SectionCard";
-import type { WorkingDay } from "../../types/workingDay";
+import { AppButton } from "@/components/ui/AppButton";
 
-type WorkingDayNotesProps = {
-  workingDay: WorkingDay;
-};
+import { useWorkingDayNotes } from "../../hooks/useWorkingDayNotes";
 
-export default function WorkingDayNotes({ workingDay }: WorkingDayNotesProps) {
+export default function WorkingDayNotes() {
+  const {
+    notes,
+    draftNotes,
+    isEditing,
+    setDraftNotes,
+    startEditing,
+    cancelEditing,
+    saveNotes,
+  } = useWorkingDayNotes();
+
   return (
     <SectionCard
-      title="Engineer Notes"
+      title="Notes"
       icon="📝"
       actions={
-        <Button variant="outline" size="sm">
-          Edit Notes
-        </Button>
+        !isEditing ? (
+          <AppButton
+            type="button"
+            variant="outline"
+            onClick={startEditing}
+          >
+            <Edit3 className="mr-2 h-4 w-4" />
+            Edit
+          </AppButton>
+        ) : (
+          <div className="flex gap-2">
+            <AppButton
+              type="button"
+              variant="outline"
+              onClick={cancelEditing}
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </AppButton>
+
+            <AppButton
+              type="button"
+              onClick={saveNotes}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Save
+            </AppButton>
+          </div>
+        )
       }
     >
-      <div className="rounded-lg border p-4">
-        <p className="text-sm leading-6 text-muted-foreground">
-          {workingDay.notes || "No notes added for this working day."}
-        </p>
-      </div>
+      {isEditing ? (
+        <textarea
+          rows={8}
+          className="w-full rounded-xl border border-slate-300 bg-white p-4 outline-none transition-colors focus:border-blue-700"
+          placeholder="Write working day notes..."
+          value={draftNotes}
+          onChange={(event) => {
+            setDraftNotes(event.target.value);
+          }}
+        />
+      ) : notes.trim() ? (
+        <div className="rounded-xl border bg-slate-50 p-4">
+          <p className="whitespace-pre-wrap leading-7">
+            {notes}
+          </p>
+        </div>
+      ) : (
+        <EmptyState
+          icon="📝"
+          title="No notes"
+          description="Add notes about today's work, issues, weather or observations."
+        />
+      )}
     </SectionCard>
   );
 }

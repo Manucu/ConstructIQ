@@ -5,24 +5,21 @@ import {
   type ExpenseCategory,
 } from "@/features/company/data/expenseCategories";
 
-import type {
-  ExpenseEntry,
-  WorkingDay,
-} from "../types/workingDay";
+import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
-type UseWorkingDayExpensesParams = {
-  workingDay: WorkingDay;
-};
+import type { ExpenseEntry } from "../types/workingDay";
 
-export function useWorkingDayExpenses({
-  workingDay,
-}: UseWorkingDayExpensesParams) {
-  const [expenseEntries, setExpenseEntries] = useState<ExpenseEntry[]>(
-    workingDay.expenses
-  );
+export function useWorkingDayExpenses() {
+  const {
+    expenseEntries,
+    setExpenseEntries,
+  } = useWorkingDayContext();
 
-  const [isCategorySearchOpen, setIsCategorySearchOpen] = useState(false);
-  const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
+  const [isCategorySearchOpen, setIsCategorySearchOpen] =
+    useState(false);
+
+  const [isExpenseDialogOpen, setIsExpenseDialogOpen] =
+    useState(false);
 
   const [selectedCategory, setSelectedCategory] =
     useState<ExpenseCategory | null>(null);
@@ -32,6 +29,7 @@ export function useWorkingDayExpenses({
 
   function openCategorySearchDialog() {
     setEditingEntry(null);
+    setSelectedCategory(null);
     setIsCategorySearchOpen(true);
   }
 
@@ -124,6 +122,7 @@ export function useWorkingDayExpenses({
     expenseEntries,
     selectedCategory,
     editingEntry,
+
     isCategorySearchOpen,
     isExpenseDialogOpen,
 

@@ -16,13 +16,10 @@ import {
 } from "@/features/company/data/expenseCategories";
 
 import { useWorkingDayExpenses } from "../../hooks/useWorkingDayExpenses";
-import type { WorkingDay } from "../../types/workingDay";
 
 import ExpenseDialog from "./ExpenseDialog";
 
-type WorkingDayExpensesProps = {
-  workingDay: WorkingDay;
-};
+
 
 function formatCurrency(amount: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
@@ -32,9 +29,7 @@ function formatCurrency(amount: number, currency: string) {
   }).format(amount);
 }
 
-export default function WorkingDayExpenses({
-  workingDay,
-}: WorkingDayExpensesProps) {
+export default function WorkingDayExpenses() {
   const {
     expenseEntries,
     selectedCategory,
@@ -48,7 +43,7 @@ export default function WorkingDayExpenses({
     saveExpense,
     deleteExpense,
     editExpense,
-  } = useWorkingDayExpenses({ workingDay });
+  } = useWorkingDayExpenses();
 
   const toolbar = (
     <EntityToolbar

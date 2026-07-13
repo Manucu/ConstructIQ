@@ -1,8 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Check, Send, X } from "lucide-react";
 
 import SectionCard from "@/components/common/SectionCard";
 import StatusBadge from "@/components/common/StatusBadge";
+import { AppButton } from "@/components/ui/AppButton";
 
+import { useWorkingDayApproval } from "../../hooks/useWorkingDayApproval";
 import type { WorkingDay } from "../../types/workingDay";
 
 type WorkingDayApprovalProps = {
@@ -12,7 +14,13 @@ type WorkingDayApprovalProps = {
 export default function WorkingDayApproval({
   workingDay,
 }: WorkingDayApprovalProps) {
-  const { approval } = workingDay;
+  const { status, submit, approve, reject } =
+    useWorkingDayApproval({ workingDay });
+
+  const isNotSubmitted = status === "NOT_SUBMITTED";
+  const isPending = status === "PENDING";
+  const isApproved = status === "APPROVED";
+  const isRejected = status === "REJECTED";
 
   return (
     <SectionCard
@@ -20,51 +28,144 @@ export default function WorkingDayApproval({
       icon="✅"
       actions={
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline">
-            Save Draft
-          </Button>
+          {isNotSubmitted && (
+            <AppButton type="button" onClick={submit}>
+              <Send className="mr-2 h-4 w-4" />
+              Submit for Approval
+            </AppButton>
+          )}
 
-          <Button type="button">
-            Submit for Approval
-          </Button>
+          {isPending && (
+            <>
+              <AppButton
+                type="button"
+                variant="outline"
+                onClick={reject}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Reject
+              </AppButton>
+
+              <AppButton type="button" onClick={approve}>
+                <Check className="mr-2 h-4 w-4" />
+                Approve
+              </AppButton>
+            </>
+          )}
+
+          {isRejected && (
+            <AppButton type="button" onClick={submit}>
+              <Send className="mr-2 h-4 w-4" />
+              Resubmit
+            </AppButton>
+          )}
         </div>
       }
     >
-      <div className="space-y-4 rounded-lg border p-4">
-        <div className="flex items-center justify-between">
-          <span className="font-medium">Status</span>
-
-          <StatusBadge status={approval.status} />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
+      <div className="space-y-5 rounded-xl border p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm text-muted-foreground">Submitted By</p>
-            <p>{approval.submittedBy ?? "-"}</p>
+            <p className="text-sm text-muted-foreground">
+              Current status
+            </p>
+
+            <div className="mt-2">
+              <StatusBadge status={status} />
+            </div>
           </div>
 
-          <div>
-            <p className="text-sm text-muted-foreground">Submitted At</p>
-            <p>{approval.submittedAt ?? "-"}</p>
-          </div>
+          <div className="text-right">
+            <p className="text-sm text-muted-foreground">
+              Working Day
+            </p>
 
-          <div>
-            <p className="text-sm text-muted-foreground">Approved By</p>
-            <p>{approval.approvedBy ?? "-"}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-muted-foreground">Approved At</p>
-            <p>{approval.approvedAt ?? "-"}</p>
+            <p className="mt-1 font-medium">{workingDay.date}</p>
           </div>
         </div>
 
-        {approval.rejectionReason && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-            <p className="text-sm font-medium">Rejection reason</p>
+        <div className="grid gap-4 border-t pt-5 md:grid-cols-2">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Submitted By
+            </p>
 
-            <p className="mt-1 text-sm text-muted-foreground">
-              {approval.rejectionReason}
+            <p className="mt-1">
+              {isNotSubmitted
+                ? "-"
+                : workingDay.approval.submittedBy ??
+                  workingDay.engineerName}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Submitted At
+            </p>
+
+            <p className="mt-1">
+              {isNotSubmitted
+                ? "-"
+                : workingDay.approval.submittedAt ??
+                  "Current session"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Approved By
+            </p>
+
+            <p className="mt-1">
+              {isApproved
+                ? workingDay.approval.approvedBy ?? "Owner"
+                : "-"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Approved At
+            </p>
+
+            <p className="mt-1">
+              {isApproved
+                ? workingDay.approval.approvedAt ??
+                  "Current session"
+                : "-"}
+            </p>
+          </div>
+        </div>
+
+        {isNotSubmitted && (
+          <div className="rounded-xl bg-slate-50 p-4">
+            <p className="text-sm text-muted-foreground">
+              This working day is still editable. Submit it after all
+              information has been completed.
+            </p>
+          </div>
+        )}
+
+        {isPending && (
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <p className="text-sm text-blue-900">
+              This working day is waiting for Owner approval.
+            </p>
+          </div>
+        )}
+
+        {isApproved && (
+          <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+            <p className="text-sm text-green-900">
+              This working day has been approved.
+            </p>
+          </div>
+        )}
+
+        {isRejected && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+            <p className="text-sm text-red-900">
+              This working day was rejected. Make the required changes
+              and submit it again.
             </p>
           </div>
         )}

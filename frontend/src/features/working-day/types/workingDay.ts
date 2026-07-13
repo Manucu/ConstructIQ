@@ -22,6 +22,8 @@ export type ActivityStatus =
 
 export type ApprovalStatus =
   | "NOT_SUBMITTED"
+  | "DRAFT"
+  | "SUBMITTED"
   | "PENDING"
   | "APPROVED"
   | "REJECTED";

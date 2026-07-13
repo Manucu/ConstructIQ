@@ -1,81 +1,151 @@
-import { Badge } from "@/components/ui/badge";
-
-import { activityTemplates } from "@/features/company/data/activityTemplates";
-import type { WorkingDay } from "../../types/workingDay";
+import { Pencil, Trash2 } from "lucide-react";
 
 import EmptyState from "@/components/common/EmptyState";
 import EntityRow from "@/components/common/EntityRow";
 import EntityToolbar from "@/components/common/EntityToolbar";
+import EntitySelectDialog from "@/components/common/dialogs/EntitySelectDialog";
 import SectionCard from "@/components/common/SectionCard";
 import StatusBadge from "@/components/common/StatusBadge";
 
-type WorkingDayActivitiesProps = {
-  workingDay: WorkingDay;
-};
+import { AppButton } from "@/components/ui/AppButton";
+import { Badge } from "@/components/ui/badge";
 
-function getActivityName(activityTemplateId: string) {
-  const activity = activityTemplates.find(
-    (item) => item.id === activityTemplateId
+import {
+  activityTemplates,
+  type ActivityTemplate,
+} from "@/features/company/data/activityTemplates";
+
+import { useWorkingDayActivities } from "../../hooks/useWorkingDayActivities";
+
+import ActivityDialog from "./ActivityDialog";
+
+
+function getActivity(activityTemplateId: string) {
+  return activityTemplates.find(
+    (activity) => activity.id === activityTemplateId
   );
-
-  return activity?.name ?? "Unknown Activity";
 }
 
-export default function WorkingDayActivities({
-  workingDay,
-}: WorkingDayActivitiesProps) {
+export default function WorkingDayActivities() {
+  const {
+    activityEntries,
+    selectedActivity,
+    editingEntry,
+
+    isSearchOpen,
+    isActivityDialogOpen,
+
+    openSearchDialog,
+    closeSearchDialog,
+    closeActivityDialog,
+
+    handleSelectActivity,
+    saveActivity,
+    deleteActivity,
+    editActivity,
+  } = useWorkingDayActivities();
+
   const toolbar = (
     <EntityToolbar
       searchLabel="Search Activity"
       addLabel="Add Activity"
-      onSearch={() => {
-        console.log("Search activity");
-      }}
-      onAdd={() => {
-        console.log("Add activity");
-      }}
+      onSearch={openSearchDialog}
+      onAdd={openSearchDialog}
     />
   );
 
-  if (workingDay.activities.length === 0) {
-    return (
-      <SectionCard title="Activities" icon="📋" actions={toolbar}>
-        <EmptyState
-          icon="📋"
-          title="No activities added"
-          description="Add the first activity completed during this working day."
-        />
-      </SectionCard>
-    );
-  }
-
   return (
-    <SectionCard title="Activities" icon="📋" actions={toolbar}>
-      {workingDay.activities.map((activity) => (
-        <EntityRow
-          key={activity.id}
-          title={getActivityName(activity.activityTemplateId)}
-          subtitle={`${activity.workersAssigned} workers • ${activity.hoursWorked} h`}
-          description={
-            activity.notes ? (
-              <p className="mt-2 text-sm text-muted-foreground">
-                {activity.notes}
-              </p>
-            ) : undefined
-          }
-          actions={
-            <div className="flex items-center gap-2">
-              {typeof activity.progressPercentage === "number" && (
-                <Badge variant="outline">
-                  {activity.progressPercentage}%
-                </Badge>
-              )}
+    <>
+      <SectionCard title="Activities" icon="📋" actions={toolbar}>
+        {activityEntries.length === 0 ? (
+          <EmptyState
+            icon="📋"
+            title="No activities added"
+            description="Add the first construction activity for this working day."
+          />
+        ) : (
+          activityEntries.map((entry) => {
+            const activity = getActivity(entry.activityTemplateId);
 
-              <StatusBadge status={activity.status} />
-            </div>
-          }
+            return (
+              <EntityRow
+                key={entry.id}
+                title={activity?.name ?? "Unknown Activity"}
+                subtitle={`${entry.workersAssigned} workers • ${entry.hoursWorked} h`}
+                description={
+                  entry.notes ? (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {entry.notes}
+                    </p>
+                  ) : undefined
+                }
+                actions={
+                  <div className="flex items-center gap-2">
+                    {typeof entry.progressPercentage === "number" && (
+                      <Badge variant="outline">
+                        {entry.progressPercentage}%
+                      </Badge>
+                    )}
+
+                    <StatusBadge status={entry.status} />
+
+                    <AppButton
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Edit activity"
+                      onClick={() => editActivity(entry)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </AppButton>
+
+                    <AppButton
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Delete activity"
+                      onClick={() => deleteActivity(entry.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </AppButton>
+                  </div>
+                }
+              />
+            );
+          })
+        )}
+      </SectionCard>
+
+      <EntitySelectDialog<ActivityTemplate>
+        open={isSearchOpen}
+        title="Select Activity"
+        description="Search and select an activity from the company templates."
+        items={activityTemplates.filter(
+          (activity) => activity.status === "ACTIVE"
+        )}
+        searchPlaceholder="Search activities..."
+        emptyMessage="No matching activities found."
+        getItemId={(activity) => activity.id}
+        getItemLabel={(activity) => activity.name}
+        getItemDescription={(activity) =>
+          activity.description
+            ? `${activity.category} • ${activity.description}`
+            : activity.category
+        }
+        onClose={closeSearchDialog}
+        onSelect={handleSelectActivity}
+      />
+
+      {isActivityDialogOpen && (
+        <ActivityDialog
+          key={editingEntry?.id ?? selectedActivity?.id ?? "new-activity"}
+          open={isActivityDialogOpen}
+          activity={selectedActivity}
+          editingEntry={editingEntry}
+          onClose={closeActivityDialog}
+          onSave={saveActivity}
         />
-      ))}
-    </SectionCard>
+      )}
+    </>
   );
 }

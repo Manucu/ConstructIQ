@@ -15,21 +15,17 @@ import {
 } from "@/features/company/data/equipment";
 
 import { useWorkingDayEquipment } from "../../hooks/useWorkingDayEquipment";
-import type { WorkingDay } from "../../types/workingDay";
+
 
 import EquipmentHoursDialog from "./EquipmentHoursDialog";
 
-type WorkingDayEquipmentProps = {
-  workingDay: WorkingDay;
-};
+
 
 function getEquipment(equipmentId: string) {
   return equipment.find((item) => item.id === equipmentId);
 }
 
-export default function WorkingDayEquipment({
-  workingDay,
-}: WorkingDayEquipmentProps) {
+export default function WorkingDayEquipment() {
   const {
     equipmentEntries,
     selectedEquipment,
@@ -42,7 +38,7 @@ export default function WorkingDayEquipment({
     saveEquipment,
     deleteEquipment,
     editEquipment,
-  } = useWorkingDayEquipment({ workingDay });
+  } = useWorkingDayEquipment();
 
   const toolbar = (
     <EntityToolbar
