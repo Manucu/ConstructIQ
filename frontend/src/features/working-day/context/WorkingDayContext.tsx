@@ -10,6 +10,11 @@ import {
 import type { WorkingDayDocumentItem } from "../hooks/useWorkingDayDocuments";
 import type { WorkingDayPhoto } from "../hooks/useWorkingDayPhotos";
 
+import {
+  loadWorkingDay,
+  saveWorkingDay,
+} from "@/utils/localStorage";
+
 import type {
   ActivityEntry,
   ApprovalStatus,
@@ -20,8 +25,6 @@ import type {
   WorkingDay,
 } from "../types/workingDay";
 
-import { saveWorkingDay } from "@/utils/localStorage";
-
 type WorkingDayProviderProps = {
   initialWorkingDay: WorkingDay;
   children: ReactNode;
@@ -31,43 +34,54 @@ export function WorkingDayProvider({
   initialWorkingDay,
   children,
 }: WorkingDayProviderProps) {
+  const storedData = useMemo(() => loadWorkingDay(), []);
+
   const [workerEntries, setWorkerEntries] = useState<WorkerEntry[]>(
-    initialWorkingDay.attendance
+    () => storedData?.workerEntries ?? initialWorkingDay.attendance
   );
 
   const [activityEntries, setActivityEntries] = useState<ActivityEntry[]>(
-    initialWorkingDay.activities
+    () => storedData?.activityEntries ?? initialWorkingDay.activities
   );
 
   const [materialEntries, setMaterialEntries] = useState<MaterialEntry[]>(
-    initialWorkingDay.materials
+    () => storedData?.materialEntries ?? initialWorkingDay.materials
   );
 
   const [equipmentEntries, setEquipmentEntries] =
-    useState<EquipmentEntry[]>(initialWorkingDay.equipment);
+    useState<EquipmentEntry[]>(
+      () => storedData?.equipmentEntries ?? initialWorkingDay.equipment
+    );
 
   const [expenseEntries, setExpenseEntries] = useState<ExpenseEntry[]>(
-    initialWorkingDay.expenses
+    () => storedData?.expenseEntries ?? initialWorkingDay.expenses
   );
 
-  const [notes, setNotes] = useState(initialWorkingDay.notes ?? "");
+  const [notes, setNotes] = useState(
+    () => storedData?.notes ?? initialWorkingDay.notes ?? ""
+  );
 
   const [photos, setPhotos] = useState<WorkingDayPhoto[]>([]);
 
   const [documents, setDocuments] = useState<WorkingDayDocumentItem[]>(
-    initialWorkingDay.documents.map((document) => ({
-      id: document.id,
-      name: document.name,
-      url: document.fileUrl,
-      category: document.category,
-      uploadedBy: document.uploadedBy,
-      uploadedAt: document.uploadedAt,
-      isLocal: false,
-    }))
+    () =>
+      initialWorkingDay.documents.map((document) => ({
+        id: document.id,
+        name: document.name,
+        url: document.fileUrl,
+        category: document.category,
+        uploadedBy: document.uploadedBy,
+        uploadedAt: document.uploadedAt,
+        isLocal: false,
+      }))
   );
 
   const [approvalStatus, setApprovalStatus] =
-    useState<ApprovalStatus>(initialWorkingDay.approval.status);
+    useState<ApprovalStatus>(
+      () =>
+        storedData?.approvalStatus ??
+        initialWorkingDay.approval.status
+    );
 
   const isLocked = approvalStatus === "APPROVED";
 
