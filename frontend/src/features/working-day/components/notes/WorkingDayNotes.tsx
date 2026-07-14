@@ -6,6 +6,8 @@ import { AppButton } from "@/components/ui/AppButton";
 
 import { useWorkingDayNotes } from "../../hooks/useWorkingDayNotes";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
+
 export default function WorkingDayNotes() {
   const {
     notes,
@@ -17,12 +19,14 @@ export default function WorkingDayNotes() {
     saveNotes,
   } = useWorkingDayNotes();
 
+  const { isLocked } = useWorkingDayContext();
+
   return (
     <SectionCard
       title="Notes"
       icon="📝"
       actions={
-        !isEditing ? (
+        isLocked ? undefined : !isEditing ? (
           <AppButton
             type="button"
             variant="outline"

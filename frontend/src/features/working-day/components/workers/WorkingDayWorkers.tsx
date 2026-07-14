@@ -20,6 +20,7 @@ import { useWorkingDayWorkers } from "../../hooks/useWorkingDayWorkers";
 
 import WorkerDialog from "./WorkerDialog";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
 function getWorker(workerId: string) {
   return workers.find((worker) => worker.id === workerId);
@@ -53,7 +54,9 @@ export default function WorkingDayWorkers() {
     editWorker,
   } = useWorkingDayWorkers();
 
-  const toolbar = (
+  const { isLocked } = useWorkingDayContext();
+
+  const toolbar = isLocked ? undefined : (
     <EntityToolbar
       searchLabel="Search Worker"
       addLabel="Add Worker"
@@ -99,39 +102,33 @@ export default function WorkingDayWorkers() {
                       {entry.hoursWorked} h
                     </Badge>
 
-                    <Badge
-                      variant={
-                        entry.present
-                          ? "default"
-                          : "secondary"
-                      }
-                    >
-                      {entry.present
-                        ? "Present"
-                        : "Absent"}
+                    <Badge variant={entry.present ? "default" : "secondary"}>
+                      {entry.present ? "Present" : "Absent"}
                     </Badge>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Edit worker"
-                      onClick={() => editWorker(entry)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </AppButton>
+                    {!isLocked && (
+                      <>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Edit worker"
+                          onClick={() => editWorker(entry)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </AppButton>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete worker"
-                      onClick={() =>
-                        deleteWorker(entry.id)
-                      }
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </AppButton>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Delete worker"
+                          onClick={() => deleteWorker(entry.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </AppButton>
+                      </>
+                    )}
                   </div>
                 }
               />

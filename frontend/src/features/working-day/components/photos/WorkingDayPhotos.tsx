@@ -10,6 +10,7 @@ import { useWorkingDayPhotos } from "../../hooks/useWorkingDayPhotos";
 
 import PhotoGrid from "./PhotoGrid";
 import PhotoPreviewDialog from "./PhotoPreviewDialog";
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
 export default function WorkingDayPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -23,6 +24,8 @@ export default function WorkingDayPhotos() {
     closePreview,
   } = useWorkingDayPhotos();
 
+  const { isLocked } = useWorkingDayContext();
+
   function openFilePicker() {
     fileInputRef.current?.click();
   }
@@ -33,13 +36,15 @@ export default function WorkingDayPhotos() {
         title="Photos"
         icon="📷"
         actions={
-          <AppButton
-            type="button"
-            onClick={openFilePicker}
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            Upload Photos
-          </AppButton>
+          isLocked ? undefined : (
+            <AppButton
+              type="button"
+              onClick={openFilePicker}
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              Upload Photos
+            </AppButton>
+          )
         }
       >
         <input
@@ -53,6 +58,7 @@ export default function WorkingDayPhotos() {
 
             event.target.value = "";
           }}
+          disabled={isLocked}
         />
 
         {photos.length === 0 ? (
@@ -61,14 +67,16 @@ export default function WorkingDayPhotos() {
             title="No photos uploaded"
             description="Upload site photos for this working day."
             action={
-              <AppButton
-                type="button"
-                variant="outline"
-                onClick={openFilePicker}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Upload First Photo
-              </AppButton>
+              !isLocked ? (
+                <AppButton
+                  type="button"
+                  variant="outline"
+                  onClick={openFilePicker}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload First Photo
+                </AppButton>
+              ) : undefined
             }
           />
         ) : (
@@ -76,6 +84,8 @@ export default function WorkingDayPhotos() {
             photos={photos}
             onPreview={openPreview}
             onDelete={deletePhoto}
+            isLocked={isLocked}
+
           />
         )}
       </SectionCard>
@@ -84,6 +94,8 @@ export default function WorkingDayPhotos() {
         photo={selectedPhoto}
         onClose={closePreview}
         onDelete={deletePhoto}
+        isLocked={isLocked}
+
       />
     </>
   );

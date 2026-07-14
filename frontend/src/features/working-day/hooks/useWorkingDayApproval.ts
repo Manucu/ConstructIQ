@@ -1,35 +1,25 @@
-import { useState } from "react";
+import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
-import type {
-  ApprovalStatus,
-  WorkingDay,
-} from "../types/workingDay";
-
-type UseWorkingDayApprovalParams = {
-  workingDay: WorkingDay;
-};
-
-export function useWorkingDayApproval({
-  workingDay,
-}: UseWorkingDayApprovalParams) {
-  const [status, setStatus] = useState<ApprovalStatus>(
-    workingDay.approval.status
-  );
+export function useWorkingDayApproval() {
+  const {
+    approvalStatus,
+    setApprovalStatus,
+  } = useWorkingDayContext();
 
   function submit() {
-    setStatus("PENDING");
+    setApprovalStatus("PENDING");
   }
 
   function approve() {
-    setStatus("APPROVED");
+    setApprovalStatus("APPROVED");
   }
 
   function reject() {
-    setStatus("REJECTED");
+    setApprovalStatus("REJECTED");
   }
 
   return {
-    status,
+    status: approvalStatus,
     submit,
     approve,
     reject,

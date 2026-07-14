@@ -19,6 +19,8 @@ import { useWorkingDayMaterials } from "../../hooks/useWorkingDayMaterials";
 
 import MaterialQuantityDialog from "./MaterialQuantityDialog";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
+
 
 
 function getMaterial(materialId: string) {
@@ -40,14 +42,17 @@ export default function WorkingDayMaterials() {
     editMaterial,
   } = useWorkingDayMaterials();
 
-  const toolbar = (
-    <EntityToolbar
-      searchLabel="Search Material"
-      addLabel="Add Material"
-      onSearch={openSearchDialog}
-      onAdd={openSearchDialog}
-    />
-  );
+  const { isLocked } = useWorkingDayContext();
+
+  const toolbar = isLocked ? undefined : (
+  <EntityToolbar
+    searchLabel="Search Material"
+    addLabel="Add Material"
+    onSearch={openSearchDialog}
+    onAdd={openSearchDialog}
+  />
+);
+  
 
   return (
     <>
@@ -74,33 +79,37 @@ export default function WorkingDayMaterials() {
                     </p>
                   ) : undefined
                 }
-                actions={
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">
-                      {entry.quantity} {entry.unit}
-                    </Badge>
+               actions={
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">
+                    {entry.quantity} {entry.unit}
+                  </Badge>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Edit material"
-                      onClick={() => editMaterial(entry)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </AppButton>
+                  {!isLocked && (
+                    <>
+                      <AppButton
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        aria-label="Edit material"
+                        onClick={() => editMaterial(entry)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </AppButton>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete material"
-                      onClick={() => deleteMaterial(entry.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </AppButton>
-                  </div>
-                }
+                      <AppButton
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        aria-label="Delete material"
+                        onClick={() => deleteMaterial(entry.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </AppButton>
+                    </>
+                  )}
+                </div>
+              }
               />
             );
           })

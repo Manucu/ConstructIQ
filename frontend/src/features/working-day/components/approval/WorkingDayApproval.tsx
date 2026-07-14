@@ -4,18 +4,18 @@ import SectionCard from "@/components/common/SectionCard";
 import StatusBadge from "@/components/common/StatusBadge";
 import { AppButton } from "@/components/ui/AppButton";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 import { useWorkingDayApproval } from "../../hooks/useWorkingDayApproval";
-import type { WorkingDay } from "../../types/workingDay";
 
-type WorkingDayApprovalProps = {
-  workingDay: WorkingDay;
-};
+export default function WorkingDayApproval() {
+  const { workingDay } = useWorkingDayContext();
 
-export default function WorkingDayApproval({
-  workingDay,
-}: WorkingDayApprovalProps) {
-  const { status, submit, approve, reject } =
-    useWorkingDayApproval({ workingDay });
+  const {
+    status,
+    submit,
+    approve,
+    reject,
+  } = useWorkingDayApproval();
 
   const isNotSubmitted = status === "NOT_SUBMITTED";
   const isPending = status === "PENDING";
@@ -79,7 +79,9 @@ export default function WorkingDayApproval({
               Working Day
             </p>
 
-            <p className="mt-1 font-medium">{workingDay.date}</p>
+            <p className="mt-1 font-medium">
+              {workingDay.date}
+            </p>
           </div>
         </div>
 
@@ -156,7 +158,8 @@ export default function WorkingDayApproval({
         {isApproved && (
           <div className="rounded-xl border border-green-200 bg-green-50 p-4">
             <p className="text-sm text-green-900">
-              This working day has been approved.
+              This working day has been approved and should be treated
+              as locked for further editing.
             </p>
           </div>
         )}

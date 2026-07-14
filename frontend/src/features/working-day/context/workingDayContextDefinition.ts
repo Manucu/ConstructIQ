@@ -12,9 +12,11 @@ import type {
   MaterialEntry,
   WorkerEntry,
   WorkingDay,
+  ApprovalStatus,
 } from "../types/workingDay";
 
 import type { WorkingDayPhoto } from "../hooks/useWorkingDayPhotos";
+import type { WorkingDayDocumentItem } from "../hooks/useWorkingDayDocuments";
 
 export type WorkingDayContextValue = {
   workingDay: WorkingDay;
@@ -47,6 +49,15 @@ export type WorkingDayContextValue = {
 
   photos: WorkingDayPhoto[];
   setPhotos: Dispatch<SetStateAction<WorkingDayPhoto[]>>;
+
+  documents: WorkingDayDocumentItem[];
+  setDocuments: Dispatch<
+    SetStateAction<WorkingDayDocumentItem[]>>;
+
+  approvalStatus: ApprovalStatus;
+  setApprovalStatus: Dispatch<SetStateAction<ApprovalStatus>>;  
+
+  isLocked: boolean;
 };
 
 export const WorkingDayContext =

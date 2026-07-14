@@ -10,6 +10,8 @@ import type { WorkingDayDocumentItem } from "../../hooks/useWorkingDayDocuments"
 type DocumentListProps = {
   documents: WorkingDayDocumentItem[];
   onDelete: (documentId: string) => void;
+  isLocked?: boolean;
+
 };
 
 function formatFileSize(size?: number) {
@@ -31,6 +33,7 @@ function formatFileSize(size?: number) {
 export default function DocumentList({
   documents,
   onDelete,
+  isLocked = false,
 }: DocumentListProps) {
   return (
     <div className="space-y-3">
@@ -86,15 +89,17 @@ export default function DocumentList({
                   </a>
                 </AppButton>
 
-                <AppButton
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  aria-label={`Delete ${document.name}`}
-                  onClick={() => onDelete(document.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </AppButton>
+                {!isLocked && (
+                  <AppButton
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    aria-label={`Delete ${document.name}`}
+                    onClick={() => onDelete(document.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </AppButton>
+                )}
               </div>
             }
           />

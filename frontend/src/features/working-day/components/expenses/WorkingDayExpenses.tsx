@@ -18,7 +18,7 @@ import {
 import { useWorkingDayExpenses } from "../../hooks/useWorkingDayExpenses";
 
 import ExpenseDialog from "./ExpenseDialog";
-
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
 
 function formatCurrency(amount: number, currency: string) {
@@ -45,7 +45,9 @@ export default function WorkingDayExpenses() {
     editExpense,
   } = useWorkingDayExpenses();
 
-  const toolbar = (
+  const { isLocked } = useWorkingDayContext();
+
+  const toolbar = isLocked ? undefined :  (
     <EntityToolbar
       searchLabel="Search Category"
       addLabel="Add Expense"
@@ -84,35 +86,34 @@ export default function WorkingDayExpenses() {
                 actions={
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                      {formatCurrency(
-                        entry.amount,
-                        entry.currency
-                      )}
+                      {formatCurrency(entry.amount, entry.currency)}
                     </Badge>
 
                     <StatusBadge status={entry.status} />
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Edit expense"
-                      onClick={() => editExpense(entry)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </AppButton>
+                    {!isLocked && (
+                      <>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Edit expense"
+                          onClick={() => editExpense(entry)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </AppButton>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete expense"
-                      onClick={() =>
-                        deleteExpense(entry.id)
-                      }
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </AppButton>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Delete expense"
+                          onClick={() => deleteExpense(entry.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </AppButton>
+                      </>
+                    )}
                   </div>
                 }
               />

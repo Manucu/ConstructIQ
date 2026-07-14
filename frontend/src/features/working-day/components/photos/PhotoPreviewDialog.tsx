@@ -9,12 +9,14 @@ type PhotoPreviewDialogProps = {
   photo: WorkingDayPhoto | null;
   onClose: () => void;
   onDelete: (photoId: string) => void;
+  isLocked?: boolean;
 };
 
 export default function PhotoPreviewDialog({
   photo,
   onClose,
   onDelete,
+  isLocked = false,
 }: PhotoPreviewDialogProps) {
   if (!photo) {
     return null;
@@ -42,6 +44,7 @@ export default function PhotoPreviewDialog({
             Close
           </AppButton>
 
+         {!isLocked && (
           <AppButton
             type="button"
             variant="destructive"
@@ -50,6 +53,7 @@ export default function PhotoPreviewDialog({
             <Trash2 className="mr-2 h-4 w-4" />
             Delete Photo
           </AppButton>
+        )}
         </>
       }
     >

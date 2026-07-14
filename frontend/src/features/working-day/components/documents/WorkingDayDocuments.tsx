@@ -7,24 +7,23 @@ import SectionCard from "@/components/common/SectionCard";
 import { AppButton } from "@/components/ui/AppButton";
 
 import { useWorkingDayDocuments } from "../../hooks/useWorkingDayDocuments";
-import type { WorkingDay } from "../../types/workingDay";
 
 import DocumentList from "./DocumentList";
 
-type WorkingDayDocumentsProps = {
-  workingDay: WorkingDay;
-};
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
-export default function WorkingDayDocuments({
-  workingDay,
-}: WorkingDayDocumentsProps) {
+
+
+export default function WorkingDayDocuments() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     documents,
     uploadDocuments,
     deleteDocument,
-  } = useWorkingDayDocuments({ workingDay });
+  } = useWorkingDayDocuments();
+
+  const { isLocked } = useWorkingDayContext();
 
   function openFilePicker() {
     fileInputRef.current?.click();
@@ -35,13 +34,15 @@ export default function WorkingDayDocuments({
       title="Documents"
       icon="📄"
       actions={
-        <AppButton
-          type="button"
-          onClick={openFilePicker}
-        >
-          <Upload className="mr-2 h-4 w-4" />
-          Upload Documents
-        </AppButton>
+        isLocked ? undefined : (
+          <AppButton
+            type="button"
+            onClick={openFilePicker}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Documents
+          </AppButton>
+        )
       }
     >
       <input
@@ -54,6 +55,7 @@ export default function WorkingDayDocuments({
           uploadDocuments(event.target.files);
           event.target.value = "";
         }}
+        disabled={isLocked}
       />
 
       {documents.length === 0 ? (
@@ -62,20 +64,23 @@ export default function WorkingDayDocuments({
           title="No documents uploaded"
           description="Upload reports, drawings, invoices or delivery documents."
           action={
-            <AppButton
-              type="button"
-              variant="outline"
-              onClick={openFilePicker}
-            >
-              <Upload className="mr-2 h-4 w-4" />
-              Upload First Document
-            </AppButton>
+            !isLocked ? (
+              <AppButton
+                type="button"
+                variant="outline"
+                onClick={openFilePicker}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Upload First Document
+              </AppButton>
+            ) : undefined
           }
         />
       ) : (
         <DocumentList
           documents={documents}
           onDelete={deleteDocument}
+          isLocked={isLocked}
         />
       )}
     </SectionCard>

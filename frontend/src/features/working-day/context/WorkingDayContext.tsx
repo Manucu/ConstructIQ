@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { ReactNode } from "react";
 
@@ -7,8 +7,12 @@ import {
   type WorkingDayContextValue,
 } from "./workingDayContextDefinition";
 
+import type { WorkingDayDocumentItem } from "../hooks/useWorkingDayDocuments";
+import type { WorkingDayPhoto } from "../hooks/useWorkingDayPhotos";
+
 import type {
   ActivityEntry,
+  ApprovalStatus,
   EquipmentEntry,
   ExpenseEntry,
   MaterialEntry,
@@ -16,7 +20,7 @@ import type {
   WorkingDay,
 } from "../types/workingDay";
 
-import type { WorkingDayPhoto } from "../hooks/useWorkingDayPhotos";
+import { saveWorkingDay } from "@/utils/localStorage";
 
 type WorkingDayProviderProps = {
   initialWorkingDay: WorkingDay;
@@ -31,32 +35,41 @@ export function WorkingDayProvider({
     initialWorkingDay.attendance
   );
 
-  const [activityEntries, setActivityEntries] =
-    useState<ActivityEntry[]>(
-      initialWorkingDay.activities
-    );
-
-  const [materialEntries, setMaterialEntries] =
-    useState<MaterialEntry[]>(
-      initialWorkingDay.materials
-    );
-
-  const [equipmentEntries, setEquipmentEntries] =
-    useState<EquipmentEntry[]>(
-      initialWorkingDay.equipment
-    );
-
-  const [expenseEntries, setExpenseEntries] =
-    useState<ExpenseEntry[]>(
-      initialWorkingDay.expenses
-    );
-
-  const [notes, setNotes] = useState(
-    initialWorkingDay.notes ?? ""
+  const [activityEntries, setActivityEntries] = useState<ActivityEntry[]>(
+    initialWorkingDay.activities
   );
 
-  const [photos, setPhotos] =
-    useState<WorkingDayPhoto[]>([]);
+  const [materialEntries, setMaterialEntries] = useState<MaterialEntry[]>(
+    initialWorkingDay.materials
+  );
+
+  const [equipmentEntries, setEquipmentEntries] =
+    useState<EquipmentEntry[]>(initialWorkingDay.equipment);
+
+  const [expenseEntries, setExpenseEntries] = useState<ExpenseEntry[]>(
+    initialWorkingDay.expenses
+  );
+
+  const [notes, setNotes] = useState(initialWorkingDay.notes ?? "");
+
+  const [photos, setPhotos] = useState<WorkingDayPhoto[]>([]);
+
+  const [documents, setDocuments] = useState<WorkingDayDocumentItem[]>(
+    initialWorkingDay.documents.map((document) => ({
+      id: document.id,
+      name: document.name,
+      url: document.fileUrl,
+      category: document.category,
+      uploadedBy: document.uploadedBy,
+      uploadedAt: document.uploadedAt,
+      isLocal: false,
+    }))
+  );
+
+  const [approvalStatus, setApprovalStatus] =
+    useState<ApprovalStatus>(initialWorkingDay.approval.status);
+
+  const isLocked = approvalStatus === "APPROVED";
 
   const workingDay = useMemo<WorkingDay>(
     () => ({
@@ -67,6 +80,10 @@ export function WorkingDayProvider({
       equipment: equipmentEntries,
       expenses: expenseEntries,
       notes,
+      approval: {
+        ...initialWorkingDay.approval,
+        status: approvalStatus,
+      },
     }),
     [
       initialWorkingDay,
@@ -76,6 +93,7 @@ export function WorkingDayProvider({
       equipmentEntries,
       expenseEntries,
       notes,
+      approvalStatus,
     ]
   );
 
@@ -103,6 +121,14 @@ export function WorkingDayProvider({
 
       photos,
       setPhotos,
+
+      documents,
+      setDocuments,
+
+      approvalStatus,
+      setApprovalStatus,
+
+      isLocked,
     }),
     [
       workingDay,
@@ -113,8 +139,31 @@ export function WorkingDayProvider({
       expenseEntries,
       notes,
       photos,
+      documents,
+      approvalStatus,
+      isLocked,
     ]
   );
+
+  useEffect(() => {
+    saveWorkingDay({
+      workerEntries,
+      activityEntries,
+      materialEntries,
+      equipmentEntries,
+      expenseEntries,
+      notes,
+      approvalStatus,
+    });
+  }, [
+    workerEntries,
+    activityEntries,
+    materialEntries,
+    equipmentEntries,
+    expenseEntries,
+    notes,
+    approvalStatus,
+  ]);
 
   return (
     <WorkingDayContext.Provider value={value}>

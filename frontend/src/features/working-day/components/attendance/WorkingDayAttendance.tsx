@@ -1,44 +1,39 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+import EntityRow from "@/components/common/EntityRow";
+import SectionCard from "@/components/common/SectionCard";
+
 import { workers } from "@/features/company/data/workers";
-import type { WorkingDay } from "../../types/workingDay";
 
-type WorkingDayAttendanceProps = {
-  workingDay: WorkingDay;
-};
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
-export default function WorkingDayAttendance({
-  workingDay,
-}: WorkingDayAttendanceProps) {
+function getWorker(workerId: string) {
+  return workers.find((worker) => worker.id === workerId);
+}
+
+export default function WorkingDayAttendance() {
+  const { workerEntries } = useWorkingDayContext();
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>👷 Attendance</CardTitle>
-      </CardHeader>
+    <SectionCard title="Attendance" icon="👷">
+      {workerEntries.map((entry) => {
+        const worker = getWorker(entry.workerId);
 
-      <CardContent className="space-y-3">
-        {workingDay.attendance.map((entry) => {
-          const worker = workers.find((w) => w.id === entry.workerId);
-
-          return (
-            <div
-              key={entry.id}
-              className="flex items-center justify-between rounded-lg border p-4"
-            >
-              <div>
-                <h3 className="font-semibold">
-                  {worker
-                    ? `${worker.firstName} ${worker.lastName}`
-                    : "Unknown Worker"}
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-                  {entry.startTime} - {entry.endTime}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
+        return (
+          <EntityRow
+            key={entry.id}
+            title={
+              worker
+                ? `${worker.firstName} ${worker.lastName}`
+                : "Unknown Worker"
+            }
+            subtitle={
+              entry.present
+                ? `${entry.startTime ?? "-"} - ${entry.endTime ?? "-"}`
+                : "Absent"
+            }
+            actions={
+              <div className="flex items-center gap-2">
                 <Badge
                   variant={entry.present ? "default" : "secondary"}
                 >
@@ -48,11 +43,17 @@ export default function WorkingDayAttendance({
                 <Badge variant="outline">
                   {entry.hoursWorked} h
                 </Badge>
+
+                {(entry.overtimeHours ?? 0) > 0 && (
+                  <Badge variant="outline">
+                    +{entry.overtimeHours} h overtime
+                  </Badge>
+                )}
               </div>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+            }
+          />
+        );
+      })}
+    </SectionCard>
   );
 }

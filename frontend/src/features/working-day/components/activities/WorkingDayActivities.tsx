@@ -19,6 +19,8 @@ import { useWorkingDayActivities } from "../../hooks/useWorkingDayActivities";
 
 import ActivityDialog from "./ActivityDialog";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
+
 
 function getActivity(activityTemplateId: string) {
   return activityTemplates.find(
@@ -45,7 +47,9 @@ export default function WorkingDayActivities() {
     editActivity,
   } = useWorkingDayActivities();
 
-  const toolbar = (
+  const { isLocked } = useWorkingDayContext();
+
+  const toolbar = isLocked ? undefined : (
     <EntityToolbar
       searchLabel="Search Activity"
       addLabel="Add Activity"
@@ -89,25 +93,29 @@ export default function WorkingDayActivities() {
 
                     <StatusBadge status={entry.status} />
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Edit activity"
-                      onClick={() => editActivity(entry)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </AppButton>
+                    {!isLocked && (
+                      <>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Edit activity"
+                          onClick={() => editActivity(entry)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </AppButton>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete activity"
-                      onClick={() => deleteActivity(entry.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </AppButton>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Delete activity"
+                          onClick={() => deleteActivity(entry.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </AppButton>
+                      </>
+                    )}
                   </div>
                 }
               />

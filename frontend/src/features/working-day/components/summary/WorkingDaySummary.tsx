@@ -6,6 +6,7 @@ export default function WorkingDaySummary() {
   const {
     workingDay,
     photos,
+    documents,
   } = useWorkingDayContext();
 
   const totalWorkers = workingDay.attendance.filter(
@@ -58,7 +59,7 @@ export default function WorkingDaySummary() {
     },
     {
       label: "Documents",
-      value: workingDay.documents.length,
+      value: documents.length,
     },
   ];
 

@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-import type { WorkingDay } from "../types/workingDay";
+import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
 export type WorkingDayDocumentItem = {
   id: string;
@@ -14,11 +12,9 @@ export type WorkingDayDocumentItem = {
   isLocal: boolean;
 };
 
-type UseWorkingDayDocumentsParams = {
-  workingDay: WorkingDay;
-};
-
 function getDocumentCategory(file: File) {
+  const lowerCaseName = file.name.toLowerCase();
+
   if (file.type === "application/pdf") {
     return "PDF";
   }
@@ -29,8 +25,8 @@ function getDocumentCategory(file: File) {
 
   if (
     file.type.includes("word") ||
-    file.name.endsWith(".doc") ||
-    file.name.endsWith(".docx")
+    lowerCaseName.endsWith(".doc") ||
+    lowerCaseName.endsWith(".docx")
   ) {
     return "Word";
   }
@@ -38,8 +34,8 @@ function getDocumentCategory(file: File) {
   if (
     file.type.includes("spreadsheet") ||
     file.type.includes("excel") ||
-    file.name.endsWith(".xls") ||
-    file.name.endsWith(".xlsx")
+    lowerCaseName.endsWith(".xls") ||
+    lowerCaseName.endsWith(".xlsx")
   ) {
     return "Spreadsheet";
   }
@@ -47,22 +43,8 @@ function getDocumentCategory(file: File) {
   return "Other";
 }
 
-export function useWorkingDayDocuments({
-  workingDay,
-}: UseWorkingDayDocumentsParams) {
-  const initialDocuments: WorkingDayDocumentItem[] =
-    workingDay.documents.map((document) => ({
-      id: document.id,
-      name: document.name,
-      url: document.fileUrl,
-      category: document.category,
-      uploadedBy: document.uploadedBy,
-      uploadedAt: document.uploadedAt,
-      isLocal: false,
-    }));
-
-  const [documents, setDocuments] =
-    useState<WorkingDayDocumentItem[]>(initialDocuments);
+export function useWorkingDayDocuments() {
+  const { documents, setDocuments } = useWorkingDayContext();
 
   function uploadDocuments(files: FileList | null) {
     if (!files) {

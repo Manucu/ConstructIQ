@@ -8,12 +8,14 @@ type PhotoGridProps = {
   photos: WorkingDayPhoto[];
   onPreview: (photo: WorkingDayPhoto) => void;
   onDelete: (photoId: string) => void;
+  isLocked?: boolean;
 };
 
 export default function PhotoGrid({
   photos,
   onPreview,
   onDelete,
+  isLocked = false,
 }: PhotoGridProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -51,6 +53,7 @@ export default function PhotoGrid({
                 <Eye className="h-4 w-4" />
               </AppButton>
 
+            {!isLocked && (
               <AppButton
                 type="button"
                 size="icon"
@@ -60,6 +63,7 @@ export default function PhotoGrid({
               >
                 <Trash2 className="h-4 w-4" />
               </AppButton>
+            )}
             </div>
           </div>
         </article>

@@ -19,6 +19,8 @@ import { useWorkingDayEquipment } from "../../hooks/useWorkingDayEquipment";
 
 import EquipmentHoursDialog from "./EquipmentHoursDialog";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
+
 
 
 function getEquipment(equipmentId: string) {
@@ -40,7 +42,9 @@ export default function WorkingDayEquipment() {
     editEquipment,
   } = useWorkingDayEquipment();
 
-  const toolbar = (
+  const { isLocked } = useWorkingDayContext();
+
+  const toolbar = isLocked ? undefined :  (
     <EntityToolbar
       searchLabel="Search Equipment"
       addLabel="Add Equipment"
@@ -80,25 +84,29 @@ export default function WorkingDayEquipment() {
                       {entry.hoursUsed} h
                     </Badge>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Edit equipment"
-                      onClick={() => editEquipment(entry)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </AppButton>
+                    {!isLocked && (
+                      <>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Edit equipment"
+                          onClick={() => editEquipment(entry)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </AppButton>
 
-                    <AppButton
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete equipment"
-                      onClick={() => deleteEquipment(entry.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </AppButton>
+                        <AppButton
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Delete equipment"
+                          onClick={() => deleteEquipment(entry.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </AppButton>
+                      </>
+                    )}
                   </div>
                 }
               />

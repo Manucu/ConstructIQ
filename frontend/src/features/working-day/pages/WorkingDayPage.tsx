@@ -24,11 +24,11 @@ export default function WorkingDayPage() {
     <WorkingDayProvider initialWorkingDay={workingDayMock}>
       <DashboardLayout>
         <div className="space-y-6">
-          <WorkingDayHeader workingDay={workingDayMock} />
+          <WorkingDayHeader />
 
           <WorkingDaySummary />
 
-          <WorkingDayAttendance workingDay={workingDayMock} />
+          <WorkingDayAttendance />
 
           <WorkingDayWorkers />
 
@@ -42,11 +42,11 @@ export default function WorkingDayPage() {
 
           <WorkingDayPhotos  />
 
-          <WorkingDayDocuments workingDay={workingDayMock} />
+          <WorkingDayDocuments />
 
           <WorkingDayNotes />
 
-          <WorkingDayApproval workingDay={workingDayMock} />
+          <WorkingDayApproval/>
 
         </div>
       </DashboardLayout>
