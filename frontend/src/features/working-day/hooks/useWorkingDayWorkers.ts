@@ -1,15 +1,17 @@
 import { useState } from "react";
 
-import {
-  workers,
-  type Worker,
-} from "@/features/company/data/workers";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+import type { Worker } from "@/features/company/data/workers";
 
 import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
 import type { WorkerEntry } from "../types/workingDay";
 
 export function useWorkingDayWorkers() {
+  const { companyData } = useCompanyContext();
+
+  const workers = companyData.workers;
+
   const {
     workerEntries,
     setWorkerEntries,
@@ -133,6 +135,7 @@ export function useWorkingDayWorkers() {
   }
 
   return {
+    workers,
     workerEntries,
     selectedWorker,
     editingEntry,

@@ -8,6 +8,7 @@ import { ProjectsPage } from "@/pages/ProjectsPage";
 import { ProjectDetailsPage } from "@/pages/ProjectDetailsPage";
 import { StageDetailsPage } from "@/pages/StageDetailsPage";
 import WorkingDayPage from "@/features/working-day/pages/WorkingDayPage";
+import CompanyPage from "@/features/company/pages/CompanyPage";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
   path: "/projects/:projectId/stages/:stageId/working-days/:workingDayId",
   element: <WorkingDayPage />,
   },
+  {
+  path: "/company",
+  element: <CompanyPage />,
+},
 ]);
 
 export function AppRouter() {

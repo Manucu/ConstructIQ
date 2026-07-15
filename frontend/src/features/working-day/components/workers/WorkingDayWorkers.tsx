@@ -9,21 +9,21 @@ import SectionCard from "@/components/common/SectionCard";
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  workers,
-  type Worker,
-} from "@/features/company/data/workers";
-
 import { activityTemplates } from "@/features/company/data/activityTemplates";
+import type { Worker } from "@/features/company/data/workers";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 import { useWorkingDayWorkers } from "../../hooks/useWorkingDayWorkers";
 
 import WorkerDialog from "./WorkerDialog";
 
-import { useWorkingDayContext } from "../../context/useWorkingDayContext";
-
-function getWorker(workerId: string) {
-  return workers.find((worker) => worker.id === workerId);
+function getWorker(
+  workers: Worker[],
+  workerId: string
+) {
+  return workers.find(
+    (worker) => worker.id === workerId
+  );
 }
 
 function getActivityName(activityTemplateId?: string) {
@@ -40,14 +40,18 @@ function getActivityName(activityTemplateId?: string) {
 
 export default function WorkingDayWorkers() {
   const {
+    workers,
     workerEntries,
     selectedWorker,
     editingEntry,
+
     isSearchOpen,
     isWorkerDialogOpen,
+
     openSearchDialog,
     closeSearchDialog,
     closeWorkerDialog,
+
     handleSelectWorker,
     saveWorker,
     deleteWorker,
@@ -65,9 +69,21 @@ export default function WorkingDayWorkers() {
     />
   );
 
+  const availableWorkers = workers.filter(
+    (worker) =>
+      worker.status === "ACTIVE" &&
+      !workerEntries.some(
+        (entry) => entry.workerId === worker.id
+      )
+  );
+
   return (
     <>
-      <SectionCard title="Workers" icon="👷" actions={toolbar}>
+      <SectionCard
+        title="Workers"
+        icon="👷"
+        actions={toolbar}
+      >
         {workerEntries.length === 0 ? (
           <EmptyState
             icon="👷"
@@ -76,7 +92,10 @@ export default function WorkingDayWorkers() {
           />
         ) : (
           workerEntries.map((entry) => {
-            const worker = getWorker(entry.workerId);
+            const worker = getWorker(
+              workers,
+              entry.workerId
+            );
 
             return (
               <EntityRow
@@ -86,7 +105,9 @@ export default function WorkingDayWorkers() {
                     ? `${worker.firstName} ${worker.lastName}`
                     : "Unknown Worker"
                 }
-                subtitle={`${worker?.role ?? "Unknown role"} • ${getActivityName(
+                subtitle={`${
+                  worker?.role ?? "Unknown role"
+                } • ${getActivityName(
                   entry.activityTemplateId
                 )}`}
                 description={
@@ -102,8 +123,16 @@ export default function WorkingDayWorkers() {
                       {entry.hoursWorked} h
                     </Badge>
 
-                    <Badge variant={entry.present ? "default" : "secondary"}>
-                      {entry.present ? "Present" : "Absent"}
+                    <Badge
+                      variant={
+                        entry.present
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {entry.present
+                        ? "Present"
+                        : "Absent"}
                     </Badge>
 
                     {!isLocked && (
@@ -112,8 +141,14 @@ export default function WorkingDayWorkers() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Edit worker"
-                          onClick={() => editWorker(entry)}
+                          aria-label={`Edit ${
+                            worker
+                              ? `${worker.firstName} ${worker.lastName}`
+                              : "worker"
+                          }`}
+                          onClick={() => {
+                            editWorker(entry);
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </AppButton>
@@ -122,8 +157,14 @@ export default function WorkingDayWorkers() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Delete worker"
-                          onClick={() => deleteWorker(entry.id)}
+                          aria-label={`Delete ${
+                            worker
+                              ? `${worker.firstName} ${worker.lastName}`
+                              : "worker"
+                          }`}
+                          onClick={() => {
+                            deleteWorker(entry.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </AppButton>
@@ -141,11 +182,9 @@ export default function WorkingDayWorkers() {
         open={isSearchOpen}
         title="Select Worker"
         description="Search and select a worker from the company workforce."
-        items={workers.filter(
-          (worker) => worker.status === "ACTIVE"
-        )}
+        items={availableWorkers}
         searchPlaceholder="Search workers..."
-        emptyMessage="No matching workers found."
+        emptyMessage="No active workers are available."
         getItemId={(worker) => worker.id}
         getItemLabel={(worker) =>
           `${worker.firstName} ${worker.lastName}`
@@ -155,13 +194,20 @@ export default function WorkingDayWorkers() {
         onSelect={handleSelectWorker}
       />
 
-      <WorkerDialog
-        open={isWorkerDialogOpen}
-        worker={selectedWorker}
-        editingEntry={editingEntry}
-        onClose={closeWorkerDialog}
-        onSave={saveWorker}
-      />
+      {isWorkerDialogOpen && (
+        <WorkerDialog
+          key={
+            editingEntry?.id ??
+            selectedWorker?.id ??
+            "new-worker-entry"
+          }
+          open={isWorkerDialogOpen}
+          worker={selectedWorker}
+          editingEntry={editingEntry}
+          onClose={closeWorkerDialog}
+          onSave={saveWorker}
+        />
+      )}
     </>
   );
 }

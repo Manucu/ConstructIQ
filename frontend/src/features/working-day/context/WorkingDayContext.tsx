@@ -13,7 +13,7 @@ import type { WorkingDayPhoto } from "../hooks/useWorkingDayPhotos";
 import {
   loadWorkingDay,
   saveWorkingDay,
-} from "@/utils/localStorage";
+} from "../utils/localStorage";
 
 import type {
   ActivityEntry,
