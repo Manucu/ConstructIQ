@@ -6,9 +6,12 @@ import { AppModal } from "@/components/ui/AppModal";
 
 import type { CompanyMaterial } from "@/features/company/data/materials";
 
+import type { MaterialEntry } from "../../types/workingDay";
+
 type MaterialQuantityDialogProps = {
   open: boolean;
   material: CompanyMaterial | null;
+  editingEntry?: MaterialEntry | null;
   onClose: () => void;
   onSave: (quantity: number, notes?: string) => void;
 };
@@ -16,15 +19,22 @@ type MaterialQuantityDialogProps = {
 export default function MaterialQuantityDialog({
   open,
   material,
+  editingEntry,
   onClose,
   onSave,
 }: MaterialQuantityDialogProps) {
-  const [quantity, setQuantity] = useState("");
-  const [notes, setNotes] = useState("");
+  const [quantity, setQuantity] = useState(
+    editingEntry ? String(editingEntry.quantity) : ""
+  );
+
+  const [notes, setNotes] = useState(
+    editingEntry?.notes ?? ""
+  );
 
   const parsedQuantity = Number(quantity);
 
-  const isQuantityValid =
+  const isValid =
+    material !== null &&
     quantity.trim() !== "" &&
     Number.isFinite(parsedQuantity) &&
     parsedQuantity > 0;
@@ -40,22 +50,30 @@ export default function MaterialQuantityDialog({
   }
 
   function handleSave() {
-    if (!isQuantityValid) {
+    if (!isValid) {
       return;
     }
 
-    onSave(parsedQuantity, notes.trim() || undefined);
+    onSave(
+      parsedQuantity,
+      notes.trim() || undefined
+    );
+
     resetForm();
   }
 
   return (
     <AppModal
       open={open}
-      title="Add Material"
+      title={
+        editingEntry
+          ? "Edit Material Quantity"
+          : "Add Material"
+      }
       description={
         material
-          ? `Add ${material.name} to this working day.`
-          : undefined
+          ? `${material.name} • ${material.code} • ${material.unit}`
+          : "No material selected."
       }
       onClose={handleClose}
       footer={
@@ -70,10 +88,12 @@ export default function MaterialQuantityDialog({
 
           <AppButton
             type="button"
-            disabled={!isQuantityValid}
+            disabled={!isValid}
             onClick={handleSave}
           >
-            Save Material
+            {editingEntry
+              ? "Save Changes"
+              : "Save Material"}
           </AppButton>
         </>
       }
@@ -86,7 +106,7 @@ export default function MaterialQuantityDialog({
 
           {material && (
             <p className="mt-1 text-sm text-muted-foreground">
-              {material.category} • Unit: {material.unit}
+              {material.code} • {material.category} • {material.unit}
             </p>
           )}
         </div>
@@ -95,7 +115,7 @@ export default function MaterialQuantityDialog({
           label={`Quantity${material ? ` (${material.unit})` : ""}`}
           type="number"
           min="0"
-          step="any"
+          step="0.01"
           value={quantity}
           placeholder="Enter quantity"
           onChange={(event) => {

@@ -43,7 +43,10 @@ export function CompanyProvider({
   const storedCompany = useMemo(() => loadCompany(), []);
 
   const [companyData, setCompanyData] = useState<CompanyData>(
-    () => storedCompany ?? initialCompanyData
+    () =>  ({
+    ...initialCompanyData,
+    ...storedCompany,
+  })
   );
 
   const value = useMemo<CompanyContextValue>(

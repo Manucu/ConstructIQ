@@ -1,15 +1,17 @@
 import { useState } from "react";
 
-import {
-  materials,
-  type CompanyMaterial,
-} from "@/features/company/data/materials";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+import type { CompanyMaterial } from "@/features/company/data/materials";
 
 import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
 import type { MaterialEntry } from "../types/workingDay";
 
 export function useWorkingDayMaterials() {
+  const { companyData } = useCompanyContext();
+
+  const materials = companyData.materials;
+
   const {
     materialEntries,
     setMaterialEntries,
@@ -71,6 +73,15 @@ export function useWorkingDayMaterials() {
       return;
     }
 
+    const alreadyAdded = materialEntries.some(
+      (entry) => entry.materialId === selectedMaterial.id
+    );
+
+    if (alreadyAdded) {
+      closeQuantityDialog();
+      return;
+    }
+
     const newEntry: MaterialEntry = {
       id: crypto.randomUUID(),
       materialId: selectedMaterial.id,
@@ -108,6 +119,7 @@ export function useWorkingDayMaterials() {
   }
 
   return {
+    materials,
     materialEntries,
     selectedMaterial,
     editingEntry,

@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 import CompanyWorkers from "../components/workers/CompanyWorkers";
+import CompanyMaterials from "../components/materials/CompanyMaterials";
 
 export default function CompanyPage() {
   return (
@@ -16,6 +17,7 @@ export default function CompanyPage() {
         </div>
 
         <CompanyWorkers />
+        <CompanyMaterials />  
       </div>
     </DashboardLayout>
   );
