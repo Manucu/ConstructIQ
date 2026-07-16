@@ -10,19 +10,17 @@ import StatusBadge from "@/components/common/StatusBadge";
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  activityTemplates,
-  type ActivityTemplate,
-} from "@/features/company/data/activityTemplates";
+import type { ActivityTemplate } from "@/features/company/data/activityTemplates";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 import { useWorkingDayActivities } from "../../hooks/useWorkingDayActivities";
 
 import ActivityDialog from "./ActivityDialog";
 
-import { useWorkingDayContext } from "../../context/useWorkingDayContext";
-
-
-function getActivity(activityTemplateId: string) {
+function getActivity(
+  activityTemplates: ActivityTemplate[],
+  activityTemplateId: string
+) {
   return activityTemplates.find(
     (activity) => activity.id === activityTemplateId
   );
@@ -30,6 +28,7 @@ function getActivity(activityTemplateId: string) {
 
 export default function WorkingDayActivities() {
   const {
+    activityTemplates,
     activityEntries,
     selectedActivity,
     editingEntry,
@@ -58,9 +57,23 @@ export default function WorkingDayActivities() {
     />
   );
 
+  const availableActivityTemplates =
+    activityTemplates.filter(
+      (activity) =>
+        activity.status === "ACTIVE" &&
+        !activityEntries.some(
+          (entry) =>
+            entry.activityTemplateId === activity.id
+        )
+    );
+
   return (
     <>
-      <SectionCard title="Activities" icon="📋" actions={toolbar}>
+      <SectionCard
+        title="Activities"
+        icon="📋"
+        actions={toolbar}
+      >
         {activityEntries.length === 0 ? (
           <EmptyState
             icon="📋"
@@ -69,12 +82,18 @@ export default function WorkingDayActivities() {
           />
         ) : (
           activityEntries.map((entry) => {
-            const activity = getActivity(entry.activityTemplateId);
+            const activity = getActivity(
+              activityTemplates,
+              entry.activityTemplateId
+            );
 
             return (
               <EntityRow
                 key={entry.id}
-                title={activity?.name ?? "Unknown Activity"}
+                title={
+                  activity?.name ??
+                  "Unknown Activity"
+                }
                 subtitle={`${entry.workersAssigned} workers • ${entry.hoursWorked} h`}
                 description={
                   entry.notes ? (
@@ -85,7 +104,8 @@ export default function WorkingDayActivities() {
                 }
                 actions={
                   <div className="flex items-center gap-2">
-                    {typeof entry.progressPercentage === "number" && (
+                    {typeof entry.progressPercentage ===
+                      "number" && (
                       <Badge variant="outline">
                         {entry.progressPercentage}%
                       </Badge>
@@ -99,8 +119,13 @@ export default function WorkingDayActivities() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Edit activity"
-                          onClick={() => editActivity(entry)}
+                          aria-label={`Edit ${
+                            activity?.name ??
+                            "activity"
+                          }`}
+                          onClick={() => {
+                            editActivity(entry);
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </AppButton>
@@ -109,8 +134,13 @@ export default function WorkingDayActivities() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Delete activity"
-                          onClick={() => deleteActivity(entry.id)}
+                          aria-label={`Delete ${
+                            activity?.name ??
+                            "activity"
+                          }`}
+                          onClick={() => {
+                            deleteActivity(entry.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </AppButton>
@@ -128,11 +158,9 @@ export default function WorkingDayActivities() {
         open={isSearchOpen}
         title="Select Activity"
         description="Search and select an activity from the company templates."
-        items={activityTemplates.filter(
-          (activity) => activity.status === "ACTIVE"
-        )}
+        items={availableActivityTemplates}
         searchPlaceholder="Search activities..."
-        emptyMessage="No matching activities found."
+        emptyMessage="No active activity templates are available."
         getItemId={(activity) => activity.id}
         getItemLabel={(activity) => activity.name}
         getItemDescription={(activity) =>
@@ -146,7 +174,11 @@ export default function WorkingDayActivities() {
 
       {isActivityDialogOpen && (
         <ActivityDialog
-          key={editingEntry?.id ?? selectedActivity?.id ?? "new-activity"}
+          key={
+            editingEntry?.id ??
+            selectedActivity?.id ??
+            "new-activity"
+          }
           open={isActivityDialogOpen}
           activity={selectedActivity}
           editingEntry={editingEntry}

@@ -1,9 +1,7 @@
 import { useState } from "react";
 
-import {
-  activityTemplates,
-  type ActivityTemplate,
-} from "@/features/company/data/activityTemplates";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+import type { ActivityTemplate } from "@/features/company/data/activityTemplates";
 
 import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
@@ -21,13 +19,18 @@ type SaveActivityParams = {
 };
 
 export function useWorkingDayActivities() {
+  const { companyData } = useCompanyContext();
+
+  const activityTemplates = companyData.activityTemplates;
+
   const {
     activityEntries,
     setActivityEntries,
   } = useWorkingDayContext();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
+  const [isActivityDialogOpen, setIsActivityDialogOpen] =
+    useState(false);
 
   const [selectedActivity, setSelectedActivity] =
     useState<ActivityTemplate | null>(null);
@@ -45,7 +48,9 @@ export function useWorkingDayActivities() {
     setIsSearchOpen(false);
   }
 
-  function handleSelectActivity(activity: ActivityTemplate) {
+  function handleSelectActivity(
+    activity: ActivityTemplate
+  ) {
     setEditingEntry(null);
     setSelectedActivity(activity);
     setIsSearchOpen(false);
@@ -75,7 +80,8 @@ export function useWorkingDayActivities() {
           entry.id === editingEntry.id
             ? {
                 ...entry,
-                activityTemplateId: selectedActivity.id,
+                activityTemplateId:
+                  selectedActivity.id,
                 workersAssigned,
                 hoursWorked,
                 progressPercentage,
@@ -91,7 +97,9 @@ export function useWorkingDayActivities() {
     }
 
     const alreadyAdded = activityEntries.some(
-      (entry) => entry.activityTemplateId === selectedActivity.id
+      (entry) =>
+        entry.activityTemplateId ===
+        selectedActivity.id
     );
 
     if (alreadyAdded) {
@@ -119,13 +127,16 @@ export function useWorkingDayActivities() {
 
   function deleteActivity(entryId: string) {
     setActivityEntries((currentEntries) =>
-      currentEntries.filter((entry) => entry.id !== entryId)
+      currentEntries.filter(
+        (entry) => entry.id !== entryId
+      )
     );
   }
 
   function editActivity(entry: ActivityEntry) {
     const activity = activityTemplates.find(
-      (item) => item.id === entry.activityTemplateId
+      (item) =>
+        item.id === entry.activityTemplateId
     );
 
     if (!activity) {
@@ -138,6 +149,7 @@ export function useWorkingDayActivities() {
   }
 
   return {
+    activityTemplates,
     activityEntries,
     selectedActivity,
     editingEntry,

@@ -2,6 +2,8 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 import CompanyWorkers from "../components/workers/CompanyWorkers";
 import CompanyMaterials from "../components/materials/CompanyMaterials";
+import CompanyEquipment from "../components/equipment/CompanyEquipment";
+import CompanyActivityTemplates from "../components/activity-templates/CompanyActivityTemplates";
 
 export default function CompanyPage() {
   return (
@@ -17,7 +19,9 @@ export default function CompanyPage() {
         </div>
 
         <CompanyWorkers />
-        <CompanyMaterials />  
+        <CompanyMaterials /> 
+        <CompanyEquipment />
+        <CompanyActivityTemplates /> 
       </div>
     </DashboardLayout>
   );

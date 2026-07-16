@@ -2,40 +2,43 @@ import { Pencil, Trash2 } from "lucide-react";
 
 import EmptyState from "@/components/common/EmptyState";
 import EntityRow from "@/components/common/EntityRow";
-import EntityToolbar from "@/components/common/EntityToolbar";
 import EntitySelectDialog from "@/components/common/dialogs/EntitySelectDialog";
+import EntityToolbar from "@/components/common/EntityToolbar";
 import SectionCard from "@/components/common/SectionCard";
 
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  equipment,
-  type Equipment,
-} from "@/features/company/data/equipment";
+import type { Equipment } from "@/features/company/data/equipment";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 import { useWorkingDayEquipment } from "../../hooks/useWorkingDayEquipment";
-
 
 import EquipmentHoursDialog from "./EquipmentHoursDialog";
 
-import { useWorkingDayContext } from "../../context/useWorkingDayContext";
-
-
-
-function getEquipment(equipmentId: string) {
-  return equipment.find((item) => item.id === equipmentId);
+function getEquipment(
+  equipment: Equipment[],
+  equipmentId: string
+) {
+  return equipment.find(
+    (item) => item.id === equipmentId
+  );
 }
 
 export default function WorkingDayEquipment() {
   const {
+    equipment,
     equipmentEntries,
     selectedEquipment,
+    editingEntry,
+
     isSearchOpen,
     isHoursOpen,
+
     openSearchDialog,
     closeSearchDialog,
     closeHoursDialog,
+
     handleSelectEquipment,
     saveEquipment,
     deleteEquipment,
@@ -44,7 +47,7 @@ export default function WorkingDayEquipment() {
 
   const { isLocked } = useWorkingDayContext();
 
-  const toolbar = isLocked ? undefined :  (
+  const toolbar = isLocked ? undefined : (
     <EntityToolbar
       searchLabel="Search Equipment"
       addLabel="Add Equipment"
@@ -53,9 +56,21 @@ export default function WorkingDayEquipment() {
     />
   );
 
+  const availableEquipment = equipment.filter(
+    (item) =>
+      item.status === "ACTIVE" &&
+      !equipmentEntries.some(
+        (entry) => entry.equipmentId === item.id
+      )
+  );
+
   return (
     <>
-      <SectionCard title="Equipment" icon="🚜" actions={toolbar}>
+      <SectionCard
+        title="Equipment"
+        icon="🚜"
+        actions={toolbar}
+      >
         {equipmentEntries.length === 0 ? (
           <EmptyState
             icon="🚜"
@@ -64,12 +79,18 @@ export default function WorkingDayEquipment() {
           />
         ) : (
           equipmentEntries.map((entry) => {
-            const equipmentItem = getEquipment(entry.equipmentId);
+            const equipmentItem = getEquipment(
+              equipment,
+              entry.equipmentId
+            );
 
             return (
               <EntityRow
                 key={entry.id}
-                title={equipmentItem?.name ?? "Unknown Equipment"}
+                title={
+                  equipmentItem?.name ??
+                  "Unknown Equipment"
+                }
                 subtitle={`Hours used: ${entry.hoursUsed} h`}
                 description={
                   entry.notes ? (
@@ -90,8 +111,13 @@ export default function WorkingDayEquipment() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Edit equipment"
-                          onClick={() => editEquipment(entry)}
+                          aria-label={`Edit ${
+                            equipmentItem?.name ??
+                            "equipment"
+                          }`}
+                          onClick={() => {
+                            editEquipment(entry);
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </AppButton>
@@ -100,8 +126,13 @@ export default function WorkingDayEquipment() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Delete equipment"
-                          onClick={() => deleteEquipment(entry.id)}
+                          aria-label={`Delete ${
+                            equipmentItem?.name ??
+                            "equipment"
+                          }`}
+                          onClick={() => {
+                            deleteEquipment(entry.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </AppButton>
@@ -119,22 +150,36 @@ export default function WorkingDayEquipment() {
         open={isSearchOpen}
         title="Select Equipment"
         description="Search and select equipment from the company catalog."
-        items={equipment.filter((item) => item.status === "ACTIVE")}
+        items={availableEquipment}
         searchPlaceholder="Search equipment..."
-        emptyMessage="No matching equipment found."
+        emptyMessage="No active equipment is available."
         getItemId={(item) => item.id}
         getItemLabel={(item) => item.name}
-        getItemDescription={(item) => item.category}
+        getItemDescription={(item) =>
+          item.internalHourlyRate !== undefined
+            ? `${item.category} • €${item.internalHourlyRate.toFixed(
+                2
+              )}/h`
+            : item.category
+        }
         onClose={closeSearchDialog}
         onSelect={handleSelectEquipment}
       />
 
-      <EquipmentHoursDialog
-        open={isHoursOpen}
-        equipment={selectedEquipment}
-        onClose={closeHoursDialog}
-        onSave={saveEquipment}
-      />
+      {isHoursOpen && (
+        <EquipmentHoursDialog
+          key={
+            editingEntry?.id ??
+            selectedEquipment?.id ??
+            "new-equipment-entry"
+          }
+          open={isHoursOpen}
+          equipment={selectedEquipment}
+          editingEntry={editingEntry}
+          onClose={closeHoursDialog}
+          onSave={saveEquipment}
+        />
+      )}
     </>
   );
 }

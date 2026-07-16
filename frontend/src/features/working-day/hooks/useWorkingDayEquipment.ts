@@ -1,15 +1,17 @@
 import { useState } from "react";
 
-import {
-  equipment,
-  type Equipment,
-} from "@/features/company/data/equipment";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+import type { Equipment } from "@/features/company/data/equipment";
 
 import { useWorkingDayContext } from "../context/useWorkingDayContext";
 
 import type { EquipmentEntry } from "../types/workingDay";
 
 export function useWorkingDayEquipment() {
+  const { companyData } = useCompanyContext();
+
+  const equipment = companyData.equipment;
+
   const {
     equipmentEntries,
     setEquipmentEntries,
@@ -70,6 +72,15 @@ export function useWorkingDayEquipment() {
       return;
     }
 
+    const alreadyAdded = equipmentEntries.some(
+      (entry) => entry.equipmentId === selectedEquipment.id
+    );
+
+    if (alreadyAdded) {
+      closeHoursDialog();
+      return;
+    }
+
     const newEntry: EquipmentEntry = {
       id: crypto.randomUUID(),
       equipmentId: selectedEquipment.id,
@@ -106,6 +117,7 @@ export function useWorkingDayEquipment() {
   }
 
   return {
+    equipment,
     equipmentEntries,
     selectedEquipment,
     editingEntry,

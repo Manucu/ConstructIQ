@@ -6,9 +6,12 @@ import { AppModal } from "@/components/ui/AppModal";
 
 import type { Equipment } from "@/features/company/data/equipment";
 
+import type { EquipmentEntry } from "../../types/workingDay";
+
 type EquipmentHoursDialogProps = {
   open: boolean;
   equipment: Equipment | null;
+  editingEntry?: EquipmentEntry | null;
   onClose: () => void;
   onSave: (hoursUsed: number, notes?: string) => void;
 };
@@ -16,15 +19,22 @@ type EquipmentHoursDialogProps = {
 export default function EquipmentHoursDialog({
   open,
   equipment,
+  editingEntry,
   onClose,
   onSave,
 }: EquipmentHoursDialogProps) {
-  const [hoursUsed, setHoursUsed] = useState("");
-  const [notes, setNotes] = useState("");
+  const [hoursUsed, setHoursUsed] = useState(
+    editingEntry ? String(editingEntry.hoursUsed) : ""
+  );
+
+  const [notes, setNotes] = useState(
+    editingEntry?.notes ?? ""
+  );
 
   const parsedHours = Number(hoursUsed);
 
   const isValid =
+    equipment !== null &&
     hoursUsed.trim() !== "" &&
     Number.isFinite(parsedHours) &&
     parsedHours > 0;
@@ -44,18 +54,26 @@ export default function EquipmentHoursDialog({
       return;
     }
 
-    onSave(parsedHours, notes.trim() || undefined);
+    onSave(
+      parsedHours,
+      notes.trim() || undefined
+    );
+
     resetForm();
   }
 
   return (
     <AppModal
       open={open}
-      title="Add Equipment"
+      title={
+        editingEntry
+          ? "Edit Equipment Usage"
+          : "Add Equipment"
+      }
       description={
         equipment
-          ? `Add ${equipment.name} to this working day.`
-          : undefined
+          ? `${equipment.name} • ${equipment.category}`
+          : "No equipment selected."
       }
       onClose={handleClose}
       footer={
@@ -73,7 +91,9 @@ export default function EquipmentHoursDialog({
             disabled={!isValid}
             onClick={handleSave}
           >
-            Save Equipment
+            {editingEntry
+              ? "Save Changes"
+              : "Save Equipment"}
           </AppButton>
         </>
       }
@@ -87,6 +107,9 @@ export default function EquipmentHoursDialog({
           {equipment && (
             <p className="mt-1 text-sm text-muted-foreground">
               {equipment.category}
+              {equipment.internalHourlyRate !== undefined
+                ? ` • €${equipment.internalHourlyRate.toFixed(2)}/h`
+                : ""}
             </p>
           )}
         </div>
@@ -98,18 +121,18 @@ export default function EquipmentHoursDialog({
           step="0.5"
           value={hoursUsed}
           placeholder="Enter hours"
-          onChange={(event) =>
-            setHoursUsed(event.target.value)
-          }
+          onChange={(event) => {
+            setHoursUsed(event.target.value);
+          }}
         />
 
         <AppInput
           label="Notes"
           value={notes}
           placeholder="Optional notes"
-          onChange={(event) =>
-            setNotes(event.target.value)
-          }
+          onChange={(event) => {
+            setNotes(event.target.value);
+          }}
         />
       </div>
     </AppModal>
