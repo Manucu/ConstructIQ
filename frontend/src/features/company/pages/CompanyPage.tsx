@@ -4,6 +4,12 @@ import CompanyWorkers from "../components/workers/CompanyWorkers";
 import CompanyMaterials from "../components/materials/CompanyMaterials";
 import CompanyEquipment from "../components/equipment/CompanyEquipment";
 import CompanyActivityTemplates from "../components/activity-templates/CompanyActivityTemplates";
+import CompanyClients from "../components/clients/CompanyClients";
+import CompanySuppliers from "../components/suppliers/CompanySuppliers";
+import CompanyExpenseCategories from "../components/expense-categories/CompanyExpenseCategories";
+import CompanyProjectTemplates from "../components/project-templates/CompanyProjectTemplates";
+
+
 
 export default function CompanyPage() {
   return (
@@ -22,6 +28,10 @@ export default function CompanyPage() {
         <CompanyMaterials /> 
         <CompanyEquipment />
         <CompanyActivityTemplates /> 
+        <CompanyClients />
+        <CompanySuppliers />
+        <CompanyExpenseCategories />
+        <CompanyProjectTemplates />
       </div>
     </DashboardLayout>
   );

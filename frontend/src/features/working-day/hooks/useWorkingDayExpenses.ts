@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-import {
-  expenseCategories,
-  type ExpenseCategory,
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+
+import type {
+  ExpenseCategory,
 } from "@/features/company/data/expenseCategories";
 
 import { useWorkingDayContext } from "../context/useWorkingDayContext";
@@ -10,6 +11,11 @@ import { useWorkingDayContext } from "../context/useWorkingDayContext";
 import type { ExpenseEntry } from "../types/workingDay";
 
 export function useWorkingDayExpenses() {
+  const { companyData } = useCompanyContext();
+
+  const expenseCategories =
+    companyData.expenseCategories;
+
   const {
     expenseEntries,
     setExpenseEntries,
@@ -37,7 +43,9 @@ export function useWorkingDayExpenses() {
     setIsCategorySearchOpen(false);
   }
 
-  function handleSelectCategory(category: ExpenseCategory) {
+  function handleSelectCategory(
+    category: ExpenseCategory
+  ) {
     setEditingEntry(null);
     setSelectedCategory(category);
     setIsCategorySearchOpen(false);
@@ -66,7 +74,8 @@ export function useWorkingDayExpenses() {
           entry.id === editingEntry.id
             ? {
                 ...entry,
-                expenseCategoryId: selectedCategory.id,
+                expenseCategoryId:
+                  selectedCategory.id,
                 description,
                 amount,
                 currency,
@@ -82,7 +91,8 @@ export function useWorkingDayExpenses() {
 
     const newEntry: ExpenseEntry = {
       id: crypto.randomUUID(),
-      expenseCategoryId: selectedCategory.id,
+      expenseCategoryId:
+        selectedCategory.id,
       description,
       amount,
       currency,
@@ -100,13 +110,16 @@ export function useWorkingDayExpenses() {
 
   function deleteExpense(entryId: string) {
     setExpenseEntries((currentEntries) =>
-      currentEntries.filter((entry) => entry.id !== entryId)
+      currentEntries.filter(
+        (entry) => entry.id !== entryId
+      )
     );
   }
 
   function editExpense(entry: ExpenseEntry) {
     const category = expenseCategories.find(
-      (item) => item.id === entry.expenseCategoryId
+      (item) =>
+        item.id === entry.expenseCategoryId
     );
 
     if (!category) {
@@ -119,6 +132,8 @@ export function useWorkingDayExpenses() {
   }
 
   return {
+    expenseCategories,
+
     expenseEntries,
     selectedCategory,
     editingEntry,

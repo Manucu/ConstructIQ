@@ -10,18 +10,17 @@ import StatusBadge from "@/components/common/StatusBadge";
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  expenseCategories,
-  type ExpenseCategory,
-} from "@/features/company/data/expenseCategories";
+import type { ExpenseCategory } from "@/features/company/data/expenseCategories";
 
+import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 import { useWorkingDayExpenses } from "../../hooks/useWorkingDayExpenses";
 
 import ExpenseDialog from "./ExpenseDialog";
-import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 
-
-function formatCurrency(amount: number, currency: string) {
+function formatCurrency(
+  amount: number,
+  currency: string
+) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
@@ -29,16 +28,30 @@ function formatCurrency(amount: number, currency: string) {
   }).format(amount);
 }
 
+function getExpenseCategory(
+  expenseCategories: ExpenseCategory[],
+  expenseCategoryId: string
+) {
+  return expenseCategories.find(
+    (category) =>
+      category.id === expenseCategoryId
+  );
+}
+
 export default function WorkingDayExpenses() {
   const {
+    expenseCategories,
     expenseEntries,
     selectedCategory,
     editingEntry,
+
     isCategorySearchOpen,
     isExpenseDialogOpen,
+
     openCategorySearchDialog,
     closeCategorySearchDialog,
     closeExpenseDialog,
+
     handleSelectCategory,
     saveExpense,
     deleteExpense,
@@ -47,7 +60,7 @@ export default function WorkingDayExpenses() {
 
   const { isLocked } = useWorkingDayContext();
 
-  const toolbar = isLocked ? undefined :  (
+  const toolbar = isLocked ? undefined : (
     <EntityToolbar
       searchLabel="Search Category"
       addLabel="Add Expense"
@@ -56,9 +69,19 @@ export default function WorkingDayExpenses() {
     />
   );
 
+  const availableExpenseCategories =
+    expenseCategories.filter(
+      (category) =>
+        category.status === "ACTIVE"
+    );
+
   return (
     <>
-      <SectionCard title="Expenses" icon="💰" actions={toolbar}>
+      <SectionCard
+        title="Expenses"
+        icon="💰"
+        actions={toolbar}
+      >
         {expenseEntries.length === 0 ? (
           <EmptyState
             icon="💰"
@@ -67,15 +90,20 @@ export default function WorkingDayExpenses() {
           />
         ) : (
           expenseEntries.map((entry) => {
-            const category = expenseCategories.find(
-              (item) => item.id === entry.expenseCategoryId
-            );
+            const category =
+              getExpenseCategory(
+                expenseCategories,
+                entry.expenseCategoryId
+              );
 
             return (
               <EntityRow
                 key={entry.id}
                 title={entry.description}
-                subtitle={category?.name ?? "Unknown Category"}
+                subtitle={
+                  category?.name ??
+                  "Unknown Category"
+                }
                 description={
                   entry.notes ? (
                     <p className="mt-2 text-sm text-muted-foreground">
@@ -86,10 +114,15 @@ export default function WorkingDayExpenses() {
                 actions={
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                      {formatCurrency(entry.amount, entry.currency)}
+                      {formatCurrency(
+                        entry.amount,
+                        entry.currency
+                      )}
                     </Badge>
 
-                    <StatusBadge status={entry.status} />
+                    <StatusBadge
+                      status={entry.status}
+                    />
 
                     {!isLocked && (
                       <>
@@ -97,8 +130,13 @@ export default function WorkingDayExpenses() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Edit expense"
-                          onClick={() => editExpense(entry)}
+                          aria-label={`Edit ${
+                            category?.name ??
+                            "expense"
+                          }`}
+                          onClick={() => {
+                            editExpense(entry);
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </AppButton>
@@ -107,8 +145,13 @@ export default function WorkingDayExpenses() {
                           type="button"
                           size="icon"
                           variant="ghost"
-                          aria-label="Delete expense"
-                          onClick={() => deleteExpense(entry.id)}
+                          aria-label={`Delete ${
+                            category?.name ??
+                            "expense"
+                          }`}
+                          onClick={() => {
+                            deleteExpense(entry.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </AppButton>
@@ -126,13 +169,13 @@ export default function WorkingDayExpenses() {
         open={isCategorySearchOpen}
         title="Select Expense Category"
         description="Search and select a company expense category."
-        items={expenseCategories.filter(
-          (category) => category.status === "ACTIVE"
-        )}
+        items={availableExpenseCategories}
         searchPlaceholder="Search expense categories..."
-        emptyMessage="No matching categories found."
+        emptyMessage="No active expense categories are available."
         getItemId={(category) => category.id}
-        getItemLabel={(category) => category.name}
+        getItemLabel={(category) =>
+          category.name
+        }
         getItemDescription={(category) =>
           category.description
         }
@@ -140,13 +183,20 @@ export default function WorkingDayExpenses() {
         onSelect={handleSelectCategory}
       />
 
-      <ExpenseDialog
-        open={isExpenseDialogOpen}
-        category={selectedCategory}
-        editingEntry={editingEntry}
-        onClose={closeExpenseDialog}
-        onSave={saveExpense}
-      />
+      {isExpenseDialogOpen && (
+        <ExpenseDialog
+          key={
+            editingEntry?.id ??
+            selectedCategory?.id ??
+            "new-expense"
+          }
+          open={isExpenseDialogOpen}
+          category={selectedCategory}
+          editingEntry={editingEntry}
+          onClose={closeExpenseDialog}
+          onSave={saveExpense}
+        />
+      )}
     </>
   );
 }
