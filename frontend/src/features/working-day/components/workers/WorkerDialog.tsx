@@ -4,7 +4,7 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppModal } from "@/components/ui/AppModal";
 
-import { activityTemplates } from "@/features/company/data/activityTemplates";
+import { activityTemplates } from "@/features/templates/data/activityTemplates";
 import type { Worker } from "@/features/company/data/workers";
 
 import type { WorkerEntry } from "../../types/workingDay";

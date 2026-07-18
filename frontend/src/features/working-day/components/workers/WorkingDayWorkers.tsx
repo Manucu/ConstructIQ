@@ -9,7 +9,7 @@ import SectionCard from "@/components/common/SectionCard";
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import { activityTemplates } from "@/features/company/data/activityTemplates";
+import { activityTemplates } from "@/features/templates/data/activityTemplates";
 import type { Worker } from "@/features/company/data/workers";
 
 import { useWorkingDayContext } from "../../context/useWorkingDayContext";

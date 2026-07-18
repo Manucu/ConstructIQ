@@ -8,16 +8,16 @@ import {
 import { workers } from "../data/workers";
 import { materials } from "../data/materials";
 import { equipment } from "../data/equipment";
-import { activityTemplates } from "../data/activityTemplates";
+import { activityTemplates } from "../../templates/data/activityTemplates";
 import { clients } from "../data/clients";
 import { suppliers } from "../data/suppliers";
 import { expenseCategories } from "../data/expenseCategories";
-import { materialTemplates } from "../data/materialTemplates";
+import { materialTemplates } from "../../templates/data/materialTemplates";
 
 import {
   projectTemplates,
   projectTemplateStages,
-} from "../data/projectTemplates";
+} from "../../templates/data/projectTemplates";
 
 import {
   CompanyContext,
@@ -27,7 +27,27 @@ import {
 
 import {
   projectTemplateActivities,
-} from "../data/projectTemplateActivities";
+} from "../../templates/data/projectTemplateActivities";
+
+import {
+  projectTemplateActivityMaterials,
+} from "../../templates/components/materials-templates/projectTemplateActivityMaterials";
+
+import {
+  projects,
+} from "@/features/projects/data/projects";
+
+import {
+  projectStages,
+} from "@/features/projects/data/projectStages";
+
+import {
+  projectActivities,
+} from "@/features/projects/data/projectActivities";
+
+import {
+  projectMaterials,
+} from "@/features/projects/data/projectMaterials";
 
 type CompanyProviderProps = {
   children: ReactNode;
@@ -49,6 +69,12 @@ const initialCompanyData: CompanyData = {
   projectTemplates,
   projectTemplateStages,
   projectTemplateActivities,
+  projectTemplateActivityMaterials,
+
+  projects,
+  projectStages,
+  projectActivities,
+  projectMaterials,
 };
 
 function loadStoredCompanyData():
@@ -98,13 +124,21 @@ function createInitialCompanyData(): CompanyData {
   }
 
   /*
-   * Datele inițiale sunt puse primele.
+   * MaterialTemplate.status este o proprietate nouă.
    *
-   * Astfel, când adăugăm o proprietate nouă precum
-   * projectTemplateStages, utilizatorii care au deja
-   * date vechi în localStorage primesc automat
-   * valoarea inițială.
+   * Datele mai vechi din localStorage nu o au, așa
+   * că le migrăm automat la ACTIVE.
    */
+  const migratedMaterialTemplates =
+    (
+      storedCompanyData.materialTemplates ??
+      initialCompanyData.materialTemplates
+    ).map(materialTemplate => ({
+      ...materialTemplate,
+      status:
+        materialTemplate.status ?? "ACTIVE",
+    }));
+
   return {
     ...initialCompanyData,
     ...storedCompanyData,
@@ -138,8 +172,7 @@ function createInitialCompanyData(): CompanyData {
       initialCompanyData.expenseCategories,
 
     materialTemplates:
-      storedCompanyData.materialTemplates ??
-      initialCompanyData.materialTemplates,
+      migratedMaterialTemplates,
 
     projectTemplates:
       storedCompanyData.projectTemplates ??
@@ -148,10 +181,30 @@ function createInitialCompanyData(): CompanyData {
     projectTemplateStages:
       storedCompanyData.projectTemplateStages ??
       initialCompanyData.projectTemplateStages,
-    
+
     projectTemplateActivities:
       storedCompanyData.projectTemplateActivities ??
       initialCompanyData.projectTemplateActivities,
+
+    projectTemplateActivityMaterials:
+      storedCompanyData.projectTemplateActivityMaterials ??
+      initialCompanyData.projectTemplateActivityMaterials,
+
+    projects:
+      storedCompanyData.projects ??
+      initialCompanyData.projects,
+
+    projectStages:
+      storedCompanyData.projectStages ??
+      initialCompanyData.projectStages,
+
+    projectActivities:
+      storedCompanyData.projectActivities ??
+      initialCompanyData.projectActivities,
+
+    projectMaterials:
+      storedCompanyData.projectMaterials ??
+      initialCompanyData.projectMaterials,
   };
 }
 

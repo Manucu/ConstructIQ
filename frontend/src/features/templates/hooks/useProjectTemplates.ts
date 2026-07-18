@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
 
-import { useCompanyContext } from "../context/useCompanyContext";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
 
 import type {
   ProjectTemplate,
   ProjectTemplateCategory,
   ProjectTemplateStatus,
-} from "../data/projectTemplates";
+} from "@/features/templates/data/projectTemplates";
+
+import { CompanyDataService } from "@/features/company/services/companyDataService";
 
 export type SaveProjectTemplateValues = {
   name: string;
@@ -26,7 +28,8 @@ export function useCompanyProjectTemplates() {
   const projectTemplates =
     companyData.projectTemplates;
 
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] =
+    useState("");
 
   const [
     isProjectTemplateDialogOpen,
@@ -38,31 +41,35 @@ export function useCompanyProjectTemplates() {
     setEditingProjectTemplate,
   ] = useState<ProjectTemplate | null>(null);
 
-  const filteredProjectTemplates = useMemo(() => {
-    const normalizedSearch = searchValue
-      .trim()
-      .toLowerCase();
+  const filteredProjectTemplates =
+    useMemo(() => {
+      const normalizedSearch = searchValue
+        .trim()
+        .toLowerCase();
 
-    if (!normalizedSearch) {
-      return projectTemplates;
-    }
+      if (!normalizedSearch) {
+        return projectTemplates;
+      }
 
-    return projectTemplates.filter(
-      (projectTemplate) =>
-        projectTemplate.name
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        projectTemplate.category
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        projectTemplate.status
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        projectTemplate.description
-          ?.toLowerCase()
-          .includes(normalizedSearch)
-    );
-  }, [projectTemplates, searchValue]);
+      return projectTemplates.filter(
+        projectTemplate =>
+          projectTemplate.name
+            .toLowerCase()
+            .includes(normalizedSearch) ||
+          projectTemplate.category
+            .toLowerCase()
+            .includes(normalizedSearch) ||
+          projectTemplate.status
+            .toLowerCase()
+            .includes(normalizedSearch) ||
+          projectTemplate.description
+            ?.toLowerCase()
+            .includes(normalizedSearch)
+      );
+    }, [
+      projectTemplates,
+      searchValue,
+    ]);
 
   function openAddProjectTemplateDialog() {
     setEditingProjectTemplate(null);
@@ -72,7 +79,10 @@ export function useCompanyProjectTemplates() {
   function openEditProjectTemplateDialog(
     projectTemplate: ProjectTemplate
   ) {
-    setEditingProjectTemplate(projectTemplate);
+    setEditingProjectTemplate(
+      projectTemplate
+    );
+
     setIsProjectTemplateDialogOpen(true);
   }
 
@@ -85,11 +95,12 @@ export function useCompanyProjectTemplates() {
     values: SaveProjectTemplateValues
   ) {
     if (editingProjectTemplate) {
-      setCompanyData((currentData) => ({
+      setCompanyData(currentData => ({
         ...currentData,
+
         projectTemplates:
           currentData.projectTemplates.map(
-            (projectTemplate) =>
+            projectTemplate =>
               projectTemplate.id ===
               editingProjectTemplate.id
                 ? {
@@ -109,8 +120,9 @@ export function useCompanyProjectTemplates() {
       ...values,
     };
 
-    setCompanyData((currentData) => ({
+    setCompanyData(currentData => ({
       ...currentData,
+
       projectTemplates: [
         ...currentData.projectTemplates,
         newProjectTemplate,
@@ -123,16 +135,20 @@ export function useCompanyProjectTemplates() {
   function toggleProjectTemplateStatus(
     projectTemplateId: string
   ) {
-    setCompanyData((currentData) => ({
+    setCompanyData(currentData => ({
       ...currentData,
+
       projectTemplates:
         currentData.projectTemplates.map(
-          (projectTemplate) =>
-            projectTemplate.id === projectTemplateId
+          projectTemplate =>
+            projectTemplate.id ===
+            projectTemplateId
               ? {
                   ...projectTemplate,
+
                   status:
-                    projectTemplate.status === "ACTIVE"
+                    projectTemplate.status ===
+                    "ACTIVE"
                       ? "INACTIVE"
                       : "ACTIVE",
                 }
@@ -144,32 +160,37 @@ export function useCompanyProjectTemplates() {
   function deleteProjectTemplate(
     projectTemplateId: string
   ) {
-    setCompanyData((currentData) => ({
-      ...currentData,
-      projectTemplates:
-        currentData.projectTemplates.filter(
-          (projectTemplate) =>
-            projectTemplate.id !== projectTemplateId
-        ),
-    }));
+    setCompanyData(currentData =>
+      CompanyDataService.deleteProjectTemplate(
+        currentData,
+        projectTemplateId
+      )
+    );
+
+    if (
+      editingProjectTemplate?.id ===
+      projectTemplateId
+    ) {
+      closeProjectTemplateDialog();
+    }
   }
 
   return {
-  projectTemplates,
-  filteredProjectTemplates,
+    projectTemplates,
+    filteredProjectTemplates,
 
-  searchValue,
-  setSearchValue,
+    searchValue,
+    setSearchValue,
 
-  isProjectTemplateDialogOpen,
-  editingProjectTemplate,
+    isProjectTemplateDialogOpen,
+    editingProjectTemplate,
 
-  openAddProjectTemplateDialog,
-  openEditProjectTemplateDialog,
-  closeProjectTemplateDialog,
+    openAddProjectTemplateDialog,
+    openEditProjectTemplateDialog,
+    closeProjectTemplateDialog,
 
-  saveProjectTemplate,
-  toggleProjectTemplateStatus,
-  deleteProjectTemplate,
+    saveProjectTemplate,
+    toggleProjectTemplateStatus,
+    deleteProjectTemplate,
   };
 }

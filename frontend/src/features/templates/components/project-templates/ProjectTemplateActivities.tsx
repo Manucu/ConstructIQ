@@ -1,7 +1,10 @@
+import { useState } from "react";
+
 import {
   ArrowDown,
   ArrowUp,
   ClipboardList,
+  PackageSearch,
   Pencil,
   Power,
   PowerOff,
@@ -15,13 +18,23 @@ import SectionCard from "@/components/common/SectionCard";
 import StatusBadge from "@/components/common/StatusBadge";
 
 import { AppButton } from "@/components/ui/AppButton";
+import { AppModal } from "@/components/ui/AppModal";
 import { Badge } from "@/components/ui/badge";
 
-import type { ProjectTemplateStage } from "../../data/projectTemplates";
+import type {
+  ProjectTemplateStage,
+} from "@/features/templates/data/projectTemplates";
 
-import { useCompanyProjectTemplateActivities } from "../../hooks/useCompanyProjectTemplateActivities";
+import type {
+  ProjectTemplateActivity,
+} from "@/features/templates/data/projectTemplateActivities";
+
+import {
+  useProjectTemplateActivities,
+} from "../../hooks/useProjectTemplateActivities";
 
 import ProjectTemplateActivityFormDialog from "./ProjectTemplateActivityFormDialog";
+import ProjectTemplateActivityMaterials from "./ProjectTemplateActivityMaterials";
 
 type ProjectTemplateActivitiesProps = {
   projectTemplateStage: ProjectTemplateStage;
@@ -39,9 +52,24 @@ function formatDuration(days?: number) {
   return `${days} days`;
 }
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-IE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 export default function ProjectTemplateActivities({
   projectTemplateStage,
 }: ProjectTemplateActivitiesProps) {
+  const [
+    selectedActivityForMaterials,
+    setSelectedActivityForMaterials,
+  ] = useState<ProjectTemplateActivity | null>(
+    null
+  );
+
   const {
     filteredProjectTemplateActivities,
 
@@ -66,7 +94,8 @@ export default function ProjectTemplateActivities({
     moveProjectTemplateActivityDown,
 
     getActivityTemplateById,
-  } = useCompanyProjectTemplateActivities({
+    getActivitySummary,
+  } = useProjectTemplateActivities({
     projectTemplateStageId:
       projectTemplateStage.id,
   });
@@ -75,6 +104,16 @@ export default function ProjectTemplateActivities({
     editingProjectTemplateActivity
       ? allActivityTemplates
       : availableActivityTemplates;
+
+  function openActivityMaterials(
+    activity: ProjectTemplateActivity
+  ) {
+    setSelectedActivityForMaterials(activity);
+  }
+
+  function closeActivityMaterials() {
+    setSelectedActivityForMaterials(null);
+  }
 
   return (
     <>
@@ -121,6 +160,9 @@ export default function ProjectTemplateActivities({
                     activity.activityTemplateId
                   );
 
+                const activitySummary =
+                  getActivitySummary(activity.id);
+
                 return (
                   <EntityRow
                     key={activity.id}
@@ -144,6 +186,19 @@ export default function ProjectTemplateActivities({
                             )}
                           </Badge>
 
+                          <Badge variant="outline">
+                            {activitySummary.materialCount === 1
+                              ? "1 suggested material"
+                              : `${activitySummary.materialCount} suggested materials`}
+                          </Badge>
+
+                          <Badge variant="outline">
+                            Material cost:{" "}
+                            {formatCurrency(
+                              activitySummary.estimatedMaterialCost
+                            )}
+                          </Badge>
+
                           {!activityTemplate && (
                             <Badge variant="destructive">
                               Missing template
@@ -157,6 +212,26 @@ export default function ProjectTemplateActivities({
                         <StatusBadge
                           status={activity.status}
                         />
+
+                        <AppButton
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          aria-label="Manage activity materials"
+                          title="Manage activity materials"
+                          onClick={() =>
+                            openActivityMaterials(
+                              activity
+                            )
+                          }
+                        >
+                          <PackageSearch className="mr-2 h-4 w-4" />
+
+                          Manage Materials
+                          {activitySummary.materialCount >
+                            0 &&
+                            ` (${activitySummary.materialCount})`}
+                        </AppButton>
 
                         <AppButton
                           type="button"
@@ -258,6 +333,13 @@ export default function ProjectTemplateActivities({
                               return;
                             }
 
+                            if (
+                              selectedActivityForMaterials
+                                ?.id === activity.id
+                            ) {
+                              closeActivityMaterials();
+                            }
+
                             deleteProjectTemplateActivity(
                               activity.id
                             );
@@ -295,6 +377,32 @@ export default function ProjectTemplateActivities({
           }
           onSave={saveProjectTemplateActivity}
         />
+      )}
+
+      {selectedActivityForMaterials && (
+        <AppModal
+          open
+          title="Activity Materials"
+          description="Manage the suggested materials and estimated costs for this activity."
+          onClose={closeActivityMaterials}
+          footer={
+            <AppButton
+              type="button"
+              variant="outline"
+              onClick={closeActivityMaterials}
+            >
+              Close
+            </AppButton>
+          }
+        >
+          <div className="max-h-[70vh] overflow-y-auto pr-1">
+            <ProjectTemplateActivityMaterials
+              projectTemplateActivity={
+                selectedActivityForMaterials
+              }
+            />
+          </div>
+        </AppModal>
       )}
     </>
   );

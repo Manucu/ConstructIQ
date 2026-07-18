@@ -26,7 +26,7 @@ import type {
   ProjectTemplateStage,
 } from "../../data/projectTemplates";
 
-import { useCompanyProjectTemplateStages } from "../../hooks/useCompanyProjectTemplateStages";
+import { useCompanyProjectTemplateStages } from "../../hooks/useProjectTemplateStages";
 
 import ProjectTemplateActivities from "./ProjectTemplateActivities";
 import ProjectTemplateStageFormDialog from "./ProjectTemplateStageFormDialog";

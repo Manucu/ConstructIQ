@@ -1,7 +1,7 @@
 import type {
   MaterialCategory,
   UnitOfMeasure,
-} from "@/features/company/data/materialTemplates";
+} from "@/features/templates/data/materialTemplates";
 
 export type CompanyMaterialStatus = "ACTIVE" | "INACTIVE";
 

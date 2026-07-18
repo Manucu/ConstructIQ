@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 
-import { useCompanyContext } from "../context/useCompanyContext";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
 
 import type {
   ActivityCategory,
   ActivityTemplate,
   ActivityTemplateStatus,
-} from "../data/activityTemplates";
+} from "@/features/templates/data/activityTemplates";
 
 export type SaveActivityTemplateValues = {
   name: string;
@@ -15,7 +15,7 @@ export type SaveActivityTemplateValues = {
   description?: string;
 };
 
-export function useCompanyActivityTemplates() {
+export function useActivityTemplates() {
   const {
     companyData,
     setCompanyData,

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { workingDay } from "../data/workingDay";
 
 import { workers } from "@/features/company/data/workers";
-import { activityTemplates } from "@/features/company/data/activityTemplates";
+import { activityTemplates } from "@/features/templates/data/activityTemplates";
 import { materials } from "@/features/company/data/materials";
 import { equipment } from "@/features/company/data/equipment";
 

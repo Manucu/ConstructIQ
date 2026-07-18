@@ -6,7 +6,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 
-import type { ProjectTemplate } from "../../data/projectTemplates";
+import type { ProjectTemplate } from "@/features/templates/data/projectTemplates";
 
 import ProjectTemplateStages from "./ProjectTemplateStages";
 

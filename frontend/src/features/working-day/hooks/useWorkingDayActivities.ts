@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useCompanyContext } from "@/features/company/context/useCompanyContext";
-import type { ActivityTemplate } from "@/features/company/data/activityTemplates";
+import type { ActivityTemplate } from "@/features/templates/data/activityTemplates";
 
 import { useWorkingDayContext } from "../context/useWorkingDayContext";
 

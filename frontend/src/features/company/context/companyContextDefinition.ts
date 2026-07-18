@@ -7,20 +7,46 @@ import {
 import type { Worker } from "../data/workers";
 import type { CompanyMaterial } from "../data/materials";
 import type { Equipment } from "../data/equipment";
-import type { ActivityTemplate } from "../data/activityTemplates";
 import type { Client } from "../data/clients";
 import type { Supplier } from "../data/suppliers";
 import type { ExpenseCategory } from "../data/expenseCategories";
-import type { MaterialTemplate } from "../data/materialTemplates";
+
+import type {
+  ActivityTemplate,
+} from "../../templates/data/activityTemplates";
+
+import type {
+  MaterialTemplate,
+} from "../../templates/data/materialTemplates";
 
 import type {
   ProjectTemplate,
   ProjectTemplateStage,
-} from "../data/projectTemplates";
+} from "../../templates/data/projectTemplates";
 
 import type {
   ProjectTemplateActivity,
-} from "../data/projectTemplateActivities";
+} from "../../templates/data/projectTemplateActivities";
+
+import type {
+  ProjectTemplateActivityMaterial,
+} from "../../templates/components/materials-templates/projectTemplateActivityMaterials";
+
+import type {
+  Project,
+} from "@/features/projects/data/projects";
+
+import type {
+  ProjectStage,
+} from "@/features/projects/data/projectStages";
+
+import type {
+  ProjectActivity,
+} from "@/features/projects/data/projectActivities";
+
+import type {
+  ProjectMaterial,
+} from "@/features/projects/data/projectMaterials";
 
 export type CompanyData = {
   workers: Worker[];
@@ -34,7 +60,15 @@ export type CompanyData = {
 
   projectTemplates: ProjectTemplate[];
   projectTemplateStages: ProjectTemplateStage[];
-  projectTemplateActivities: ProjectTemplateActivity[];
+  projectTemplateActivities:
+    ProjectTemplateActivity[];
+  projectTemplateActivityMaterials:
+    ProjectTemplateActivityMaterial[];
+
+  projects: Project[];
+  projectStages: ProjectStage[];
+  projectActivities: ProjectActivity[];
+  projectMaterials: ProjectMaterial[];
 };
 
 export type CompanyContextValue = {

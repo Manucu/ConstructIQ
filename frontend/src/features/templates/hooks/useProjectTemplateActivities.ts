@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 
-import { useCompanyContext } from "../context/useCompanyContext";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+
+import { ProjectTemplateEstimator } from "@/features/templates/services/projectTemplateEstimator";
 
 import type {
   ProjectTemplateActivity,
@@ -14,13 +16,13 @@ export type SaveProjectTemplateActivityValues = {
   status: ProjectTemplateActivityStatus;
 };
 
-type UseCompanyProjectTemplateActivitiesOptions = {
+type UseProjectTemplateActivitiesOptions = {
   projectTemplateStageId: string;
 };
 
-export function useCompanyProjectTemplateActivities({
+export function useProjectTemplateActivities({
   projectTemplateStageId,
-}: UseCompanyProjectTemplateActivitiesOptions) {
+}: UseProjectTemplateActivitiesOptions) {
   const {
     companyData,
     setCompanyData,
@@ -41,14 +43,6 @@ export function useCompanyProjectTemplateActivities({
     null
   );
 
-  /*
-   * Doar Activity Templates active pot fi adăugate
-   * într-o etapă nouă.
-   *
-   * La editare, dialogul poate include separat
-   * activitatea deja selectată dacă între timp
-   * Activity Template-ul a devenit inactiv.
-   */
   const availableActivityTemplates = useMemo(
     () =>
       companyData.activityTemplates.filter(
@@ -58,9 +52,6 @@ export function useCompanyProjectTemplateActivities({
     [companyData.activityTemplates]
   );
 
-  /*
-   * Activitățile care aparțin exclusiv etapei curente.
-   */
   const projectTemplateActivities = useMemo(
     () =>
       companyData.projectTemplateActivities
@@ -80,11 +71,6 @@ export function useCompanyProjectTemplateActivities({
     ]
   );
 
-  /*
-   * Filtrarea se face folosind numele din
-   * Activity Template, deoarece ProjectTemplateActivity
-   * păstrează doar activityTemplateId.
-   */
   const filteredProjectTemplateActivities =
     useMemo(() => {
       const normalizedSearch =
@@ -124,27 +110,33 @@ export function useCompanyProjectTemplateActivities({
 
   function openAddProjectTemplateActivityDialog() {
     setEditingProjectTemplateActivity(null);
-    setIsProjectTemplateActivityDialogOpen(true);
+
+    setIsProjectTemplateActivityDialogOpen(
+      true
+    );
   }
 
   function openEditProjectTemplateActivityDialog(
     activity: ProjectTemplateActivity
   ) {
     setEditingProjectTemplateActivity(activity);
-    setIsProjectTemplateActivityDialogOpen(true);
+
+    setIsProjectTemplateActivityDialogOpen(
+      true
+    );
   }
 
   function closeProjectTemplateActivityDialog() {
     setEditingProjectTemplateActivity(null);
-    setIsProjectTemplateActivityDialogOpen(false);
+
+    setIsProjectTemplateActivityDialogOpen(
+      false
+    );
   }
 
   function saveProjectTemplateActivity(
     values: SaveProjectTemplateActivityValues
   ) {
-    /*
-     * EDITARE
-     */
     if (editingProjectTemplateActivity) {
       setCompanyData(currentData => ({
         ...currentData,
@@ -163,12 +155,9 @@ export function useCompanyProjectTemplateActivities({
       }));
 
       closeProjectTemplateActivityDialog();
+
       return;
     }
-
-    /*
-     * ADĂUGARE
-     */
 
     const activitiesForCurrentStage =
       companyData.projectTemplateActivities.filter(
@@ -177,10 +166,6 @@ export function useCompanyProjectTemplateActivities({
           projectTemplateStageId
       );
 
-    /*
-     * Evităm adăugarea aceluiași Activity Template
-     * de două ori în aceeași etapă.
-     */
     const alreadyExists =
       activitiesForCurrentStage.some(
         activity =>
@@ -254,10 +239,6 @@ export function useCompanyProjectTemplateActivities({
             activity.id !== activityId
         );
 
-      /*
-       * După ștergere, renumerotăm doar activitățile
-       * etapei curente.
-       */
       const reorderedActivities =
         remainingActivities
           .filter(
@@ -266,7 +247,10 @@ export function useCompanyProjectTemplateActivities({
               projectTemplateStageId
           )
           .sort(
-            (firstActivity, secondActivity) =>
+            (
+              firstActivity,
+              secondActivity
+            ) =>
               firstActivity.order -
               secondActivity.order
           )
@@ -275,12 +259,13 @@ export function useCompanyProjectTemplateActivities({
             order: index + 1,
           }));
 
-      const reorderedActivitiesById = new Map(
-        reorderedActivities.map(activity => [
-          activity.id,
-          activity,
-        ])
-      );
+      const reorderedActivitiesById =
+        new Map(
+          reorderedActivities.map(activity => [
+            activity.id,
+            activity,
+          ])
+        );
 
       return {
         ...currentData,
@@ -291,6 +276,13 @@ export function useCompanyProjectTemplateActivities({
               reorderedActivitiesById.get(
                 activity.id
               ) ?? activity
+          ),
+
+        projectTemplateActivityMaterials:
+          currentData.projectTemplateActivityMaterials.filter(
+            material =>
+              material.projectTemplateActivityId !==
+              activityId
           ),
       };
     });
@@ -334,7 +326,10 @@ export function useCompanyProjectTemplateActivities({
               projectTemplateStageId
           )
           .sort(
-            (firstActivity, secondActivity) =>
+            (
+              firstActivity,
+              secondActivity
+            ) =>
               firstActivity.order -
               secondActivity.order
           );
@@ -418,6 +413,24 @@ export function useCompanyProjectTemplateActivities({
     );
   }
 
+  function getActivityMaterials(
+    projectTemplateActivityId: string
+  ) {
+    return ProjectTemplateEstimator.getActivityMaterials(
+      companyData,
+      projectTemplateActivityId
+    );
+  }
+
+  function getActivitySummary(
+    projectTemplateActivityId: string
+  ) {
+    return ProjectTemplateEstimator.getActivitySummary(
+      companyData,
+      projectTemplateActivityId
+    );
+  }
+
   return {
     projectTemplateActivities,
     filteredProjectTemplateActivities,
@@ -444,5 +457,8 @@ export function useCompanyProjectTemplateActivities({
     moveProjectTemplateActivityDown,
 
     getActivityTemplateById,
+
+    getActivityMaterials,
+    getActivitySummary,
   };
 }

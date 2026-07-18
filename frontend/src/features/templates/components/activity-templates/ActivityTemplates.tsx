@@ -15,11 +15,11 @@ import StatusBadge from "@/components/common/StatusBadge";
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import { useCompanyActivityTemplates } from "../../hooks/useCompanyActivityTemplates";
+import { useActivityTemplates } from "../../hooks/useActivityTemplates";
 
 import ActivityTemplateFormDialog from "./ActivityTemplateFormDialog";
 
-export default function CompanyActivityTemplates() {
+export default function ActivityTemplates() {
   const {
     filteredActivityTemplates,
     searchValue,
@@ -35,7 +35,7 @@ export default function CompanyActivityTemplates() {
     saveActivityTemplate,
     toggleActivityTemplateStatus,
     deleteActivityTemplate,
-  } = useCompanyActivityTemplates();
+  } = useActivityTemplates();
 
   return (
     <>

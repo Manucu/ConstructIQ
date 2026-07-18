@@ -8,9 +8,9 @@ import type {
   ProjectTemplate,
   ProjectTemplateCategory,
   ProjectTemplateStatus,
-} from "../../data/projectTemplates";
+} from "@/features/templates/data/projectTemplates";
 
-import type { SaveProjectTemplateValues } from "../../hooks/useCompanyProjectTemplates";
+import type { SaveProjectTemplateValues } from "../../hooks/useProjectTemplates";
 
 type ProjectTemplateFormDialogProps = {
   open: boolean;

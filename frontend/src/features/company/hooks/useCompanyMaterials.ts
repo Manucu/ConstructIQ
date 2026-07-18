@@ -10,7 +10,7 @@ import type {
 import type {
   MaterialCategory,
   UnitOfMeasure,
-} from "../data/materialTemplates";
+} from "../../templates/data/materialTemplates";
 
 export type SaveMaterialValues = {
   code: string;

@@ -1,3 +1,7 @@
+export type MaterialTemplateStatus =
+  | "ACTIVE"
+  | "INACTIVE";
+
 export type MaterialCategory =
   | "Concrete"
   | "Steel"
@@ -30,7 +34,35 @@ export type MaterialTemplate = {
   category: MaterialCategory;
   unit: UnitOfMeasure;
   defaultEstimatedUnitCost?: number;
+  status: MaterialTemplateStatus;
 };
+
+export const materialCategories: MaterialCategory[] = [
+  "Concrete",
+  "Steel",
+  "Masonry",
+  "Aggregates",
+  "Wood",
+  "Insulation",
+  "Roof",
+  "Finishing",
+  "Electrical",
+  "Plumbing",
+  "Other",
+];
+
+export const unitsOfMeasure: UnitOfMeasure[] = [
+  "pcs",
+  "kg",
+  "m",
+  "m²",
+  "m³",
+  "liter",
+  "bag",
+  "roll",
+  "set",
+  "ton",
+];
 
 export const materialTemplates: MaterialTemplate[] = [
   {
@@ -40,6 +72,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Concrete",
     unit: "m³",
     defaultEstimatedUnitCost: 90,
+    status: "ACTIVE",
   },
   {
     id: "2",
@@ -48,6 +81,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Concrete",
     unit: "m³",
     defaultEstimatedUnitCost: 95,
+    status: "ACTIVE",
   },
   {
     id: "3",
@@ -56,6 +90,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Concrete",
     unit: "m³",
     defaultEstimatedUnitCost: 105,
+    status: "ACTIVE",
   },
   {
     id: "4",
@@ -64,6 +99,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Steel",
     unit: "kg",
     defaultEstimatedUnitCost: 1.2,
+    status: "ACTIVE",
   },
   {
     id: "5",
@@ -72,6 +108,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Steel",
     unit: "kg",
     defaultEstimatedUnitCost: 1.3,
+    status: "ACTIVE",
   },
   {
     id: "6",
@@ -80,6 +117,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Steel",
     unit: "kg",
     defaultEstimatedUnitCost: 1.45,
+    status: "ACTIVE",
   },
   {
     id: "7",
@@ -88,6 +126,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Steel",
     unit: "kg",
     defaultEstimatedUnitCost: 1.55,
+    status: "ACTIVE",
   },
   {
     id: "8",
@@ -96,6 +135,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Aggregates",
     unit: "ton",
     defaultEstimatedUnitCost: 28,
+    status: "ACTIVE",
   },
   {
     id: "9",
@@ -104,6 +144,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Aggregates",
     unit: "ton",
     defaultEstimatedUnitCost: 24,
+    status: "ACTIVE",
   },
   {
     id: "10",
@@ -112,6 +153,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Concrete",
     unit: "bag",
     defaultEstimatedUnitCost: 7.5,
+    status: "ACTIVE",
   },
   {
     id: "11",
@@ -120,6 +162,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Masonry",
     unit: "pcs",
     defaultEstimatedUnitCost: 0.75,
+    status: "ACTIVE",
   },
   {
     id: "12",
@@ -128,6 +171,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Masonry",
     unit: "bag",
     defaultEstimatedUnitCost: 6.8,
+    status: "ACTIVE",
   },
   {
     id: "13",
@@ -136,6 +180,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Wood",
     unit: "m",
     defaultEstimatedUnitCost: 4.2,
+    status: "ACTIVE",
   },
   {
     id: "14",
@@ -144,6 +189,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Roof",
     unit: "pcs",
     defaultEstimatedUnitCost: 1.15,
+    status: "ACTIVE",
   },
   {
     id: "15",
@@ -152,6 +198,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Roof",
     unit: "roll",
     defaultEstimatedUnitCost: 38,
+    status: "ACTIVE",
   },
   {
     id: "16",
@@ -160,6 +207,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Insulation",
     unit: "m²",
     defaultEstimatedUnitCost: 8.5,
+    status: "ACTIVE",
   },
   {
     id: "17",
@@ -168,6 +216,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Finishing",
     unit: "pcs",
     defaultEstimatedUnitCost: 7.2,
+    status: "ACTIVE",
   },
   {
     id: "18",
@@ -176,6 +225,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Finishing",
     unit: "liter",
     defaultEstimatedUnitCost: 3.8,
+    status: "ACTIVE",
   },
   {
     id: "19",
@@ -184,6 +234,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Finishing",
     unit: "m²",
     defaultEstimatedUnitCost: 14,
+    status: "ACTIVE",
   },
   {
     id: "20",
@@ -192,6 +243,7 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Plumbing",
     unit: "m",
     defaultEstimatedUnitCost: 2.4,
+    status: "ACTIVE",
   },
   {
     id: "21",
@@ -200,5 +252,6 @@ export const materialTemplates: MaterialTemplate[] = [
     category: "Electrical",
     unit: "m",
     defaultEstimatedUnitCost: 1.1,
+    status: "ACTIVE",
   },
 ];

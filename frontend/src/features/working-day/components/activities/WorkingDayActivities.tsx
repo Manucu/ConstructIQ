@@ -10,7 +10,7 @@ import StatusBadge from "@/components/common/StatusBadge";
 import { AppButton } from "@/components/ui/AppButton";
 import { Badge } from "@/components/ui/badge";
 
-import type { ActivityTemplate } from "@/features/company/data/activityTemplates";
+import type { ActivityTemplate } from "@/features/templates/data/activityTemplates";
 
 import { useWorkingDayContext } from "../../context/useWorkingDayContext";
 import { useWorkingDayActivities } from "../../hooks/useWorkingDayActivities";

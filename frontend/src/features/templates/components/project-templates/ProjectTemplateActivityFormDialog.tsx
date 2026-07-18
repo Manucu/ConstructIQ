@@ -4,16 +4,14 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppModal } from "@/components/ui/AppModal";
 
-import type { ActivityTemplate } from "../../data/activityTemplates";
+import type { ActivityTemplate } from "@/features/templates/data/activityTemplates";
 
 import type {
   ProjectTemplateActivity,
   ProjectTemplateActivityStatus,
-} from "../../data/projectTemplateActivities";
+} from "@/features/templates/data/projectTemplateActivities";
 
-import type {
-  SaveProjectTemplateActivityValues,
-} from "../../hooks/useCompanyProjectTemplateActivities";
+import type { SaveProjectTemplateActivityValues } from "../../hooks/useProjectTemplateActivities";
 
 type ProjectTemplateActivityFormDialogProps = {
   open: boolean;

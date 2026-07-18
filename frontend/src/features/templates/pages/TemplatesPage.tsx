@@ -2,110 +2,71 @@ import { useState } from "react";
 
 import {
   Boxes,
-  HardHat,
+  ClipboardList,
   Package,
-  ReceiptText,
-  Truck,
-  Users,
 } from "lucide-react";
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
-import CompanyWorkers from "../components/workers/CompanyWorkers";
-import CompanyMaterials from "../components/materials/CompanyMaterials";
-import CompanyEquipment from "../components/equipment/CompanyEquipment";
-import CompanyClients from "../components/clients/CompanyClients";
-import CompanySuppliers from "../components/suppliers/CompanySuppliers";
-import CompanyExpenseCategories from "../components/expense-categories/CompanyExpenseCategories";
+import ActivityTemplates from "../components/activity-templates/ActivityTemplates";
+import MaterialTemplates from "../components/materials-templates/MaterialTemplates";
+import ProjectTemplates from "../components/project-templates/ProjectTemplates";
 
-type CompanySection =
-  | "workers"
+type TemplateSection =
   | "materials"
-  | "equipment"
-  | "clients"
-  | "suppliers"
-  | "expense-categories";
+  | "projects"
+  | "activities";
 
-type CompanySectionDefinition = {
-  id: CompanySection;
+type TemplateSectionDefinition = {
+  id: TemplateSection;
   title: string;
   description: string;
-  icon: typeof Users;
+  icon: typeof Package;
 };
 
-const companySections: CompanySectionDefinition[] = [
-  {
-    id: "workers",
-    title: "Workers",
-    description:
-      "Manage the company workforce, worker roles, rates and availability.",
-    icon: Users,
-  },
+const templateSections: TemplateSectionDefinition[] = [
   {
     id: "materials",
     title: "Materials",
     description:
-      "Manage operational company materials used by projects and working days.",
+      "Manage reusable material definitions and default estimated unit costs.",
     icon: Package,
   },
   {
-    id: "equipment",
-    title: "Equipment",
+    id: "projects",
+    title: "Project Templates",
     description:
-      "Manage company equipment, machinery and estimated operating costs.",
-    icon: HardHat,
-  },
-  {
-    id: "clients",
-    title: "Clients",
-    description:
-      "Manage clients and the contact information used across company projects.",
+      "Manage reusable project structures, stages, activities and materials.",
     icon: Boxes,
   },
   {
-    id: "suppliers",
-    title: "Suppliers",
+    id: "activities",
+    title: "Activity Templates",
     description:
-      "Manage suppliers used for materials, equipment and project procurement.",
-    icon: Truck,
-  },
-  {
-    id: "expense-categories",
-    title: "Expense Categories",
-    description:
-      "Manage reusable categories used to classify company and project expenses.",
-    icon: ReceiptText,
+      "Manage reusable construction activities used inside project templates.",
+    icon: ClipboardList,
   },
 ];
 
-export default function CompanyPage() {
+export default function TemplatesPage() {
   const [selectedSection, setSelectedSection] =
-    useState<CompanySection>("workers");
+    useState<TemplateSection>("materials");
 
   const selectedSectionDefinition =
-    companySections.find(
+    templateSections.find(
       section => section.id === selectedSection
-    ) ?? companySections[0];
+    ) ?? templateSections[0];
 
   function renderSelectedSection() {
     switch (selectedSection) {
-      case "workers":
-        return <CompanyWorkers />;
-
       case "materials":
-        return <CompanyMaterials />;
+        return <MaterialTemplates />;
 
-      case "equipment":
-        return <CompanyEquipment />;
+      case "projects":
+        return <ProjectTemplates />;
 
-      case "clients":
-        return <CompanyClients />;
-
-      case "suppliers":
-        return <CompanySuppliers />;
-
-      case "expense-categories":
-        return <CompanyExpenseCategories />;
+      case "activities":
+        return <ActivityTemplates />;
 
       default:
         return null;
@@ -117,21 +78,20 @@ export default function CompanyPage() {
       <div className="space-y-8">
         <header>
           <h1 className="text-3xl font-bold">
-            Company
+            Templates
           </h1>
 
           <p className="mt-2 text-muted-foreground">
-            Manage the company workforce, materials,
-            equipment, clients, suppliers and reusable
-            operational data.
+            Create and manage reusable structures
+            for future construction projects.
           </p>
         </header>
 
         <section
-          aria-label="Company sections"
-          className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+          aria-label="Template sections"
+          className="grid gap-4 md:grid-cols-3"
         >
-          {companySections.map(section => {
+          {templateSections.map(section => {
             const Icon = section.icon;
 
             const isSelected =

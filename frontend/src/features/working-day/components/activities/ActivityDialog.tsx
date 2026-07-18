@@ -4,7 +4,7 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppInput } from "@/components/ui/AppInput";
 import { AppModal } from "@/components/ui/AppModal";
 
-import type { ActivityTemplate } from "@/features/company/data/activityTemplates";
+import type { ActivityTemplate } from "@/features/templates/data/activityTemplates";
 
 import type {
   ActivityEntry,

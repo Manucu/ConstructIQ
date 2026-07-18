@@ -12,7 +12,7 @@ import type {
 import type {
   MaterialCategory,
   UnitOfMeasure,
-} from "../../data/materialTemplates";
+} from "../../../templates/data/materialTemplates";
 
 import type { SaveMaterialValues } from "../../hooks/useCompanyMaterials";
 

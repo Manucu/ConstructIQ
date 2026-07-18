@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import {
   CalendarDays,
   CircleDollarSign,
+  PackageSearch,
   Pencil,
   Plus,
   Power,
@@ -21,11 +22,13 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppModal } from "@/components/ui/AppModal";
 import { Badge } from "@/components/ui/badge";
 
-import { useCompanyContext } from "../../context/useCompanyContext";
+import { useCompanyContext } from "@/features/company/context/useCompanyContext";
 
-import type { ProjectTemplate } from "../../data/projectTemplates";
+import type { ProjectTemplate } from "@/features/templates/data/projectTemplates";
 
-import { useCompanyProjectTemplates } from "../../hooks/useCompanyProjectTemplates";
+import { useCompanyProjectTemplates } from "@/features/templates/hooks/useProjectTemplates";
+
+import { ProjectTemplateEstimator } from "@/features/templates/services/projectTemplateEstimator";
 
 import ProjectTemplateBuilder from "./ProjectTemplateBuilder";
 import ProjectTemplateFormDialog from "./ProjectTemplateFormDialog";
@@ -47,14 +50,22 @@ function formatBudget(value?: number) {
     return "Budget not estimated";
   }
 
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-IE", {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
   }).format(value);
 }
 
-export default function CompanyProjectTemplates() {
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-IE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+export default function ProjectTemplates() {
   const { companyData } = useCompanyContext();
 
   const {
@@ -79,8 +90,8 @@ export default function CompanyProjectTemplates() {
   /*
    * Păstrăm doar ID-ul template-ului selectat.
    *
-   * Astfel, builder-ul citește întotdeauna cea mai
-   * recentă versiune din CompanyContext.
+   * Builder-ul citește astfel întotdeauna
+   * cea mai recentă versiune din CompanyContext.
    */
   const [
     selectedProjectTemplateId,
@@ -112,54 +123,25 @@ export default function CompanyProjectTemplates() {
     setSelectedProjectTemplateId(null);
   }
 
-  function getStageCount(
-    projectTemplateId: string
-  ) {
-    return companyData.projectTemplateStages.filter(
-      stage =>
-        stage.projectTemplateId ===
-        projectTemplateId
-    ).length;
-  }
-
-  function getActivityCount(
-    projectTemplateId: string
-  ) {
-    const stageIds = new Set(
-      companyData.projectTemplateStages
-        .filter(
-          stage =>
-            stage.projectTemplateId ===
-            projectTemplateId
-        )
-        .map(stage => stage.id)
-    );
-
-    return companyData.projectTemplateActivities.filter(
-      activity =>
-        stageIds.has(
-          activity.projectTemplateStageId
-        )
-    ).length;
-  }
-
   function handleDeleteProjectTemplate(
     projectTemplate: ProjectTemplate
   ) {
-    const stageCount = getStageCount(
-      projectTemplate.id
-    );
-
-    const activityCount = getActivityCount(
-      projectTemplate.id
-    );
+    const summary =
+      ProjectTemplateEstimator.getProjectSummary(
+        companyData,
+        projectTemplate.id
+      );
 
     const confirmed = window.confirm(
       [
         `Delete the project template "${projectTemplate.name}"?`,
         "",
-        `Stages associated with this template: ${stageCount}`,
-        `Activities associated with this template: ${activityCount}`,
+        `Stages associated with this template: ${summary.stageCount}`,
+        `Activities associated with this template: ${summary.activityCount}`,
+        `Suggested materials associated with this template: ${summary.materialCount}`,
+        `Estimated material cost: ${formatCurrency(
+          summary.estimatedMaterialCost
+        )}`,
         "",
         "This action cannot be undone.",
       ].join("\n")
@@ -221,13 +203,9 @@ export default function CompanyProjectTemplates() {
           <div className="space-y-3">
             {filteredProjectTemplates.map(
               projectTemplate => {
-                const stageCount =
-                  getStageCount(
-                    projectTemplate.id
-                  );
-
-                const activityCount =
-                  getActivityCount(
+                const summary =
+                  ProjectTemplateEstimator.getProjectSummary(
+                    companyData,
                     projectTemplate.id
                   );
 
@@ -260,21 +238,39 @@ export default function CompanyProjectTemplates() {
                           <Badge variant="secondary">
                             <CircleDollarSign className="mr-1.5 h-3.5 w-3.5" />
 
+                            Budget:{" "}
                             {formatBudget(
                               projectTemplate.estimatedBudget
                             )}
                           </Badge>
 
                           <Badge variant="outline">
-                            {stageCount === 1
+                            {summary.stageCount === 1
                               ? "1 stage"
-                              : `${stageCount} stages`}
+                              : `${summary.stageCount} stages`}
                           </Badge>
 
                           <Badge variant="outline">
-                            {activityCount === 1
+                            {summary.activityCount === 1
                               ? "1 activity"
-                              : `${activityCount} activities`}
+                              : `${summary.activityCount} activities`}
+                          </Badge>
+
+                          <Badge variant="outline">
+                            <PackageSearch className="mr-1.5 h-3.5 w-3.5" />
+
+                            {summary.materialCount === 1
+                              ? "1 suggested material"
+                              : `${summary.materialCount} suggested materials`}
+                          </Badge>
+
+                          <Badge variant="outline">
+                            <CircleDollarSign className="mr-1.5 h-3.5 w-3.5" />
+
+                            Material cost:{" "}
+                            {formatCurrency(
+                              summary.estimatedMaterialCost
+                            )}
                           </Badge>
                         </div>
                       </div>

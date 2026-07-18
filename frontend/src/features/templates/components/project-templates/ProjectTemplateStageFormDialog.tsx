@@ -7,11 +7,9 @@ import { AppModal } from "@/components/ui/AppModal";
 import type {
   ProjectTemplateStage,
   ProjectTemplateStageStatus,
-} from "../../data/projectTemplates";
+} from "@/features/templates/data/projectTemplates";
 
-import type {
-  SaveProjectTemplateStageValues,
-} from "../../hooks/useCompanyProjectTemplateStages";
+import type { SaveProjectTemplateStageValues } from "../../hooks/useProjectTemplateStages";
 
 type ProjectTemplateStageFormDialogProps = {
   open: boolean;

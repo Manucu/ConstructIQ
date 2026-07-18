@@ -8,9 +8,9 @@ import type {
   ActivityCategory,
   ActivityTemplate,
   ActivityTemplateStatus,
-} from "../../data/activityTemplates";
+} from "@/features/templates/data/activityTemplates";
 
-import type { SaveActivityTemplateValues } from "../../hooks/useCompanyActivityTemplates";
+import type { SaveActivityTemplateValues } from "../../hooks/useActivityTemplates";
 
 type ActivityTemplateFormDialogProps = {
   open: boolean;
