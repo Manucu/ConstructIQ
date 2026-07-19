@@ -8,11 +8,29 @@ import {
 import { workers } from "../data/workers";
 import { materials } from "../data/materials";
 import { equipment } from "../data/equipment";
-import { activityTemplates } from "../../templates/data/activityTemplates";
 import { clients } from "../data/clients";
 import { suppliers } from "../data/suppliers";
 import { expenseCategories } from "../data/expenseCategories";
-import { materialTemplates } from "../../templates/data/materialTemplates";
+
+import {
+  activityTemplates,
+} from "../../templates/data/activityTemplates";
+
+import {
+  materialTemplates,
+} from "../../templates/data/materialTemplates";
+
+import {
+  labourTemplates,
+} from "../../templates/data/labourTemplates";
+
+import {
+  equipmentTemplates,
+} from "../../templates/data/equipmentTemplates";
+
+import {
+  expenseTemplates,
+} from "../../templates/data/expenseTemplates";
 
 import {
   projectTemplates,
@@ -20,18 +38,24 @@ import {
 } from "../../templates/data/projectTemplates";
 
 import {
-  CompanyContext,
-  type CompanyData,
-  type CompanyContextValue,
-} from "./companyContextDefinition";
-
-import {
   projectTemplateActivities,
 } from "../../templates/data/projectTemplateActivities";
 
 import {
   projectTemplateActivityMaterials,
-} from "../../templates/components/materials-templates/projectTemplateActivityMaterials";
+} from "../../templates/data/projectTemplateActivityMaterial";
+
+import {
+  projectTemplateActivityLabour,
+} from "../../templates/data/projectTemplateActivityLabour";
+
+import {
+  projectTemplateActivityEquipment,
+} from "../../templates/data/projectTemplateActivityEquipment";
+
+import {
+  projectTemplateActivityExpenses,
+} from "../../templates/data/projectTemplateActivityExpense";
 
 import {
   projects,
@@ -49,6 +73,24 @@ import {
   projectMaterials,
 } from "@/features/projects/data/projectMaterials";
 
+import {
+  projectLabours,
+} from "@/features/projects/data/projectLabours";
+
+import {
+  projectEquipment,
+} from "@/features/projects/data/projectEquipment";
+
+import {
+  projectExpenses,
+} from "@/features/projects/data/projectExpenses";
+
+import {
+  CompanyContext,
+  type CompanyData,
+  type CompanyContextValue,
+} from "./companyContextDefinition";
+
 type CompanyProviderProps = {
   children: ReactNode;
 };
@@ -57,24 +99,59 @@ const COMPANY_STORAGE_KEY =
   "constructiq-company-data";
 
 const initialCompanyData: CompanyData = {
+  /*
+   * Company operational resources
+   */
   workers,
   materials,
   equipment,
-  activityTemplates,
+
   clients,
   suppliers,
   expenseCategories,
-  materialTemplates,
 
+  /*
+   * Resource templates
+   */
+  materialTemplates,
+  labourTemplates,
+  equipmentTemplates,
+  expenseTemplates,
+
+  /*
+   * Activity templates
+   */
+  activityTemplates,
+
+  /*
+   * Project templates
+   */
   projectTemplates,
   projectTemplateStages,
   projectTemplateActivities,
-  projectTemplateActivityMaterials,
 
+  /*
+   * Resources attached to template activities
+   */
+  projectTemplateActivityMaterials,
+  projectTemplateActivityLabour,
+  projectTemplateActivityEquipment,
+  projectTemplateActivityExpenses,
+
+  /*
+   * Operational projects
+   */
   projects,
   projectStages,
   projectActivities,
+
+  /*
+   * Operational project resources
+   */
   projectMaterials,
+  projectLabours,
+  projectEquipment,
+  projectExpenses,
 };
 
 function loadStoredCompanyData():
@@ -85,9 +162,10 @@ function loadStoredCompanyData():
   }
 
   try {
-    const storedValue = window.localStorage.getItem(
-      COMPANY_STORAGE_KEY
-    );
+    const storedValue =
+      window.localStorage.getItem(
+        COMPANY_STORAGE_KEY
+      );
 
     if (!storedValue) {
       return null;
@@ -124,10 +202,8 @@ function createInitialCompanyData(): CompanyData {
   }
 
   /*
-   * MaterialTemplate.status este o proprietate nouă.
-   *
-   * Datele mai vechi din localStorage nu o au, așa
-   * că le migrăm automat la ACTIVE.
+   * Datele mai vechi din localStorage pot să nu
+   * conțină status pentru MaterialTemplate.
    */
   const migratedMaterialTemplates =
     (
@@ -143,6 +219,9 @@ function createInitialCompanyData(): CompanyData {
     ...initialCompanyData,
     ...storedCompanyData,
 
+    /*
+     * Company operational resources
+     */
     workers:
       storedCompanyData.workers ??
       initialCompanyData.workers,
@@ -154,10 +233,6 @@ function createInitialCompanyData(): CompanyData {
     equipment:
       storedCompanyData.equipment ??
       initialCompanyData.equipment,
-
-    activityTemplates:
-      storedCompanyData.activityTemplates ??
-      initialCompanyData.activityTemplates,
 
     clients:
       storedCompanyData.clients ??
@@ -171,9 +246,34 @@ function createInitialCompanyData(): CompanyData {
       storedCompanyData.expenseCategories ??
       initialCompanyData.expenseCategories,
 
+    /*
+     * Resource templates
+     */
     materialTemplates:
       migratedMaterialTemplates,
 
+    labourTemplates:
+      storedCompanyData.labourTemplates ??
+      initialCompanyData.labourTemplates,
+
+    equipmentTemplates:
+      storedCompanyData.equipmentTemplates ??
+      initialCompanyData.equipmentTemplates,
+
+    expenseTemplates:
+      storedCompanyData.expenseTemplates ??
+      initialCompanyData.expenseTemplates,
+
+    /*
+     * Activity templates
+     */
+    activityTemplates:
+      storedCompanyData.activityTemplates ??
+      initialCompanyData.activityTemplates,
+
+    /*
+     * Project templates
+     */
     projectTemplates:
       storedCompanyData.projectTemplates ??
       initialCompanyData.projectTemplates,
@@ -186,10 +286,28 @@ function createInitialCompanyData(): CompanyData {
       storedCompanyData.projectTemplateActivities ??
       initialCompanyData.projectTemplateActivities,
 
+    /*
+     * Resources attached to template activities
+     */
     projectTemplateActivityMaterials:
       storedCompanyData.projectTemplateActivityMaterials ??
       initialCompanyData.projectTemplateActivityMaterials,
 
+    projectTemplateActivityLabour:
+      storedCompanyData.projectTemplateActivityLabour ??
+      initialCompanyData.projectTemplateActivityLabour,
+
+    projectTemplateActivityEquipment:
+      storedCompanyData.projectTemplateActivityEquipment ??
+      initialCompanyData.projectTemplateActivityEquipment,
+
+    projectTemplateActivityExpenses:
+      storedCompanyData.projectTemplateActivityExpenses ??
+      initialCompanyData.projectTemplateActivityExpenses,
+
+    /*
+     * Operational projects
+     */
     projects:
       storedCompanyData.projects ??
       initialCompanyData.projects,
@@ -202,9 +320,24 @@ function createInitialCompanyData(): CompanyData {
       storedCompanyData.projectActivities ??
       initialCompanyData.projectActivities,
 
+    /*
+     * Operational project resources
+     */
     projectMaterials:
       storedCompanyData.projectMaterials ??
       initialCompanyData.projectMaterials,
+
+    projectLabours:
+      storedCompanyData.projectLabours ??
+      initialCompanyData.projectLabours,
+
+    projectEquipment:
+      storedCompanyData.projectEquipment ??
+      initialCompanyData.projectEquipment,
+
+    projectExpenses:
+      storedCompanyData.projectExpenses ??
+      initialCompanyData.projectExpenses,
   };
 }
 

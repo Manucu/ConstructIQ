@@ -1,23 +1,34 @@
-export type WorkerStatus = "ACTIVE" | "INACTIVE";
+export type WorkerStatus =
+  | "ACTIVE"
+  | "INACTIVE";
+
+export const workerRoles = [
+  "Site Engineer",
+  "Foreman",
+  "Mason",
+  "Steel Fixer",
+  "Carpenter",
+  "Electrician",
+  "Plumber",
+  "Painter",
+  "Equipment Operator",
+  "General Laborer",
+] as const;
 
 export type WorkerRole =
-  | "Site Engineer"
-  | "Foreman"
-  | "Mason"
-  | "Steel Fixer"
-  | "Carpenter"
-  | "Electrician"
-  | "Plumber"
-  | "Painter"
-  | "Equipment Operator"
-  | "General Laborer";
+  typeof workerRoles[number];
 
 export type Worker = {
   id: string;
+
   firstName: string;
+
   lastName: string;
+
   role: WorkerRole;
+
   status: WorkerStatus;
+
   phone?: string;
 
   /**

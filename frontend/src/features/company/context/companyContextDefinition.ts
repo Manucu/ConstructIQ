@@ -20,6 +20,18 @@ import type {
 } from "../../templates/data/materialTemplates";
 
 import type {
+  LabourTemplate,
+} from "../../templates/data/labourTemplates";
+
+import type {
+  EquipmentTemplate,
+} from "../../templates/data/equipmentTemplates";
+
+import type {
+  ExpenseTemplate,
+} from "../../templates/data/expenseTemplates";
+
+import type {
   ProjectTemplate,
   ProjectTemplateStage,
 } from "../../templates/data/projectTemplates";
@@ -30,7 +42,19 @@ import type {
 
 import type {
   ProjectTemplateActivityMaterial,
-} from "../../templates/components/materials-templates/projectTemplateActivityMaterials";
+} from "../../templates/data/projectTemplateActivityMaterial";
+
+import type {
+  ProjectTemplateActivityLabour,
+} from "../../templates/data/projectTemplateActivityLabour";
+
+import type {
+  ProjectTemplateActivityEquipment,
+} from "../../templates/data/projectTemplateActivityEquipment";
+
+import type {
+  ProjectTemplateActivityExpense,
+} from "../../templates/data/projectTemplateActivityExpense";
 
 import type {
   Project,
@@ -48,27 +72,80 @@ import type {
   ProjectMaterial,
 } from "@/features/projects/data/projectMaterials";
 
+import type {
+  ProjectLabour,
+} from "@/features/projects/data/projectLabours";
+
+import type {
+  ProjectEquipment,
+} from "@/features/projects/data/projectEquipment";
+
+import type {
+  ProjectExpense,
+} from "@/features/projects/data/projectExpenses";
+
 export type CompanyData = {
+  /*
+   * Company operational resources
+   */
   workers: Worker[];
   materials: CompanyMaterial[];
   equipment: Equipment[];
-  activityTemplates: ActivityTemplate[];
+
   clients: Client[];
   suppliers: Supplier[];
   expenseCategories: ExpenseCategory[];
-  materialTemplates: MaterialTemplate[];
 
+  /*
+   * Resource templates
+   */
+  materialTemplates: MaterialTemplate[];
+  labourTemplates: LabourTemplate[];
+  equipmentTemplates: EquipmentTemplate[];
+  expenseTemplates: ExpenseTemplate[];
+
+  /*
+   * Activity templates
+   */
+  activityTemplates: ActivityTemplate[];
+
+  /*
+   * Project templates
+   */
   projectTemplates: ProjectTemplate[];
   projectTemplateStages: ProjectTemplateStage[];
   projectTemplateActivities:
     ProjectTemplateActivity[];
+
+  /*
+   * Resources attached to template activities
+   */
   projectTemplateActivityMaterials:
     ProjectTemplateActivityMaterial[];
 
+  projectTemplateActivityLabour:
+    ProjectTemplateActivityLabour[];
+
+  projectTemplateActivityEquipment:
+    ProjectTemplateActivityEquipment[];
+
+  projectTemplateActivityExpenses:
+    ProjectTemplateActivityExpense[];
+
+  /*
+   * Operational projects
+   */
   projects: Project[];
   projectStages: ProjectStage[];
   projectActivities: ProjectActivity[];
+
+  /*
+   * Operational project resources
+   */
   projectMaterials: ProjectMaterial[];
+  projectLabours: ProjectLabour[];
+  projectEquipment: ProjectEquipment[];
+  projectExpenses: ProjectExpense[];
 };
 
 export type CompanyContextValue = {

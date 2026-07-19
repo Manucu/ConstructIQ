@@ -4,16 +4,19 @@ import {
   Boxes,
   ClipboardList,
   Package,
+  Users,
 } from "lucide-react";
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 import ActivityTemplates from "../components/activity-templates/ActivityTemplates";
+import LabourTemplates from "../components/labour-templates/LabourTemplates";
 import MaterialTemplates from "../components/materials-templates/MaterialTemplates";
 import ProjectTemplates from "../components/project-templates/ProjectTemplates";
 
 type TemplateSection =
   | "materials"
+  | "labour"
   | "projects"
   | "activities";
 
@@ -33,10 +36,17 @@ const templateSections: TemplateSectionDefinition[] = [
     icon: Package,
   },
   {
+    id: "labour",
+    title: "Labour",
+    description:
+      "Manage reusable labour roles and default estimated hourly rates.",
+    icon: Users,
+  },
+  {
     id: "projects",
     title: "Project Templates",
     description:
-      "Manage reusable project structures, stages, activities and materials.",
+      "Manage reusable project structures, stages, activities and resources.",
     icon: Boxes,
   },
   {
@@ -61,6 +71,9 @@ export default function TemplatesPage() {
     switch (selectedSection) {
       case "materials":
         return <MaterialTemplates />;
+
+      case "labour":
+        return <LabourTemplates />;
 
       case "projects":
         return <ProjectTemplates />;
@@ -89,7 +102,7 @@ export default function TemplatesPage() {
 
         <section
           aria-label="Template sections"
-          className="grid gap-4 md:grid-cols-3"
+          className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
         >
           {templateSections.map(section => {
             const Icon = section.icon;

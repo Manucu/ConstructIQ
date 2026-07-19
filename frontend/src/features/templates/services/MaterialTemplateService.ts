@@ -3,38 +3,37 @@ import type {
   MaterialTemplateStatus,
 } from "@/features/templates/data/materialTemplates";
 
+import {
+  BaseTemplateService,
+  type CreateTemplateOptions,
+} from "@/features/templates/services/BaseTemplateService";
+
 export type MaterialTemplateUsageReference = {
   materialTemplateId: string;
 };
 
-export type CreateMaterialTemplateValues = Omit<
-  MaterialTemplate,
-  "id"
->;
+export type CreateMaterialTemplateValues =
+  Omit<MaterialTemplate, "id">;
 
 export type UpdateMaterialTemplateValues =
   CreateMaterialTemplateValues;
 
-type CreateMaterialTemplateOptions = {
-  id?: string;
-};
-
 export class MaterialTemplateService {
-  static normalizeCode(code: string) {
-    return code.trim().toUpperCase();
-  }
-
-  static normalizeName(name: string) {
-    return name.trim();
-  }
-
   static normalizeValues(
     values: CreateMaterialTemplateValues
   ): CreateMaterialTemplateValues {
     return {
       ...values,
-      code: this.normalizeCode(values.code),
-      name: this.normalizeName(values.name),
+
+      code:
+        BaseTemplateService.normalizeCode(
+          values.code
+        ),
+
+      name:
+        BaseTemplateService.normalizeText(
+          values.name
+        ),
     };
   }
 
@@ -43,7 +42,8 @@ export class MaterialTemplateService {
     searchValue: string
   ) {
     const normalizedSearch =
-      searchValue.trim().toLowerCase();
+      BaseTemplateService
+        .normalizeSearchValue(searchValue);
 
     if (!normalizedSearch) {
       return materialTemplates;
@@ -51,21 +51,31 @@ export class MaterialTemplateService {
 
     return materialTemplates.filter(
       materialTemplate =>
-        materialTemplate.code
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        materialTemplate.name
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        materialTemplate.category
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        materialTemplate.unit
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        materialTemplate.status
-          .toLowerCase()
-          .includes(normalizedSearch)
+        BaseTemplateService
+          .includesSearchValue(
+            materialTemplate.code,
+            normalizedSearch
+          ) ||
+        BaseTemplateService
+          .includesSearchValue(
+            materialTemplate.name,
+            normalizedSearch
+          ) ||
+        BaseTemplateService
+          .includesSearchValue(
+            materialTemplate.category,
+            normalizedSearch
+          ) ||
+        BaseTemplateService
+          .includesSearchValue(
+            materialTemplate.unit,
+            normalizedSearch
+          ) ||
+        BaseTemplateService
+          .includesSearchValue(
+            materialTemplate.status,
+            normalizedSearch
+          )
     );
   }
 
@@ -75,7 +85,8 @@ export class MaterialTemplateService {
     ignoredMaterialTemplateId?: string
   ) {
     const normalizedCode =
-      this.normalizeCode(code);
+      BaseTemplateService
+        .normalizeCode(code);
 
     if (!normalizedCode) {
       return false;
@@ -85,23 +96,23 @@ export class MaterialTemplateService {
       materialTemplate =>
         materialTemplate.id !==
           ignoredMaterialTemplateId &&
-        this.normalizeCode(
-          materialTemplate.code
-        ) === normalizedCode
+        BaseTemplateService
+          .normalizeCode(
+            materialTemplate.code
+          ) === normalizedCode
     );
   }
 
   static create(
     values: CreateMaterialTemplateValues,
-    options?: CreateMaterialTemplateOptions
+    options?: CreateTemplateOptions
   ): MaterialTemplate {
     const normalizedValues =
       this.normalizeValues(values);
 
-    return {
-      id: options?.id ?? crypto.randomUUID(),
-      ...normalizedValues,
-    };
+    return BaseTemplateService.create<
+      MaterialTemplate
+    >(normalizedValues, options);
   }
 
   static update(
@@ -112,15 +123,12 @@ export class MaterialTemplateService {
     const normalizedValues =
       this.normalizeValues(values);
 
-    return materialTemplates.map(
-      materialTemplate =>
-        materialTemplate.id ===
-        materialTemplateId
-          ? {
-              ...materialTemplate,
-              ...normalizedValues,
-            }
-          : materialTemplate
+    return BaseTemplateService.update<
+      MaterialTemplate
+    >(
+      materialTemplates,
+      materialTemplateId,
+      normalizedValues
     );
   }
 
@@ -128,48 +136,44 @@ export class MaterialTemplateService {
     materialTemplates: MaterialTemplate[],
     materialTemplateId: string
   ) {
-    return materialTemplates.map(
-      materialTemplate =>
-        materialTemplate.id ===
-        materialTemplateId
-          ? {
-              ...materialTemplate,
-              status: this.getOppositeStatus(
-                materialTemplate.status
-              ),
-            }
-          : materialTemplate
+    return BaseTemplateService.toggleStatus(
+      materialTemplates,
+      materialTemplateId
     );
   }
 
   static getOppositeStatus(
     status: MaterialTemplateStatus
   ): MaterialTemplateStatus {
-    return status === "ACTIVE"
-      ? "INACTIVE"
-      : "ACTIVE";
+    return BaseTemplateService
+      .getOppositeStatus(
+        status
+      ) as MaterialTemplateStatus;
   }
 
   static getUsageCount(
     materialTemplateId: string,
-    references: MaterialTemplateUsageReference[]
+    references:
+      MaterialTemplateUsageReference[]
   ) {
-    return references.filter(
+    return BaseTemplateService.getUsageCount(
+      materialTemplateId,
+      references,
       reference =>
-        reference.materialTemplateId ===
-        materialTemplateId
-    ).length;
+        reference.materialTemplateId
+    );
   }
 
   static canDelete(
     materialTemplateId: string,
-    references: MaterialTemplateUsageReference[]
+    references:
+      MaterialTemplateUsageReference[]
   ) {
-    return (
-      this.getUsageCount(
-        materialTemplateId,
-        references
-      ) === 0
+    return BaseTemplateService.canDelete(
+      materialTemplateId,
+      references,
+      reference =>
+        reference.materialTemplateId
     );
   }
 
@@ -177,10 +181,9 @@ export class MaterialTemplateService {
     materialTemplates: MaterialTemplate[],
     materialTemplateId: string
   ) {
-    return materialTemplates.filter(
-      materialTemplate =>
-        materialTemplate.id !==
-        materialTemplateId
+    return BaseTemplateService.delete(
+      materialTemplates,
+      materialTemplateId
     );
   }
 }

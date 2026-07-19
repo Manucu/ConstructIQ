@@ -10,7 +10,7 @@ import type {
 
 import type {
   ProjectTemplateActivityMaterial,
-} from "../materials-templates/projectTemplateActivityMaterials";
+} from "../../data/projectTemplateActivityMaterial";
 
 import type {
   SaveProjectTemplateActivityMaterialValues,

@@ -4,7 +4,7 @@ import { useCompanyContext } from "@/features/company/context/useCompanyContext"
 
 import type {
   ProjectTemplateActivityMaterial,
-} from "../components/materials-templates/projectTemplateActivityMaterials";
+} from "../data/projectTemplateActivityMaterial";
 
 export type SaveProjectTemplateActivityMaterialValues = {
   materialTemplateId: string;
