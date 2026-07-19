@@ -16,6 +16,22 @@ import type {
 } from "../../templates/data/activityTemplates";
 
 import type {
+  ActivityTemplateMaterial,
+} from "../../templates/data/activityTemplateMaterials";
+
+import type {
+  ActivityTemplateLabour,
+} from "../../templates/data/activityTemplateLabour";
+
+import type {
+  ActivityTemplateEquipment,
+} from "../../templates/data/activityTemplateEquipment";
+
+import type {
+  ActivityTemplateExpense,
+} from "../../templates/data/activityTemplateExpenses";
+
+import type {
   MaterialTemplate,
 } from "../../templates/data/materialTemplates";
 
@@ -108,6 +124,10 @@ export type CompanyData = {
    * Activity templates
    */
   activityTemplates: ActivityTemplate[];
+  activityTemplateMaterials: ActivityTemplateMaterial[];
+  activityTemplateLabour: ActivityTemplateLabour[];
+  activityTemplateEquipment: ActivityTemplateEquipment[];
+  activityTemplateExpenses: ActivityTemplateExpense[];
 
   /*
    * Project templates
@@ -146,6 +166,7 @@ export type CompanyData = {
   projectLabours: ProjectLabour[];
   projectEquipment: ProjectEquipment[];
   projectExpenses: ProjectExpense[];
+  
 };
 
 export type CompanyContextValue = {

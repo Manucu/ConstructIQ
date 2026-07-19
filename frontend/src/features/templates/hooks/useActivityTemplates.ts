@@ -1,172 +1,100 @@
-import { useMemo, useState } from "react";
-
+import { useCallback, useMemo } from "react";
 import { useCompanyContext } from "@/features/company/context/useCompanyContext";
-
-import type {
-  ActivityCategory,
-  ActivityTemplate,
-  ActivityTemplateStatus,
-} from "@/features/templates/data/activityTemplates";
+import type { ActivityCategory, ActivityTemplate, ActivityTemplateStatus } from "@/features/templates/data/activityTemplates";
+import { ActivityTemplateService } from "@/features/templates/services/ActivityTemplateService";
+import { useTemplateCrud } from "@/features/templates/hooks/useTemplateCrud";
 
 export type SaveActivityTemplateValues = {
   name: string;
   category: ActivityCategory;
   status: ActivityTemplateStatus;
-  description?: string;
+  description: string | undefined;
 };
 
 export function useActivityTemplates() {
-  const {
-    companyData,
-    setCompanyData,
-  } = useCompanyContext();
-
+  const { companyData, setCompanyData } = useCompanyContext();
   const activityTemplates = companyData.activityTemplates;
 
-  const [searchValue, setSearchValue] = useState("");
+  const usageReferences = useMemo(
+    () => companyData.projectTemplateActivities
+      .filter(item => Boolean(item.activityTemplateId))
+      .map(item => ({ activityTemplateId: item.activityTemplateId! })),
+    [companyData.projectTemplateActivities]
+  );
 
-  const [
-    isActivityTemplateDialogOpen,
-    setIsActivityTemplateDialogOpen,
-  ] = useState(false);
-
-  const [
-    editingActivityTemplate,
-    setEditingActivityTemplate,
-  ] = useState<ActivityTemplate | null>(null);
-
-  const filteredActivityTemplates = useMemo(() => {
-    const normalizedSearch = searchValue
-      .trim()
-      .toLowerCase();
-
-    if (!normalizedSearch) {
-      return activityTemplates;
-    }
-
-    return activityTemplates.filter((activityTemplate) => {
-      return (
-        activityTemplate.name
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        activityTemplate.category
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        activityTemplate.status
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        activityTemplate.description
-          ?.toLowerCase()
-          .includes(normalizedSearch)
-      );
-    });
-  }, [activityTemplates, searchValue]);
-
-  function openAddActivityTemplateDialog() {
-    setEditingActivityTemplate(null);
-    setIsActivityTemplateDialogOpen(true);
-  }
-
-  function openEditActivityTemplateDialog(
-    activityTemplate: ActivityTemplate
-  ) {
-    setEditingActivityTemplate(activityTemplate);
-    setIsActivityTemplateDialogOpen(true);
-  }
-
-  function closeActivityTemplateDialog() {
-    setEditingActivityTemplate(null);
-    setIsActivityTemplateDialogOpen(false);
-  }
-
-  function saveActivityTemplate(
-    values: SaveActivityTemplateValues
-  ) {
-    if (editingActivityTemplate) {
-      setCompanyData((currentData) => ({
-        ...currentData,
-        activityTemplates:
-          currentData.activityTemplates.map(
-            (activityTemplate) =>
-              activityTemplate.id ===
-              editingActivityTemplate.id
-                ? {
-                    ...activityTemplate,
-                    ...values,
-                  }
-                : activityTemplate
-          ),
+  const setTemplates = useCallback(
+    (updater: (items: ActivityTemplate[]) => ActivityTemplate[]) => {
+      setCompanyData(current => ({
+        ...current,
+        activityTemplates: updater(current.activityTemplates),
       }));
+    },
+    [setCompanyData]
+  );
 
-      closeActivityTemplateDialog();
-      return;
-    }
+  const crud = useTemplateCrud<ActivityTemplate, SaveActivityTemplateValues>({
+    templates: activityTemplates,
+    search: useCallback((items, value) => ActivityTemplateService.search(items, value), []),
+    create: useCallback(values => ActivityTemplateService.create(values), []),
+    update: useCallback((items, id, values) => ActivityTemplateService.update(items, id, values), []),
+    toggleStatus: useCallback((items, id) => ActivityTemplateService.toggleStatus(items, id), []),
+    remove: useCallback((items, id) => ActivityTemplateService.delete(items, id), []),
+    getUsageCount: useCallback(id => ActivityTemplateService.getUsageCount(id, usageReferences), [usageReferences]),
+    canDelete: useCallback(id => ActivityTemplateService.canDelete(id, usageReferences), [usageReferences]),
+    setTemplates,
+    normalizeValues: useCallback(values => {
+      const name = values.name.trim();
+      if (!name) return null;
+      return { ...values, name, description: values.description?.trim() || undefined };
+    }, []),
+    validateValues: useCallback(
+      (values: SaveActivityTemplateValues, editing: ActivityTemplate | null) =>
+        ActivityTemplateService.isNameAvailable(activityTemplates, values.name, editing?.id),
+      [activityTemplates]
+    ),
+  });
 
-    const newActivityTemplate: ActivityTemplate = {
-      id: crypto.randomUUID(),
-      ...values,
-    };
+  const isActivityTemplateNameAvailable = useCallback(
+    (name: string, ignoredId?: string) =>
+      ActivityTemplateService.isNameAvailable(activityTemplates, name, ignoredId),
+    [activityTemplates]
+  );
 
-    setCompanyData((currentData) => ({
-      ...currentData,
-      activityTemplates: [
-        ...currentData.activityTemplates,
-        newActivityTemplate,
-      ],
+  const getActivityTemplateResourceCount = useCallback((id: string) =>
+    companyData.activityTemplateMaterials.filter(x => x.activityTemplateId === id).length +
+    companyData.activityTemplateLabour.filter(x => x.activityTemplateId === id).length +
+    companyData.activityTemplateEquipment.filter(x => x.activityTemplateId === id).length +
+    companyData.activityTemplateExpenses.filter(x => x.activityTemplateId === id).length,
+    [companyData.activityTemplateMaterials, companyData.activityTemplateLabour, companyData.activityTemplateEquipment, companyData.activityTemplateExpenses]
+  );
+
+  function deleteActivityTemplate(id: string) {
+    if (!crud.deleteTemplate(id)) return false;
+    setCompanyData(current => ({
+      ...current,
+      activityTemplateMaterials: current.activityTemplateMaterials.filter(x => x.activityTemplateId !== id),
+      activityTemplateLabour: current.activityTemplateLabour.filter(x => x.activityTemplateId !== id),
+      activityTemplateEquipment: current.activityTemplateEquipment.filter(x => x.activityTemplateId !== id),
+      activityTemplateExpenses: current.activityTemplateExpenses.filter(x => x.activityTemplateId !== id),
     }));
-
-    closeActivityTemplateDialog();
-  }
-
-  function toggleActivityTemplateStatus(
-    activityTemplateId: string
-  ) {
-    setCompanyData((currentData) => ({
-      ...currentData,
-      activityTemplates:
-        currentData.activityTemplates.map(
-          (activityTemplate) =>
-            activityTemplate.id === activityTemplateId
-              ? {
-                  ...activityTemplate,
-                  status:
-                    activityTemplate.status === "ACTIVE"
-                      ? "INACTIVE"
-                      : "ACTIVE",
-                }
-              : activityTemplate
-        ),
-    }));
-  }
-
-  function deleteActivityTemplate(
-    activityTemplateId: string
-  ) {
-    setCompanyData((currentData) => ({
-      ...currentData,
-      activityTemplates:
-        currentData.activityTemplates.filter(
-          (activityTemplate) =>
-            activityTemplate.id !== activityTemplateId
-        ),
-    }));
+    return true;
   }
 
   return {
-    activityTemplates,
-    filteredActivityTemplates,
-    searchValue,
-    isActivityTemplateDialogOpen,
-    editingActivityTemplate,
-
-    setSearchValue,
-
-    openAddActivityTemplateDialog,
-    openEditActivityTemplateDialog,
-    closeActivityTemplateDialog,
-
-    saveActivityTemplate,
-    toggleActivityTemplateStatus,
+    activityTemplates: crud.templates,
+    filteredActivityTemplates: crud.filteredTemplates,
+    searchValue: crud.searchValue,
+    setSearchValue: crud.setSearchValue,
+    isActivityTemplateDialogOpen: crud.isTemplateDialogOpen,
+    editingActivityTemplate: crud.editingTemplate,
+    openAddActivityTemplateDialog: crud.openAddTemplateDialog,
+    openEditActivityTemplateDialog: crud.openEditTemplateDialog,
+    closeActivityTemplateDialog: crud.closeTemplateDialog,
+    isActivityTemplateNameAvailable,
+    saveActivityTemplate: crud.saveTemplate,
+    toggleActivityTemplateStatus: crud.toggleTemplateStatus,
+    getActivityTemplateUsageCount: crud.getTemplateUsageCount,
+    getActivityTemplateResourceCount,
     deleteActivityTemplate,
   };
 }

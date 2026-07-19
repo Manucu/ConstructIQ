@@ -17,6 +17,22 @@ import {
 } from "../../templates/data/activityTemplates";
 
 import {
+  activityTemplateMaterials,
+} from "../../templates/data/activityTemplateMaterials";
+
+import {
+  activityTemplateLabour,
+} from "../../templates/data/activityTemplateLabour";
+
+import {
+  activityTemplateEquipment,
+} from "../../templates/data/activityTemplateEquipment";
+
+import {
+  activityTemplateExpenses,
+} from "../../templates/data/activityTemplateExpenses";
+
+import {
   materialTemplates,
 } from "../../templates/data/materialTemplates";
 
@@ -122,6 +138,10 @@ const initialCompanyData: CompanyData = {
    * Activity templates
    */
   activityTemplates,
+  activityTemplateMaterials,
+  activityTemplateLabour,
+  activityTemplateEquipment,
+  activityTemplateExpenses,
 
   /*
    * Project templates
@@ -270,6 +290,22 @@ function createInitialCompanyData(): CompanyData {
     activityTemplates:
       storedCompanyData.activityTemplates ??
       initialCompanyData.activityTemplates,
+
+    activityTemplateMaterials:
+      storedCompanyData.activityTemplateMaterials ??
+      initialCompanyData.activityTemplateMaterials,
+
+    activityTemplateLabour:
+      storedCompanyData.activityTemplateLabour ??
+      initialCompanyData.activityTemplateLabour,
+
+    activityTemplateEquipment:
+      storedCompanyData.activityTemplateEquipment ??
+      initialCompanyData.activityTemplateEquipment,
+
+    activityTemplateExpenses:
+      storedCompanyData.activityTemplateExpenses ??
+      initialCompanyData.activityTemplateExpenses,
 
     /*
      * Project templates
