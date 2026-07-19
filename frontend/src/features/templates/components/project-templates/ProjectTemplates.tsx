@@ -28,7 +28,7 @@ import type { ProjectTemplate } from "@/features/templates/data/projectTemplates
 
 import { useCompanyProjectTemplates } from "@/features/templates/hooks/useProjectTemplates";
 
-import { ProjectTemplateEstimator } from "@/features/templates/services/projectTemplateEstimator";
+import { ProjectTemplateEstimator } from "@/features/templates/services/ProjectTemplateEstimator";
 
 import ProjectTemplateBuilder from "./ProjectTemplateBuilder";
 import ProjectTemplateFormDialog from "./ProjectTemplateFormDialog";
@@ -138,9 +138,9 @@ export default function ProjectTemplates() {
         "",
         `Stages associated with this template: ${summary.stageCount}`,
         `Activities associated with this template: ${summary.activityCount}`,
-        `Suggested materials associated with this template: ${summary.materialCount}`,
-        `Estimated material cost: ${formatCurrency(
-          summary.estimatedMaterialCost
+        `Resources associated with this template: ${summary.resourceCount}`,
+        `Estimated total cost: ${formatCurrency(
+          summary.estimatedTotalCost
         )}`,
         "",
         "This action cannot be undone.",
@@ -259,17 +259,17 @@ export default function ProjectTemplates() {
                           <Badge variant="outline">
                             <PackageSearch className="mr-1.5 h-3.5 w-3.5" />
 
-                            {summary.materialCount === 1
-                              ? "1 suggested material"
-                              : `${summary.materialCount} suggested materials`}
+                            {summary.resourceCount === 1
+                              ? "1 resource"
+                              : `${summary.resourceCount} resources`}
                           </Badge>
 
                           <Badge variant="outline">
                             <CircleDollarSign className="mr-1.5 h-3.5 w-3.5" />
 
-                            Material cost:{" "}
+                            Estimated cost:{" "}
                             {formatCurrency(
-                              summary.estimatedMaterialCost
+                              summary.estimatedTotalCost
                             )}
                           </Badge>
                         </div>

@@ -18,7 +18,6 @@ import SectionCard from "@/components/common/SectionCard";
 import StatusBadge from "@/components/common/StatusBadge";
 
 import { AppButton } from "@/components/ui/AppButton";
-import { AppModal } from "@/components/ui/AppModal";
 import { Badge } from "@/components/ui/badge";
 
 import type {
@@ -34,7 +33,7 @@ import {
 } from "../../hooks/useProjectTemplateActivities";
 
 import ProjectTemplateActivityFormDialog from "./ProjectTemplateActivityFormDialog";
-import ProjectTemplateActivityMaterials from "./ProjectTemplateActivityMaterials";
+import ProjectTemplateActivityResourcesDialog from "./ProjectTemplateActivityResourcesDialog";
 
 type ProjectTemplateActivitiesProps = {
   projectTemplateStage: ProjectTemplateStage;
@@ -64,8 +63,8 @@ export default function ProjectTemplateActivities({
   projectTemplateStage,
 }: ProjectTemplateActivitiesProps) {
   const [
-    selectedActivityForMaterials,
-    setSelectedActivityForMaterials,
+    selectedActivityForResources,
+    setSelectedActivityForResources,
   ] = useState<ProjectTemplateActivity | null>(
     null
   );
@@ -105,14 +104,14 @@ export default function ProjectTemplateActivities({
       ? allActivityTemplates
       : availableActivityTemplates;
 
-  function openActivityMaterials(
+  function openActivityResources(
     activity: ProjectTemplateActivity
   ) {
-    setSelectedActivityForMaterials(activity);
+    setSelectedActivityForResources(activity);
   }
 
-  function closeActivityMaterials() {
-    setSelectedActivityForMaterials(null);
+  function closeActivityResources() {
+    setSelectedActivityForResources(null);
   }
 
   return (
@@ -187,15 +186,15 @@ export default function ProjectTemplateActivities({
                           </Badge>
 
                           <Badge variant="outline">
-                            {activitySummary.materialCount === 1
-                              ? "1 suggested material"
-                              : `${activitySummary.materialCount} suggested materials`}
+                            {activitySummary.resourceCount === 1
+                              ? "1 resource"
+                              : `${activitySummary.resourceCount} resources`}
                           </Badge>
 
                           <Badge variant="outline">
-                            Material cost:{" "}
+                            Estimated cost:{" "}
                             {formatCurrency(
-                              activitySummary.estimatedMaterialCost
+                              activitySummary.estimatedTotalCost
                             )}
                           </Badge>
 
@@ -217,20 +216,20 @@ export default function ProjectTemplateActivities({
                           type="button"
                           size="sm"
                           variant="outline"
-                          aria-label="Manage activity materials"
-                          title="Manage activity materials"
+                          aria-label="Manage activity resources"
+                          title="Manage activity resources"
                           onClick={() =>
-                            openActivityMaterials(
+                            openActivityResources(
                               activity
                             )
                           }
                         >
                           <PackageSearch className="mr-2 h-4 w-4" />
 
-                          Manage Materials
-                          {activitySummary.materialCount >
+                          Manage Resources
+                          {activitySummary.resourceCount >
                             0 &&
-                            ` (${activitySummary.materialCount})`}
+                            ` (${activitySummary.resourceCount})`}
                         </AppButton>
 
                         <AppButton
@@ -334,10 +333,10 @@ export default function ProjectTemplateActivities({
                             }
 
                             if (
-                              selectedActivityForMaterials
+                              selectedActivityForResources
                                 ?.id === activity.id
                             ) {
-                              closeActivityMaterials();
+                              closeActivityResources();
                             }
 
                             deleteProjectTemplateActivity(
@@ -379,30 +378,17 @@ export default function ProjectTemplateActivities({
         />
       )}
 
-      {selectedActivityForMaterials && (
-        <AppModal
+      {selectedActivityForResources && (
+        <ProjectTemplateActivityResourcesDialog
           open
-          title="Activity Materials"
-          description="Manage the suggested materials and estimated costs for this activity."
-          onClose={closeActivityMaterials}
-          footer={
-            <AppButton
-              type="button"
-              variant="outline"
-              onClick={closeActivityMaterials}
-            >
-              Close
-            </AppButton>
+          activity={selectedActivityForResources}
+          activityName={
+            getActivityTemplateById(
+              selectedActivityForResources.activityTemplateId
+            )?.name ?? "Unknown Activity Template"
           }
-        >
-          <div className="max-h-[70vh] overflow-y-auto pr-1">
-            <ProjectTemplateActivityMaterials
-              projectTemplateActivity={
-                selectedActivityForMaterials
-              }
-            />
-          </div>
-        </AppModal>
+          onClose={closeActivityResources}
+        />
       )}
     </>
   );

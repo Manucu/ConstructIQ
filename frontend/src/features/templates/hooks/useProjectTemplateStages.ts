@@ -1,15 +1,24 @@
-import { useMemo, useState } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
 
-import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+import {
+  useCompanyContext,
+} from "@/features/company/context/useCompanyContext";
+
+import {
+  CompanyDataService,
+} from "@/features/company/services/companyDataService";
 
 import type {
   ProjectTemplateStage,
   ProjectTemplateStageStatus,
 } from "@/features/templates/data/projectTemplates";
 
-import { CompanyDataService } from "@/features/company/services/companyDataService";
-
-import { ProjectTemplateEstimator } from "@/features/templates/services/projectTemplateEstimator";
+import {
+  ProjectTemplateEstimator,
+} from "@/features/templates/services/ProjectTemplateEstimator";
 
 export type SaveProjectTemplateStageValues = {
   name: string;
@@ -30,8 +39,10 @@ export function useCompanyProjectTemplateStages({
     setCompanyData,
   } = useCompanyContext();
 
-  const [searchValue, setSearchValue] =
-    useState("");
+  const [
+    searchValue,
+    setSearchValue,
+  ] = useState("");
 
   const [
     isProjectTemplateStageDialogOpen,
@@ -54,7 +65,10 @@ export function useCompanyProjectTemplateStages({
             projectTemplateId
         )
         .sort(
-          (firstStage, secondStage) =>
+          (
+            firstStage,
+            secondStage
+          ) =>
             firstStage.order -
             secondStage.order
         ),
@@ -66,9 +80,10 @@ export function useCompanyProjectTemplateStages({
 
   const filteredProjectTemplateStages =
     useMemo(() => {
-      const normalizedSearch = searchValue
-        .trim()
-        .toLowerCase();
+      const normalizedSearch =
+        searchValue
+          .trim()
+          .toLowerCase();
 
       if (!normalizedSearch) {
         return projectTemplateStages;
@@ -102,7 +117,9 @@ export function useCompanyProjectTemplateStages({
   function openEditProjectTemplateStageDialog(
     stage: ProjectTemplateStage
   ) {
-    setEditingProjectTemplateStage(stage);
+    setEditingProjectTemplateStage(
+      stage
+    );
 
     setIsProjectTemplateStageDialogOpen(
       true
@@ -142,41 +159,43 @@ export function useCompanyProjectTemplateStages({
       return;
     }
 
-    const stagesForCurrentTemplate =
-      companyData.projectTemplateStages.filter(
-        stage =>
-          stage.projectTemplateId ===
-          projectTemplateId
-      );
+    setCompanyData(currentData => {
+      const stagesForCurrentTemplate =
+        currentData.projectTemplateStages.filter(
+          stage =>
+            stage.projectTemplateId ===
+            projectTemplateId
+        );
 
-    const highestOrder =
-      stagesForCurrentTemplate.reduce(
-        (
-          currentHighestOrder,
-          stage
-        ) =>
-          Math.max(
+      const highestOrder =
+        stagesForCurrentTemplate.reduce(
+          (
             currentHighestOrder,
-            stage.order
-          ),
-        0
-      );
+            stage
+          ) =>
+            Math.max(
+              currentHighestOrder,
+              stage.order
+            ),
+          0
+        );
 
-    const newStage: ProjectTemplateStage = {
-      id: crypto.randomUUID(),
-      projectTemplateId,
-      order: highestOrder + 1,
-      ...values,
-    };
+      const newStage: ProjectTemplateStage = {
+        id: crypto.randomUUID(),
+        projectTemplateId,
+        order: highestOrder + 1,
+        ...values,
+      };
 
-    setCompanyData(currentData => ({
-      ...currentData,
+      return {
+        ...currentData,
 
-      projectTemplateStages: [
-        ...currentData.projectTemplateStages,
-        newStage,
-      ],
-    }));
+        projectTemplateStages: [
+          ...currentData.projectTemplateStages,
+          newStage,
+        ],
+      };
+    });
 
     closeProjectTemplateStageDialog();
   }
@@ -195,7 +214,8 @@ export function useCompanyProjectTemplateStages({
                   ...stage,
 
                   status:
-                    stage.status === "ACTIVE"
+                    stage.status ===
+                    "ACTIVE"
                       ? "INACTIVE"
                       : "ACTIVE",
                 }
@@ -272,7 +292,8 @@ export function useCompanyProjectTemplateStages({
       }
 
       const destinationIndex =
-        currentStageIndex + direction;
+        currentStageIndex +
+        direction;
 
       if (
         destinationIndex < 0 ||
@@ -292,6 +313,10 @@ export function useCompanyProjectTemplateStages({
           1
         );
 
+      if (!movedStage) {
+        return currentData;
+      }
+
       reorderedStages.splice(
         destinationIndex,
         0,
@@ -300,7 +325,10 @@ export function useCompanyProjectTemplateStages({
 
       const normalizedStages =
         reorderedStages.map(
-          (stage, index) => ({
+          (
+            stage,
+            index
+          ) => ({
             ...stage,
             order: index + 1,
           })
@@ -308,10 +336,12 @@ export function useCompanyProjectTemplateStages({
 
       const normalizedStagesById =
         new Map(
-          normalizedStages.map(stage => [
-            stage.id,
-            stage,
-          ])
+          normalizedStages.map(
+            stage => [
+              stage.id,
+              stage,
+            ]
+          )
         );
 
       return {
@@ -332,15 +362,6 @@ export function useCompanyProjectTemplateStages({
     projectTemplateStageId: string
   ) {
     return ProjectTemplateEstimator.getStageActivities(
-      companyData,
-      projectTemplateStageId
-    );
-  }
-
-  function getStageMaterials(
-    projectTemplateStageId: string
-  ) {
-    return ProjectTemplateEstimator.getStageMaterials(
       companyData,
       projectTemplateStageId
     );
@@ -377,7 +398,6 @@ export function useCompanyProjectTemplateStages({
     moveProjectTemplateStageDown,
 
     getStageActivities,
-    getStageMaterials,
     getStageSummary,
   };
 }

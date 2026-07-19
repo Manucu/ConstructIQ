@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { useCompanyContext } from "@/features/company/context/useCompanyContext";
 
-import { ProjectTemplateEstimator } from "@/features/templates/services/projectTemplateEstimator";
+import { ProjectTemplateEstimator } from "@/features/templates/services/ProjectTemplateEstimator";
 
 import type {
   ProjectTemplateActivity,
@@ -194,14 +194,106 @@ export function useProjectTemplateActivities({
       ...values,
     };
 
-    setCompanyData(currentData => ({
-      ...currentData,
+    setCompanyData(currentData => {
+      const sourceMaterials =
+        currentData.activityTemplateMaterials.filter(
+          item =>
+            item.activityTemplateId ===
+            values.activityTemplateId
+        );
 
-      projectTemplateActivities: [
-        ...currentData.projectTemplateActivities,
-        newActivity,
-      ],
-    }));
+      const sourceLabour =
+        currentData.activityTemplateLabour.filter(
+          item =>
+            item.activityTemplateId ===
+            values.activityTemplateId
+        );
+
+      const sourceEquipment =
+        currentData.activityTemplateEquipment.filter(
+          item =>
+            item.activityTemplateId ===
+            values.activityTemplateId
+        );
+
+      const sourceExpenses =
+        currentData.activityTemplateExpenses.filter(
+          item =>
+            item.activityTemplateId ===
+            values.activityTemplateId
+        );
+
+      return {
+        ...currentData,
+
+        projectTemplateActivities: [
+          ...currentData.projectTemplateActivities,
+          newActivity,
+        ],
+
+        projectTemplateActivityMaterials: [
+          ...currentData.projectTemplateActivityMaterials,
+          ...sourceMaterials.map(item => ({
+            id: crypto.randomUUID(),
+            projectTemplateActivityId:
+              newActivity.id,
+            materialTemplateId:
+              item.materialTemplateId,
+            estimatedQuantity:
+              item.estimatedQuantity,
+            estimatedUnitCost:
+              item.estimatedUnitCost,
+            notes: item.notes,
+          })),
+        ],
+
+        projectTemplateActivityLabour: [
+          ...currentData.projectTemplateActivityLabour,
+          ...sourceLabour.map(item => ({
+            id: crypto.randomUUID(),
+            projectTemplateActivityId:
+              newActivity.id,
+            labourTemplateId:
+              item.labourTemplateId,
+            estimatedHours: item.estimatedHours,
+            estimatedHourlyRate:
+              item.estimatedHourlyRate,
+            notes: item.notes,
+          })),
+        ],
+
+        projectTemplateActivityEquipment: [
+          ...currentData.projectTemplateActivityEquipment,
+          ...sourceEquipment.map(item => ({
+            id: crypto.randomUUID(),
+            projectTemplateActivityId:
+              newActivity.id,
+            equipmentTemplateId:
+              item.equipmentTemplateId,
+            estimatedHours: item.estimatedHours,
+            estimatedHourlyRate:
+              item.estimatedHourlyRate,
+            notes: item.notes,
+          })),
+        ],
+
+        projectTemplateActivityExpenses: [
+          ...currentData.projectTemplateActivityExpenses,
+          ...sourceExpenses.map(item => ({
+            id: crypto.randomUUID(),
+            projectTemplateActivityId:
+              newActivity.id,
+            expenseTemplateId:
+              item.expenseTemplateId,
+            estimatedQuantity:
+              item.estimatedQuantity,
+            estimatedUnitCost:
+              item.estimatedUnitCost,
+            notes: item.notes,
+          })),
+        ],
+      };
+    });
 
     closeProjectTemplateActivityDialog();
   }
@@ -280,8 +372,29 @@ export function useProjectTemplateActivities({
 
         projectTemplateActivityMaterials:
           currentData.projectTemplateActivityMaterials.filter(
-            material =>
-              material.projectTemplateActivityId !==
+            item =>
+              item.projectTemplateActivityId !==
+              activityId
+          ),
+
+        projectTemplateActivityLabour:
+          currentData.projectTemplateActivityLabour.filter(
+            item =>
+              item.projectTemplateActivityId !==
+              activityId
+          ),
+
+        projectTemplateActivityEquipment:
+          currentData.projectTemplateActivityEquipment.filter(
+            item =>
+              item.projectTemplateActivityId !==
+              activityId
+          ),
+
+        projectTemplateActivityExpenses:
+          currentData.projectTemplateActivityExpenses.filter(
+            item =>
+              item.projectTemplateActivityId !==
               activityId
           ),
       };

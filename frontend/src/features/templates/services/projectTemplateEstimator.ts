@@ -2,239 +2,195 @@ import type { CompanyData } from "@/features/company/context/companyContextDefin
 
 export type ProjectTemplateActivitySummary = {
   materialCount: number;
+  labourCount: number;
+  equipmentCount: number;
+  expenseCount: number;
+  resourceCount: number;
   estimatedMaterialCost: number;
+  estimatedLabourCost: number;
+  estimatedEquipmentCost: number;
+  estimatedExpenseCost: number;
+  estimatedTotalCost: number;
 };
 
-export type ProjectTemplateStageSummary = {
-  activityCount: number;
-  materialCount: number;
-  estimatedMaterialCost: number;
-};
+export type ProjectTemplateStageSummary =
+  ProjectTemplateActivitySummary & {
+    activityCount: number;
+  };
 
-export type ProjectTemplateSummary = {
-  stageCount: number;
-  activityCount: number;
-  materialCount: number;
-  estimatedMaterialCost: number;
-};
+export type ProjectTemplateSummary =
+  ProjectTemplateStageSummary & {
+    stageCount: number;
+  };
 
 export class ProjectTemplateEstimator {
-  static getMaterialEstimatedCost(
-    estimatedQuantity: number,
-    estimatedUnitCost?: number
-  ) {
-    return (
-      estimatedQuantity *
-      (estimatedUnitCost ?? 0)
+  static getQuantityCost(quantity: number, unitCost?: number) {
+    return quantity * (unitCost ?? 0);
+  }
+
+  static getHoursCost(hours: number, hourlyRate?: number) {
+    return hours * (hourlyRate ?? 0);
+  }
+
+  static getActivityMaterials(companyData: CompanyData, activityId: string) {
+    return companyData.projectTemplateActivityMaterials.filter(
+      item => item.projectTemplateActivityId === activityId
     );
   }
 
-  static getActivityMaterials(
-    companyData: CompanyData,
-    projectTemplateActivityId: string
-  ) {
-    return companyData.projectTemplateActivityMaterials.filter(
-      material =>
-        material.projectTemplateActivityId ===
-        projectTemplateActivityId
+  static getActivityLabour(companyData: CompanyData, activityId: string) {
+    return companyData.projectTemplateActivityLabour.filter(
+      item => item.projectTemplateActivityId === activityId
+    );
+  }
+
+  static getActivityEquipment(companyData: CompanyData, activityId: string) {
+    return companyData.projectTemplateActivityEquipment.filter(
+      item => item.projectTemplateActivityId === activityId
+    );
+  }
+
+  static getActivityExpenses(companyData: CompanyData, activityId: string) {
+    return companyData.projectTemplateActivityExpenses.filter(
+      item => item.projectTemplateActivityId === activityId
     );
   }
 
   static getActivitySummary(
     companyData: CompanyData,
-    projectTemplateActivityId: string
+    activityId: string
   ): ProjectTemplateActivitySummary {
-    const materials =
-      this.getActivityMaterials(
-        companyData,
-        projectTemplateActivityId
-      );
+    const materials = this.getActivityMaterials(companyData, activityId);
+    const labour = this.getActivityLabour(companyData, activityId);
+    const equipment = this.getActivityEquipment(companyData, activityId);
+    const expenses = this.getActivityExpenses(companyData, activityId);
 
-    const estimatedMaterialCost =
-      materials.reduce(
-        (totalCost, material) =>
-          totalCost +
-          this.getMaterialEstimatedCost(
-            material.estimatedQuantity,
-            material.estimatedUnitCost
-          ),
-        0
-      );
+    const estimatedMaterialCost = materials.reduce(
+      (total, item) =>
+        total + this.getQuantityCost(item.estimatedQuantity, item.estimatedUnitCost),
+      0
+    );
+    const estimatedLabourCost = labour.reduce(
+      (total, item) =>
+        total + this.getHoursCost(item.estimatedHours, item.estimatedHourlyRate),
+      0
+    );
+    const estimatedEquipmentCost = equipment.reduce(
+      (total, item) =>
+        total + this.getHoursCost(item.estimatedHours, item.estimatedHourlyRate),
+      0
+    );
+    const estimatedExpenseCost = expenses.reduce(
+      (total, item) =>
+        total + this.getQuantityCost(item.estimatedQuantity, item.estimatedUnitCost),
+      0
+    );
 
     return {
       materialCount: materials.length,
+      labourCount: labour.length,
+      equipmentCount: equipment.length,
+      expenseCount: expenses.length,
+      resourceCount:
+        materials.length + labour.length + equipment.length + expenses.length,
       estimatedMaterialCost,
+      estimatedLabourCost,
+      estimatedEquipmentCost,
+      estimatedExpenseCost,
+      estimatedTotalCost:
+        estimatedMaterialCost +
+        estimatedLabourCost +
+        estimatedEquipmentCost +
+        estimatedExpenseCost,
     };
   }
 
-  static getStageActivities(
-    companyData: CompanyData,
-    projectTemplateStageId: string
-  ) {
+  static getStageActivities(companyData: CompanyData, stageId: string) {
     return companyData.projectTemplateActivities
-      .filter(
-        activity =>
-          activity.projectTemplateStageId ===
-          projectTemplateStageId
-      )
-      .sort(
-        (firstActivity, secondActivity) =>
-          firstActivity.order -
-          secondActivity.order
-      );
+      .filter(item => item.projectTemplateStageId === stageId)
+      .sort((a, b) => a.order - b.order);
   }
 
-  static getStageMaterials(
-    companyData: CompanyData,
-    projectTemplateStageId: string
-  ) {
-    const activityIds = new Set(
-      this.getStageActivities(
-        companyData,
-        projectTemplateStageId
-      ).map(activity => activity.id)
-    );
-
-    return companyData.projectTemplateActivityMaterials.filter(
-      material =>
-        activityIds.has(
-          material.projectTemplateActivityId
-        )
+  static combineActivitySummaries(
+    summaries: ProjectTemplateActivitySummary[]
+  ): ProjectTemplateActivitySummary {
+    return summaries.reduce<ProjectTemplateActivitySummary>(
+      (total, summary) => ({
+        materialCount: total.materialCount + summary.materialCount,
+        labourCount: total.labourCount + summary.labourCount,
+        equipmentCount: total.equipmentCount + summary.equipmentCount,
+        expenseCount: total.expenseCount + summary.expenseCount,
+        resourceCount: total.resourceCount + summary.resourceCount,
+        estimatedMaterialCost:
+          total.estimatedMaterialCost + summary.estimatedMaterialCost,
+        estimatedLabourCost:
+          total.estimatedLabourCost + summary.estimatedLabourCost,
+        estimatedEquipmentCost:
+          total.estimatedEquipmentCost + summary.estimatedEquipmentCost,
+        estimatedExpenseCost:
+          total.estimatedExpenseCost + summary.estimatedExpenseCost,
+        estimatedTotalCost:
+          total.estimatedTotalCost + summary.estimatedTotalCost,
+      }),
+      {
+        materialCount: 0,
+        labourCount: 0,
+        equipmentCount: 0,
+        expenseCount: 0,
+        resourceCount: 0,
+        estimatedMaterialCost: 0,
+        estimatedLabourCost: 0,
+        estimatedEquipmentCost: 0,
+        estimatedExpenseCost: 0,
+        estimatedTotalCost: 0,
+      }
     );
   }
 
   static getStageSummary(
     companyData: CompanyData,
-    projectTemplateStageId: string
+    stageId: string
   ): ProjectTemplateStageSummary {
-    const activities =
-      this.getStageActivities(
-        companyData,
-        projectTemplateStageId
-      );
-
-    const materials =
-      this.getStageMaterials(
-        companyData,
-        projectTemplateStageId
-      );
-
-    const estimatedMaterialCost =
-      materials.reduce(
-        (totalCost, material) =>
-          totalCost +
-          this.getMaterialEstimatedCost(
-            material.estimatedQuantity,
-            material.estimatedUnitCost
-          ),
-        0
-      );
-
+    const activities = this.getStageActivities(companyData, stageId);
     return {
       activityCount: activities.length,
-      materialCount: materials.length,
-      estimatedMaterialCost,
+      ...this.combineActivitySummaries(
+        activities.map(activity =>
+          this.getActivitySummary(companyData, activity.id)
+        )
+      ),
     };
   }
 
-  static getProjectTemplateStages(
-    companyData: CompanyData,
-    projectTemplateId: string
-  ) {
+  static getProjectTemplateStages(companyData: CompanyData, templateId: string) {
     return companyData.projectTemplateStages
-      .filter(
-        stage =>
-          stage.projectTemplateId ===
-          projectTemplateId
-      )
-      .sort(
-        (firstStage, secondStage) =>
-          firstStage.order -
-          secondStage.order
-      );
+      .filter(item => item.projectTemplateId === templateId)
+      .sort((a, b) => a.order - b.order);
   }
 
-  static getProjectTemplateActivities(
-    companyData: CompanyData,
-    projectTemplateId: string
-  ) {
+  static getProjectTemplateActivities(companyData: CompanyData, templateId: string) {
     const stageIds = new Set(
-      this.getProjectTemplateStages(
-        companyData,
-        projectTemplateId
-      ).map(stage => stage.id)
+      this.getProjectTemplateStages(companyData, templateId).map(item => item.id)
     );
-
-    return companyData.projectTemplateActivities
-      .filter(activity =>
-        stageIds.has(
-          activity.projectTemplateStageId
-        )
-      )
-      .sort(
-        (firstActivity, secondActivity) =>
-          firstActivity.order -
-          secondActivity.order
-      );
-  }
-
-  static getProjectTemplateMaterials(
-    companyData: CompanyData,
-    projectTemplateId: string
-  ) {
-    const activityIds = new Set(
-      this.getProjectTemplateActivities(
-        companyData,
-        projectTemplateId
-      ).map(activity => activity.id)
-    );
-
-    return companyData.projectTemplateActivityMaterials.filter(
-      material =>
-        activityIds.has(
-          material.projectTemplateActivityId
-        )
+    return companyData.projectTemplateActivities.filter(item =>
+      stageIds.has(item.projectTemplateStageId)
     );
   }
 
   static getProjectSummary(
     companyData: CompanyData,
-    projectTemplateId: string
+    templateId: string
   ): ProjectTemplateSummary {
-    const stages =
-      this.getProjectTemplateStages(
-        companyData,
-        projectTemplateId
-      );
-
-    const activities =
-      this.getProjectTemplateActivities(
-        companyData,
-        projectTemplateId
-      );
-
-    const materials =
-      this.getProjectTemplateMaterials(
-        companyData,
-        projectTemplateId
-      );
-
-    const estimatedMaterialCost =
-      materials.reduce(
-        (totalCost, material) =>
-          totalCost +
-          this.getMaterialEstimatedCost(
-            material.estimatedQuantity,
-            material.estimatedUnitCost
-          ),
-        0
-      );
-
+    const stages = this.getProjectTemplateStages(companyData, templateId);
+    const activities = this.getProjectTemplateActivities(companyData, templateId);
     return {
       stageCount: stages.length,
       activityCount: activities.length,
-      materialCount: materials.length,
-      estimatedMaterialCost,
+      ...this.combineActivitySummaries(
+        activities.map(activity =>
+          this.getActivitySummary(companyData, activity.id)
+        )
+      ),
     };
   }
 }
