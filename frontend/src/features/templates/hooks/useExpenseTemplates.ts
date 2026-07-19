@@ -7,39 +7,42 @@ import {
 } from "@/features/company/context/useCompanyContext";
 
 import type {
-  LabourTemplateStatus,
-} from "@/features/templates/data/labourTemplates";
+  ExpenseTemplateStatus,
+  ExpenseTemplateUnit,
+} from "@/features/templates/data/expenseTemplates";
 
 import {
-  LabourTemplateService,
-} from "@/features/templates/services/LabourTemplateService";
+  ExpenseTemplateService,
+} from "@/features/templates/services/ExpenseTemplateService";
 
 import {
   useTemplateCrud,
 } from "@/features/templates/hooks/useTemplateCrud";
 
-export type SaveLabourTemplateValues = {
-  role: string;
-  estimatedHourlyRate?: number;
-  status: LabourTemplateStatus;
+export type SaveExpenseTemplateValues = {
+  name: string;
+  category: string;
+  unit: ExpenseTemplateUnit;
+  estimatedUnitCost?: number;
+  status: ExpenseTemplateStatus;
   description?: string;
 };
 
-export function useLabourTemplates() {
+export function useExpenseTemplates() {
   const {
     companyData,
     setCompanyData,
   } = useCompanyContext();
 
-  const labourTemplates =
-    companyData.labourTemplates;
+  const expenseTemplates =
+    companyData.expenseTemplates;
 
   const search = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof expenseTemplates,
       searchValue: string
     ) =>
-      LabourTemplateService.search(
+      ExpenseTemplateService.search(
         templates,
         searchValue
       ),
@@ -47,18 +50,18 @@ export function useLabourTemplates() {
   );
 
   const create = useCallback(
-    (values: SaveLabourTemplateValues) =>
-      LabourTemplateService.create(values),
+    (values: SaveExpenseTemplateValues) =>
+      ExpenseTemplateService.create(values),
     []
   );
 
   const update = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof expenseTemplates,
       templateId: string,
-      values: SaveLabourTemplateValues
+      values: SaveExpenseTemplateValues
     ) =>
-      LabourTemplateService.update(
+      ExpenseTemplateService.update(
         templates,
         templateId,
         values
@@ -68,10 +71,10 @@ export function useLabourTemplates() {
 
   const toggleStatus = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof expenseTemplates,
       templateId: string
     ) =>
-      LabourTemplateService.toggleStatus(
+      ExpenseTemplateService.toggleStatus(
         templates,
         templateId
       ),
@@ -80,10 +83,10 @@ export function useLabourTemplates() {
 
   const remove = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof expenseTemplates,
       templateId: string
     ) =>
-      LabourTemplateService.delete(
+      ExpenseTemplateService.delete(
         templates,
         templateId
       ),
@@ -92,27 +95,27 @@ export function useLabourTemplates() {
 
   const getUsageCount = useCallback(
     (templateId: string) =>
-      LabourTemplateService.getUsageCount(
+      ExpenseTemplateService.getUsageCount(
         templateId,
         companyData
-          .projectTemplateActivityLabour
+          .projectTemplateActivityExpenses
       ),
     [
       companyData
-        .projectTemplateActivityLabour,
+        .projectTemplateActivityExpenses,
     ]
   );
 
   const canDelete = useCallback(
     (templateId: string) =>
-      LabourTemplateService.canDelete(
+      ExpenseTemplateService.canDelete(
         templateId,
         companyData
-          .projectTemplateActivityLabour
+          .projectTemplateActivityExpenses
       ),
     [
       companyData
-        .projectTemplateActivityLabour,
+        .projectTemplateActivityExpenses,
     ]
   );
 
@@ -120,13 +123,13 @@ export function useLabourTemplates() {
     (
       updater: (
         currentTemplates:
-          typeof labourTemplates
-      ) => typeof labourTemplates
+          typeof expenseTemplates
+      ) => typeof expenseTemplates
     ) => {
       setCompanyData(currentData => ({
         ...currentData,
-        labourTemplates: updater(
-          currentData.labourTemplates
+        expenseTemplates: updater(
+          currentData.expenseTemplates
         ),
       }));
     },
@@ -135,17 +138,20 @@ export function useLabourTemplates() {
 
   const normalizeValues = useCallback(
     (
-      values: SaveLabourTemplateValues
-    ): SaveLabourTemplateValues | null => {
-      const role = values.role.trim();
+      values: SaveExpenseTemplateValues
+    ): SaveExpenseTemplateValues | null => {
+      const name = values.name.trim();
+      const category =
+        values.category.trim();
 
-      if (!role) {
+      if (!name || !category) {
         return null;
       }
 
       return {
         ...values,
-        role,
+        name,
+        category,
         description:
           values.description?.trim() ||
           undefined,
@@ -156,21 +162,21 @@ export function useLabourTemplates() {
 
   const validateValues = useCallback(
     (
-      values: SaveLabourTemplateValues,
+      values: SaveExpenseTemplateValues,
       editingTemplate:
-        (typeof labourTemplates)[number] | null
+        (typeof expenseTemplates)[number] | null
     ) =>
-      LabourTemplateService
-        .isRoleAvailable(
-          labourTemplates,
-          values.role,
+      ExpenseTemplateService
+        .isNameAvailable(
+          expenseTemplates,
+          values.name,
           editingTemplate?.id
         ),
-    [labourTemplates]
+    [expenseTemplates]
   );
 
   const crud = useTemplateCrud({
-    templates: labourTemplates,
+    templates: expenseTemplates,
     search,
     create,
     update,
@@ -183,23 +189,23 @@ export function useLabourTemplates() {
     validateValues,
   });
 
-  function isLabourTemplateRoleAvailable(
-    role: string,
-    ignoredLabourTemplateId?: string
+  function isExpenseTemplateNameAvailable(
+    name: string,
+    ignoredExpenseTemplateId?: string
   ) {
-    return LabourTemplateService
-      .isRoleAvailable(
-        labourTemplates,
-        role,
-        ignoredLabourTemplateId
+    return ExpenseTemplateService
+      .isNameAvailable(
+        expenseTemplates,
+        name,
+        ignoredExpenseTemplateId
       );
   }
 
   return {
-    labourTemplates:
+    expenseTemplates:
       crud.templates,
 
-    filteredLabourTemplates:
+    filteredExpenseTemplates:
       crud.filteredTemplates,
 
     searchValue:
@@ -208,33 +214,33 @@ export function useLabourTemplates() {
     setSearchValue:
       crud.setSearchValue,
 
-    isLabourTemplateDialogOpen:
+    isExpenseTemplateDialogOpen:
       crud.isTemplateDialogOpen,
 
-    editingLabourTemplate:
+    editingExpenseTemplate:
       crud.editingTemplate,
 
-    openAddLabourTemplateDialog:
+    openAddExpenseTemplateDialog:
       crud.openAddTemplateDialog,
 
-    openEditLabourTemplateDialog:
+    openEditExpenseTemplateDialog:
       crud.openEditTemplateDialog,
 
-    closeLabourTemplateDialog:
+    closeExpenseTemplateDialog:
       crud.closeTemplateDialog,
 
-    isLabourTemplateRoleAvailable,
+    isExpenseTemplateNameAvailable,
 
-    saveLabourTemplate:
+    saveExpenseTemplate:
       crud.saveTemplate,
 
-    toggleLabourTemplateStatus:
+    toggleExpenseTemplateStatus:
       crud.toggleTemplateStatus,
 
-    getLabourTemplateUsageCount:
+    getExpenseTemplateUsageCount:
       crud.getTemplateUsageCount,
 
-    deleteLabourTemplate:
+    deleteExpenseTemplate:
       crud.deleteTemplate,
   };
 }

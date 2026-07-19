@@ -1,6 +1,6 @@
-import { Package } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 
-import MaterialTemplateFormDialog from "@/features/templates/components/materials-templates/MaterialTemplateFormDialog";
+import ExpenseTemplateFormDialog from "@/features/templates/components/expense-templates/ExpenseTemplateFormDialog";
 import TemplateActions from "@/features/templates/components/shared/TemplateActions";
 import TemplateEmptyState from "@/features/templates/components/shared/TemplateEmptyState";
 import TemplateListFooter from "@/features/templates/components/shared/TemplateListFooter";
@@ -10,50 +10,51 @@ import TemplateStatusButton from "@/features/templates/components/shared/Templat
 import TemplateTableShell from "@/features/templates/components/shared/TemplateTableShell";
 import {
   formatCurrency,
+  formatUnitLabel,
   formatUsage,
 } from "@/features/templates/components/shared/templateFormatters";
 
 import type {
-  MaterialTemplate,
-} from "@/features/templates/data/materialTemplates";
+  ExpenseTemplate,
+} from "@/features/templates/data/expenseTemplates";
 
 import {
-  useMaterialTemplates,
-} from "@/features/templates/hooks/useMaterialTemplates";
+  useExpenseTemplates,
+} from "@/features/templates/hooks/useExpenseTemplates";
 
-export default function MaterialTemplates() {
+export default function ExpenseTemplates() {
   const {
-    materialTemplates,
-    filteredMaterialTemplates,
+    expenseTemplates,
+    filteredExpenseTemplates,
 
     searchValue,
     setSearchValue,
 
-    isMaterialTemplateDialogOpen,
-    editingMaterialTemplate,
+    isExpenseTemplateDialogOpen,
+    editingExpenseTemplate,
 
-    openAddMaterialTemplateDialog,
-    openEditMaterialTemplateDialog,
-    closeMaterialTemplateDialog,
+    openAddExpenseTemplateDialog,
+    openEditExpenseTemplateDialog,
+    closeExpenseTemplateDialog,
 
-    isMaterialTemplateCodeAvailable,
-    saveMaterialTemplate,
-    toggleMaterialTemplateStatus,
-    getMaterialTemplateUsageCount,
-    deleteMaterialTemplate,
-  } = useMaterialTemplates();
+    isExpenseTemplateNameAvailable,
+    saveExpenseTemplate,
+    toggleExpenseTemplateStatus,
+    getExpenseTemplateUsageCount,
+    deleteExpenseTemplate,
+  } = useExpenseTemplates();
 
   function handleDelete(
-    materialTemplate: MaterialTemplate
+    expenseTemplate: ExpenseTemplate
   ) {
     const usageCount =
-      getMaterialTemplateUsageCount(
-        materialTemplate.id
+      getExpenseTemplateUsageCount(
+        expenseTemplate.id
       );
 
     if (usageCount > 0) {
       window.alert(
-        `This material template cannot be deleted because it is used by ${usageCount} project template ${
+        `This expense template cannot be deleted because it is used by ${usageCount} project template ${
           usageCount === 1
             ? "activity"
             : "activities"
@@ -65,119 +66,117 @@ export default function MaterialTemplates() {
 
     const confirmed =
       window.confirm(
-        `Delete the "${materialTemplate.name}" material template? This action cannot be undone.`
+        `Delete the "${expenseTemplate.name}" expense template? This action cannot be undone.`
       );
 
     if (!confirmed) {
       return;
     }
 
-    deleteMaterialTemplate(
-      materialTemplate.id
+    deleteExpenseTemplate(
+      expenseTemplate.id
     );
   }
 
   const activeCount =
-    materialTemplates.filter(
-      materialTemplate =>
-        materialTemplate.status === "ACTIVE"
+    expenseTemplates.filter(
+      expenseTemplate =>
+        expenseTemplate.status === "ACTIVE"
     ).length;
 
   return (
     <>
       <section className="space-y-6">
         <TemplateSectionHeader
-          icon={Package}
-          iconClassName="bg-orange-50 text-orange-700"
-          title="Material Templates"
-          description="Manage reusable material definitions and estimated unit costs."
-          addLabel="Add Material Template"
-          onAdd={openAddMaterialTemplateDialog}
+          icon={CircleDollarSign}
+          iconClassName="bg-violet-50 text-violet-700"
+          title="Expense Templates"
+          description="Manage reusable indirect expenses and estimated unit costs."
+          addLabel="Add Expense Template"
+          onAdd={openAddExpenseTemplateDialog}
         />
 
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           <TemplateSearchBar
             value={searchValue}
-            placeholder="Search material templates..."
+            placeholder="Search expense templates..."
             onChange={setSearchValue}
           />
 
-          {filteredMaterialTemplates.length ===
+          {filteredExpenseTemplates.length ===
           0 ? (
             <TemplateEmptyState
-              icon={Package}
+              icon={CircleDollarSign}
               isCollectionEmpty={
-                materialTemplates.length === 0
+                expenseTemplates.length === 0
               }
-              emptyTitle="No material templates yet"
-              noResultsTitle="No matching material templates"
-              emptyDescription="Create reusable material definitions that can later be assigned to project template activities."
-              noResultsDescription="Try changing the search term to find the material template you need."
-              addLabel="Add Material Template"
+              emptyTitle="No expense templates yet"
+              noResultsTitle="No matching expense templates"
+              emptyDescription="Create reusable expense definitions that can later be assigned to project template activities."
+              noResultsDescription="Try changing the search term to find the expense template you need."
+              addLabel="Add Expense Template"
               onAdd={
-                openAddMaterialTemplateDialog
+                openAddExpenseTemplateDialog
               }
             />
           ) : (
             <TemplateTableShell
               headers={[
-                "Material",
-                "Code",
+                "Expense",
                 "Category",
                 "Unit",
                 "Estimated Cost",
                 "Status",
                 "Usage",
+                "Description",
                 "Actions",
               ]}
             >
-              {filteredMaterialTemplates.map(
-                materialTemplate => {
+              {filteredExpenseTemplates.map(
+                expenseTemplate => {
                   const usageCount =
-                    getMaterialTemplateUsageCount(
-                      materialTemplate.id
+                    getExpenseTemplateUsageCount(
+                      expenseTemplate.id
                     );
 
                   return (
                     <tr
-                      key={materialTemplate.id}
+                      key={expenseTemplate.id}
                       className="transition hover:bg-slate-50"
                     >
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-orange-700">
-                            <Package className="h-4 w-4" />
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+                            <CircleDollarSign className="h-4 w-4" />
                           </div>
 
                           <span className="font-medium text-slate-900">
-                            {materialTemplate.name}
+                            {expenseTemplate.name}
                           </span>
                         </div>
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-                        {materialTemplate.code}
+                        {expenseTemplate.category}
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-                        {materialTemplate.category}
-                      </td>
-
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-                        {materialTemplate.unit}
+                        {formatUnitLabel(
+                          expenseTemplate.unit
+                        )}
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
                         {formatCurrency(
-                          materialTemplate
-                            .defaultEstimatedUnitCost
+                          expenseTemplate
+                            .estimatedUnitCost
                         )}
 
-                        {materialTemplate
-                          .defaultEstimatedUnitCost !==
+                        {expenseTemplate
+                          .estimatedUnitCost !==
                           undefined && (
                           <span className="ml-1 text-slate-400">
-                            / {materialTemplate.unit}
+                            / {expenseTemplate.unit}
                           </span>
                         )}
                       </td>
@@ -185,11 +184,11 @@ export default function MaterialTemplates() {
                       <td className="whitespace-nowrap px-6 py-4">
                         <TemplateStatusButton
                           status={
-                            materialTemplate.status
+                            expenseTemplate.status
                           }
                           onToggle={() =>
-                            toggleMaterialTemplateStatus(
-                              materialTemplate.id
+                            toggleExpenseTemplateStatus(
+                              expenseTemplate.id
                             )
                           }
                         />
@@ -199,18 +198,25 @@ export default function MaterialTemplates() {
                         {formatUsage(usageCount)}
                       </td>
 
+                      <td className="max-w-xs px-6 py-4 text-sm text-slate-600">
+                        <p className="truncate">
+                          {expenseTemplate.description ??
+                            "—"}
+                        </p>
+                      </td>
+
                       <td className="whitespace-nowrap px-6 py-4 text-right">
                         <TemplateActions
-                          entityLabel="material template"
+                          entityLabel="expense template"
                           usageCount={usageCount}
                           onEdit={() =>
-                            openEditMaterialTemplateDialog(
-                              materialTemplate
+                            openEditExpenseTemplateDialog(
+                              expenseTemplate
                             )
                           }
                           onDelete={() =>
                             handleDelete(
-                              materialTemplate
+                              expenseTemplate
                             )
                           }
                         />
@@ -224,35 +230,35 @@ export default function MaterialTemplates() {
 
           <TemplateListFooter
             visibleCount={
-              filteredMaterialTemplates.length
+              filteredExpenseTemplates.length
             }
             totalCount={
-              materialTemplates.length
+              expenseTemplates.length
             }
             activeCount={activeCount}
-            entityLabel="material templates"
+            entityLabel="expense templates"
           />
         </div>
       </section>
 
-      {isMaterialTemplateDialogOpen && (
-        <MaterialTemplateFormDialog
+      {isExpenseTemplateDialogOpen && (
+        <ExpenseTemplateFormDialog
           key={
-            editingMaterialTemplate?.id ??
-            "new-material-template"
+            editingExpenseTemplate?.id ??
+            "new-expense-template"
           }
           open={
-            isMaterialTemplateDialogOpen
+            isExpenseTemplateDialogOpen
           }
-          editingMaterialTemplate={
-            editingMaterialTemplate
+          editingExpenseTemplate={
+            editingExpenseTemplate
           }
           onClose={
-            closeMaterialTemplateDialog
+            closeExpenseTemplateDialog
           }
-          onSave={saveMaterialTemplate}
-          isCodeAvailable={
-            isMaterialTemplateCodeAvailable
+          onSave={saveExpenseTemplate}
+          isNameAvailable={
+            isExpenseTemplateNameAvailable
           }
         />
       )}

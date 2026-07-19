@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import {
+  useCallback,
+} from "react";
 
-import { useCompanyContext } from "@/features/company/context/useCompanyContext";
+import {
+  useCompanyContext,
+} from "@/features/company/context/useCompanyContext";
 
 import type {
   MaterialCategory,
-  MaterialTemplate,
   MaterialTemplateStatus,
   UnitOfMeasure,
 } from "@/features/templates/data/materialTemplates";
@@ -12,6 +15,10 @@ import type {
 import {
   MaterialTemplateService,
 } from "@/features/templates/services/MaterialTemplateService";
+
+import {
+  useTemplateCrud,
+} from "@/features/templates/hooks/useTemplateCrud";
 
 export type SaveMaterialTemplateValues = {
   code: string;
@@ -31,53 +38,153 @@ export function useMaterialTemplates() {
   const materialTemplates =
     companyData.materialTemplates;
 
-  const [searchValue, setSearchValue] =
-    useState("");
-
-  const [
-    isMaterialTemplateDialogOpen,
-    setIsMaterialTemplateDialogOpen,
-  ] = useState(false);
-
-  const [
-    editingMaterialTemplate,
-    setEditingMaterialTemplate,
-  ] = useState<MaterialTemplate | null>(
-    null
+  const search = useCallback(
+    (
+      templates: typeof materialTemplates,
+      searchValue: string
+    ) =>
+      MaterialTemplateService.search(
+        templates,
+        searchValue
+      ),
+    []
   );
 
-  const filteredMaterialTemplates =
-    useMemo(
-      () =>
-        MaterialTemplateService.search(
-          materialTemplates,
-          searchValue
+  const create = useCallback(
+    (values: SaveMaterialTemplateValues) =>
+      MaterialTemplateService.create(values),
+    []
+  );
+
+  const update = useCallback(
+    (
+      templates: typeof materialTemplates,
+      templateId: string,
+      values: SaveMaterialTemplateValues
+    ) =>
+      MaterialTemplateService.update(
+        templates,
+        templateId,
+        values
+      ),
+    []
+  );
+
+  const toggleStatus = useCallback(
+    (
+      templates: typeof materialTemplates,
+      templateId: string
+    ) =>
+      MaterialTemplateService.toggleStatus(
+        templates,
+        templateId
+      ),
+    []
+  );
+
+  const remove = useCallback(
+    (
+      templates: typeof materialTemplates,
+      templateId: string
+    ) =>
+      MaterialTemplateService.delete(
+        templates,
+        templateId
+      ),
+    []
+  );
+
+  const getUsageCount = useCallback(
+    (templateId: string) =>
+      MaterialTemplateService.getUsageCount(
+        templateId,
+        companyData
+          .projectTemplateActivityMaterials
+      ),
+    [
+      companyData
+        .projectTemplateActivityMaterials,
+    ]
+  );
+
+  const canDelete = useCallback(
+    (templateId: string) =>
+      MaterialTemplateService.canDelete(
+        templateId,
+        companyData
+          .projectTemplateActivityMaterials
+      ),
+    [
+      companyData
+        .projectTemplateActivityMaterials,
+    ]
+  );
+
+  const setTemplates = useCallback(
+    (
+      updater: (
+        currentTemplates:
+          typeof materialTemplates
+      ) => typeof materialTemplates
+    ) => {
+      setCompanyData(currentData => ({
+        ...currentData,
+        materialTemplates: updater(
+          currentData.materialTemplates
         ),
-      [
-        materialTemplates,
-        searchValue,
-      ]
-    );
+      }));
+    },
+    [setCompanyData]
+  );
 
-  function openAddMaterialTemplateDialog() {
-    setEditingMaterialTemplate(null);
-    setIsMaterialTemplateDialogOpen(true);
-  }
+  const normalizeValues = useCallback(
+    (
+      values: SaveMaterialTemplateValues
+    ): SaveMaterialTemplateValues | null => {
+      const code = values.code.trim();
+      const name = values.name.trim();
 
-  function openEditMaterialTemplateDialog(
-    materialTemplate: MaterialTemplate
-  ) {
-    setEditingMaterialTemplate(
-      materialTemplate
-    );
+      if (!code || !name) {
+        return null;
+      }
 
-    setIsMaterialTemplateDialogOpen(true);
-  }
+      return {
+        ...values,
+        code,
+        name,
+      };
+    },
+    []
+  );
 
-  function closeMaterialTemplateDialog() {
-    setEditingMaterialTemplate(null);
-    setIsMaterialTemplateDialogOpen(false);
-  }
+  const validateValues = useCallback(
+    (
+      values: SaveMaterialTemplateValues,
+      editingTemplate:
+        (typeof materialTemplates)[number] | null
+    ) =>
+      MaterialTemplateService
+        .isCodeAvailable(
+          materialTemplates,
+          values.code,
+          editingTemplate?.id
+        ),
+    [materialTemplates]
+  );
+
+  const crud = useTemplateCrud({
+    templates: materialTemplates,
+    search,
+    create,
+    update,
+    toggleStatus,
+    remove,
+    getUsageCount,
+    canDelete,
+    setTemplates,
+    normalizeValues,
+    validateValues,
+  });
 
   function isMaterialTemplateCodeAvailable(
     code: string,
@@ -91,132 +198,46 @@ export function useMaterialTemplates() {
       );
   }
 
-  function saveMaterialTemplate(
-    values: SaveMaterialTemplateValues
-  ) {
-    const isCodeAvailable =
-      MaterialTemplateService
-        .isCodeAvailable(
-          materialTemplates,
-          values.code,
-          editingMaterialTemplate?.id
-        );
-
-    if (!isCodeAvailable) {
-      return false;
-    }
-
-    if (editingMaterialTemplate) {
-      setCompanyData(currentData => ({
-        ...currentData,
-
-        materialTemplates:
-          MaterialTemplateService.update(
-            currentData.materialTemplates,
-            editingMaterialTemplate.id,
-            values
-          ),
-      }));
-
-      closeMaterialTemplateDialog();
-
-      return true;
-    }
-
-    const newMaterialTemplate =
-      MaterialTemplateService.create(values);
-
-    setCompanyData(currentData => ({
-      ...currentData,
-
-      materialTemplates: [
-        ...currentData.materialTemplates,
-        newMaterialTemplate,
-      ],
-    }));
-
-    closeMaterialTemplateDialog();
-
-    return true;
-  }
-
-  function toggleMaterialTemplateStatus(
-    materialTemplateId: string
-  ) {
-    setCompanyData(currentData => ({
-      ...currentData,
-
-      materialTemplates:
-        MaterialTemplateService.toggleStatus(
-          currentData.materialTemplates,
-          materialTemplateId
-        ),
-    }));
-  }
-
-  function getMaterialTemplateUsageCount(
-    materialTemplateId: string
-  ) {
-    return MaterialTemplateService
-      .getUsageCount(
-        materialTemplateId,
-        companyData
-          .projectTemplateActivityMaterials
-      );
-  }
-
-  function deleteMaterialTemplate(
-    materialTemplateId: string
-  ) {
-    const canDelete =
-      MaterialTemplateService.canDelete(
-        materialTemplateId,
-        companyData
-          .projectTemplateActivityMaterials
-      );
-
-    if (!canDelete) {
-      return false;
-    }
-
-    setCompanyData(currentData => ({
-      ...currentData,
-
-      materialTemplates:
-        MaterialTemplateService.delete(
-          currentData.materialTemplates,
-          materialTemplateId
-        ),
-    }));
-
-    if (
-      editingMaterialTemplate?.id ===
-      materialTemplateId
-    ) {
-      closeMaterialTemplateDialog();
-    }
-
-    return true;
-  }
-
   return {
-    materialTemplates,
-    filteredMaterialTemplates,
+    materialTemplates:
+      crud.templates,
 
-    searchValue,
-    setSearchValue,
+    filteredMaterialTemplates:
+      crud.filteredTemplates,
 
-    isMaterialTemplateDialogOpen,
-    editingMaterialTemplate,
+    searchValue:
+      crud.searchValue,
 
-    openAddMaterialTemplateDialog,
-    openEditMaterialTemplateDialog,
-    closeMaterialTemplateDialog,
+    setSearchValue:
+      crud.setSearchValue,
+
+    isMaterialTemplateDialogOpen:
+      crud.isTemplateDialogOpen,
+
+    editingMaterialTemplate:
+      crud.editingTemplate,
+
+    openAddMaterialTemplateDialog:
+      crud.openAddTemplateDialog,
+
+    openEditMaterialTemplateDialog:
+      crud.openEditTemplateDialog,
+
+    closeMaterialTemplateDialog:
+      crud.closeTemplateDialog,
 
     isMaterialTemplateCodeAvailable,
-    saveMaterialTemplate,
-    toggleMaterialTemplateStatus,
-    getMaterialTemplateUsageCount,
-    deleteMaterialTemplate,
+
+    saveMaterialTemplate:
+      crud.saveTemplate,
+
+    toggleMaterialTemplateStatus:
+      crud.toggleTemplateStatus,
+
+    getMaterialTemplateUsageCount:
+      crud.getTemplateUsageCount,
+
+    deleteMaterialTemplate:
+      crud.deleteTemplate,
   };
 }

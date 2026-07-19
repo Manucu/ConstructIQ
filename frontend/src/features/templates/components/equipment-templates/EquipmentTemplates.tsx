@@ -1,6 +1,6 @@
-import { Package } from "lucide-react";
+import { Construction } from "lucide-react";
 
-import MaterialTemplateFormDialog from "@/features/templates/components/materials-templates/MaterialTemplateFormDialog";
+import EquipmentTemplateFormDialog from "@/features/templates/components/equipment-templates/EquipmentTemplateFormDialog";
 import TemplateActions from "@/features/templates/components/shared/TemplateActions";
 import TemplateEmptyState from "@/features/templates/components/shared/TemplateEmptyState";
 import TemplateListFooter from "@/features/templates/components/shared/TemplateListFooter";
@@ -14,46 +14,46 @@ import {
 } from "@/features/templates/components/shared/templateFormatters";
 
 import type {
-  MaterialTemplate,
-} from "@/features/templates/data/materialTemplates";
+  EquipmentTemplate,
+} from "@/features/templates/data/equipmentTemplates";
 
 import {
-  useMaterialTemplates,
-} from "@/features/templates/hooks/useMaterialTemplates";
+  useEquipmentTemplates,
+} from "@/features/templates/hooks/useEquipmentTemplates";
 
-export default function MaterialTemplates() {
+export default function EquipmentTemplates() {
   const {
-    materialTemplates,
-    filteredMaterialTemplates,
+    equipmentTemplates,
+    filteredEquipmentTemplates,
 
     searchValue,
     setSearchValue,
 
-    isMaterialTemplateDialogOpen,
-    editingMaterialTemplate,
+    isEquipmentTemplateDialogOpen,
+    editingEquipmentTemplate,
 
-    openAddMaterialTemplateDialog,
-    openEditMaterialTemplateDialog,
-    closeMaterialTemplateDialog,
+    openAddEquipmentTemplateDialog,
+    openEditEquipmentTemplateDialog,
+    closeEquipmentTemplateDialog,
 
-    isMaterialTemplateCodeAvailable,
-    saveMaterialTemplate,
-    toggleMaterialTemplateStatus,
-    getMaterialTemplateUsageCount,
-    deleteMaterialTemplate,
-  } = useMaterialTemplates();
+    isEquipmentTemplateNameAvailable,
+    saveEquipmentTemplate,
+    toggleEquipmentTemplateStatus,
+    getEquipmentTemplateUsageCount,
+    deleteEquipmentTemplate,
+  } = useEquipmentTemplates();
 
   function handleDelete(
-    materialTemplate: MaterialTemplate
+    equipmentTemplate: EquipmentTemplate
   ) {
     const usageCount =
-      getMaterialTemplateUsageCount(
-        materialTemplate.id
+      getEquipmentTemplateUsageCount(
+        equipmentTemplate.id
       );
 
     if (usageCount > 0) {
       window.alert(
-        `This material template cannot be deleted because it is used by ${usageCount} project template ${
+        `This equipment template cannot be deleted because it is used by ${usageCount} project template ${
           usageCount === 1
             ? "activity"
             : "activities"
@@ -65,119 +65,110 @@ export default function MaterialTemplates() {
 
     const confirmed =
       window.confirm(
-        `Delete the "${materialTemplate.name}" material template? This action cannot be undone.`
+        `Delete the "${equipmentTemplate.name}" equipment template? This action cannot be undone.`
       );
 
     if (!confirmed) {
       return;
     }
 
-    deleteMaterialTemplate(
-      materialTemplate.id
+    deleteEquipmentTemplate(
+      equipmentTemplate.id
     );
   }
 
   const activeCount =
-    materialTemplates.filter(
-      materialTemplate =>
-        materialTemplate.status === "ACTIVE"
+    equipmentTemplates.filter(
+      equipmentTemplate =>
+        equipmentTemplate.status === "ACTIVE"
     ).length;
 
   return (
     <>
       <section className="space-y-6">
         <TemplateSectionHeader
-          icon={Package}
-          iconClassName="bg-orange-50 text-orange-700"
-          title="Material Templates"
-          description="Manage reusable material definitions and estimated unit costs."
-          addLabel="Add Material Template"
-          onAdd={openAddMaterialTemplateDialog}
+          icon={Construction}
+          iconClassName="bg-amber-50 text-amber-700"
+          title="Equipment Templates"
+          description="Manage reusable equipment and estimated hourly rates."
+          addLabel="Add Equipment Template"
+          onAdd={openAddEquipmentTemplateDialog}
         />
 
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           <TemplateSearchBar
             value={searchValue}
-            placeholder="Search material templates..."
+            placeholder="Search equipment templates..."
             onChange={setSearchValue}
           />
 
-          {filteredMaterialTemplates.length ===
+          {filteredEquipmentTemplates.length ===
           0 ? (
             <TemplateEmptyState
-              icon={Package}
+              icon={Construction}
               isCollectionEmpty={
-                materialTemplates.length === 0
+                equipmentTemplates.length === 0
               }
-              emptyTitle="No material templates yet"
-              noResultsTitle="No matching material templates"
-              emptyDescription="Create reusable material definitions that can later be assigned to project template activities."
-              noResultsDescription="Try changing the search term to find the material template you need."
-              addLabel="Add Material Template"
+              emptyTitle="No equipment templates yet"
+              noResultsTitle="No matching equipment templates"
+              emptyDescription="Create reusable equipment definitions that can later be assigned to project template activities."
+              noResultsDescription="Try changing the search term to find the equipment template you need."
+              addLabel="Add Equipment Template"
               onAdd={
-                openAddMaterialTemplateDialog
+                openAddEquipmentTemplateDialog
               }
             />
           ) : (
             <TemplateTableShell
               headers={[
-                "Material",
-                "Code",
+                "Equipment",
                 "Category",
-                "Unit",
-                "Estimated Cost",
+                "Estimated Rate",
                 "Status",
                 "Usage",
+                "Description",
                 "Actions",
               ]}
             >
-              {filteredMaterialTemplates.map(
-                materialTemplate => {
+              {filteredEquipmentTemplates.map(
+                equipmentTemplate => {
                   const usageCount =
-                    getMaterialTemplateUsageCount(
-                      materialTemplate.id
+                    getEquipmentTemplateUsageCount(
+                      equipmentTemplate.id
                     );
 
                   return (
                     <tr
-                      key={materialTemplate.id}
+                      key={equipmentTemplate.id}
                       className="transition hover:bg-slate-50"
                     >
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-orange-700">
-                            <Package className="h-4 w-4" />
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                            <Construction className="h-4 w-4" />
                           </div>
 
                           <span className="font-medium text-slate-900">
-                            {materialTemplate.name}
+                            {equipmentTemplate.name}
                           </span>
                         </div>
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-                        {materialTemplate.code}
-                      </td>
-
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-                        {materialTemplate.category}
-                      </td>
-
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-                        {materialTemplate.unit}
+                        {equipmentTemplate.category}
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
                         {formatCurrency(
-                          materialTemplate
-                            .defaultEstimatedUnitCost
+                          equipmentTemplate
+                            .estimatedHourlyRate
                         )}
 
-                        {materialTemplate
-                          .defaultEstimatedUnitCost !==
+                        {equipmentTemplate
+                          .estimatedHourlyRate !==
                           undefined && (
                           <span className="ml-1 text-slate-400">
-                            / {materialTemplate.unit}
+                            / hour
                           </span>
                         )}
                       </td>
@@ -185,11 +176,11 @@ export default function MaterialTemplates() {
                       <td className="whitespace-nowrap px-6 py-4">
                         <TemplateStatusButton
                           status={
-                            materialTemplate.status
+                            equipmentTemplate.status
                           }
                           onToggle={() =>
-                            toggleMaterialTemplateStatus(
-                              materialTemplate.id
+                            toggleEquipmentTemplateStatus(
+                              equipmentTemplate.id
                             )
                           }
                         />
@@ -199,18 +190,25 @@ export default function MaterialTemplates() {
                         {formatUsage(usageCount)}
                       </td>
 
+                      <td className="max-w-xs px-6 py-4 text-sm text-slate-600">
+                        <p className="truncate">
+                          {equipmentTemplate.description ??
+                            "—"}
+                        </p>
+                      </td>
+
                       <td className="whitespace-nowrap px-6 py-4 text-right">
                         <TemplateActions
-                          entityLabel="material template"
+                          entityLabel="equipment template"
                           usageCount={usageCount}
                           onEdit={() =>
-                            openEditMaterialTemplateDialog(
-                              materialTemplate
+                            openEditEquipmentTemplateDialog(
+                              equipmentTemplate
                             )
                           }
                           onDelete={() =>
                             handleDelete(
-                              materialTemplate
+                              equipmentTemplate
                             )
                           }
                         />
@@ -224,35 +222,35 @@ export default function MaterialTemplates() {
 
           <TemplateListFooter
             visibleCount={
-              filteredMaterialTemplates.length
+              filteredEquipmentTemplates.length
             }
             totalCount={
-              materialTemplates.length
+              equipmentTemplates.length
             }
             activeCount={activeCount}
-            entityLabel="material templates"
+            entityLabel="equipment templates"
           />
         </div>
       </section>
 
-      {isMaterialTemplateDialogOpen && (
-        <MaterialTemplateFormDialog
+      {isEquipmentTemplateDialogOpen && (
+        <EquipmentTemplateFormDialog
           key={
-            editingMaterialTemplate?.id ??
-            "new-material-template"
+            editingEquipmentTemplate?.id ??
+            "new-equipment-template"
           }
           open={
-            isMaterialTemplateDialogOpen
+            isEquipmentTemplateDialogOpen
           }
-          editingMaterialTemplate={
-            editingMaterialTemplate
+          editingEquipmentTemplate={
+            editingEquipmentTemplate
           }
           onClose={
-            closeMaterialTemplateDialog
+            closeEquipmentTemplateDialog
           }
-          onSave={saveMaterialTemplate}
-          isCodeAvailable={
-            isMaterialTemplateCodeAvailable
+          onSave={saveEquipmentTemplate}
+          isNameAvailable={
+            isEquipmentTemplateNameAvailable
           }
         />
       )}

@@ -1,6 +1,6 @@
-import type {
+/*import type {
   EquipmentCategory,
-} from "@/features/company/data/equipment";
+} from "@/features/company/data/equipment";*/
 
 export type EquipmentTemplateStatus =
   | "ACTIVE"
@@ -11,7 +11,7 @@ export type EquipmentTemplate = {
 
   name: string;
 
-  category: EquipmentCategory;
+  category: string;
 
   /**
    * Cost estimativ folosit pentru planificare.

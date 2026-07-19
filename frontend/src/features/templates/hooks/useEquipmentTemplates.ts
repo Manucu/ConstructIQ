@@ -7,39 +7,40 @@ import {
 } from "@/features/company/context/useCompanyContext";
 
 import type {
-  LabourTemplateStatus,
-} from "@/features/templates/data/labourTemplates";
+  EquipmentTemplateStatus,
+} from "@/features/templates/data/equipmentTemplates";
 
 import {
-  LabourTemplateService,
-} from "@/features/templates/services/LabourTemplateService";
+  EquipmentTemplateService,
+} from "@/features/templates/services/EquipmentTemplateService";
 
 import {
   useTemplateCrud,
 } from "@/features/templates/hooks/useTemplateCrud";
 
-export type SaveLabourTemplateValues = {
-  role: string;
+export type SaveEquipmentTemplateValues = {
+  name: string;
+  category: string;
   estimatedHourlyRate?: number;
-  status: LabourTemplateStatus;
+  status: EquipmentTemplateStatus;
   description?: string;
 };
 
-export function useLabourTemplates() {
+export function useEquipmentTemplates() {
   const {
     companyData,
     setCompanyData,
   } = useCompanyContext();
 
-  const labourTemplates =
-    companyData.labourTemplates;
+  const equipmentTemplates =
+    companyData.equipmentTemplates;
 
   const search = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof equipmentTemplates,
       searchValue: string
     ) =>
-      LabourTemplateService.search(
+      EquipmentTemplateService.search(
         templates,
         searchValue
       ),
@@ -47,18 +48,18 @@ export function useLabourTemplates() {
   );
 
   const create = useCallback(
-    (values: SaveLabourTemplateValues) =>
-      LabourTemplateService.create(values),
+    (values: SaveEquipmentTemplateValues) =>
+      EquipmentTemplateService.create(values),
     []
   );
 
   const update = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof equipmentTemplates,
       templateId: string,
-      values: SaveLabourTemplateValues
+      values: SaveEquipmentTemplateValues
     ) =>
-      LabourTemplateService.update(
+      EquipmentTemplateService.update(
         templates,
         templateId,
         values
@@ -68,10 +69,10 @@ export function useLabourTemplates() {
 
   const toggleStatus = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof equipmentTemplates,
       templateId: string
     ) =>
-      LabourTemplateService.toggleStatus(
+      EquipmentTemplateService.toggleStatus(
         templates,
         templateId
       ),
@@ -80,10 +81,10 @@ export function useLabourTemplates() {
 
   const remove = useCallback(
     (
-      templates: typeof labourTemplates,
+      templates: typeof equipmentTemplates,
       templateId: string
     ) =>
-      LabourTemplateService.delete(
+      EquipmentTemplateService.delete(
         templates,
         templateId
       ),
@@ -92,27 +93,27 @@ export function useLabourTemplates() {
 
   const getUsageCount = useCallback(
     (templateId: string) =>
-      LabourTemplateService.getUsageCount(
+      EquipmentTemplateService.getUsageCount(
         templateId,
         companyData
-          .projectTemplateActivityLabour
+          .projectTemplateActivityEquipment
       ),
     [
       companyData
-        .projectTemplateActivityLabour,
+        .projectTemplateActivityEquipment,
     ]
   );
 
   const canDelete = useCallback(
     (templateId: string) =>
-      LabourTemplateService.canDelete(
+      EquipmentTemplateService.canDelete(
         templateId,
         companyData
-          .projectTemplateActivityLabour
+          .projectTemplateActivityEquipment
       ),
     [
       companyData
-        .projectTemplateActivityLabour,
+        .projectTemplateActivityEquipment,
     ]
   );
 
@@ -120,13 +121,13 @@ export function useLabourTemplates() {
     (
       updater: (
         currentTemplates:
-          typeof labourTemplates
-      ) => typeof labourTemplates
+          typeof equipmentTemplates
+      ) => typeof equipmentTemplates
     ) => {
       setCompanyData(currentData => ({
         ...currentData,
-        labourTemplates: updater(
-          currentData.labourTemplates
+        equipmentTemplates: updater(
+          currentData.equipmentTemplates
         ),
       }));
     },
@@ -135,17 +136,20 @@ export function useLabourTemplates() {
 
   const normalizeValues = useCallback(
     (
-      values: SaveLabourTemplateValues
-    ): SaveLabourTemplateValues | null => {
-      const role = values.role.trim();
+      values: SaveEquipmentTemplateValues
+    ): SaveEquipmentTemplateValues | null => {
+      const name = values.name.trim();
+      const category =
+        values.category.trim();
 
-      if (!role) {
+      if (!name || !category) {
         return null;
       }
 
       return {
         ...values,
-        role,
+        name,
+        category,
         description:
           values.description?.trim() ||
           undefined,
@@ -156,21 +160,21 @@ export function useLabourTemplates() {
 
   const validateValues = useCallback(
     (
-      values: SaveLabourTemplateValues,
+      values: SaveEquipmentTemplateValues,
       editingTemplate:
-        (typeof labourTemplates)[number] | null
+        (typeof equipmentTemplates)[number] | null
     ) =>
-      LabourTemplateService
-        .isRoleAvailable(
-          labourTemplates,
-          values.role,
+      EquipmentTemplateService
+        .isNameAvailable(
+          equipmentTemplates,
+          values.name,
           editingTemplate?.id
         ),
-    [labourTemplates]
+    [equipmentTemplates]
   );
 
   const crud = useTemplateCrud({
-    templates: labourTemplates,
+    templates: equipmentTemplates,
     search,
     create,
     update,
@@ -183,23 +187,23 @@ export function useLabourTemplates() {
     validateValues,
   });
 
-  function isLabourTemplateRoleAvailable(
-    role: string,
-    ignoredLabourTemplateId?: string
+  function isEquipmentTemplateNameAvailable(
+    name: string,
+    ignoredEquipmentTemplateId?: string
   ) {
-    return LabourTemplateService
-      .isRoleAvailable(
-        labourTemplates,
-        role,
-        ignoredLabourTemplateId
+    return EquipmentTemplateService
+      .isNameAvailable(
+        equipmentTemplates,
+        name,
+        ignoredEquipmentTemplateId
       );
   }
 
   return {
-    labourTemplates:
+    equipmentTemplates:
       crud.templates,
 
-    filteredLabourTemplates:
+    filteredEquipmentTemplates:
       crud.filteredTemplates,
 
     searchValue:
@@ -208,33 +212,33 @@ export function useLabourTemplates() {
     setSearchValue:
       crud.setSearchValue,
 
-    isLabourTemplateDialogOpen:
+    isEquipmentTemplateDialogOpen:
       crud.isTemplateDialogOpen,
 
-    editingLabourTemplate:
+    editingEquipmentTemplate:
       crud.editingTemplate,
 
-    openAddLabourTemplateDialog:
+    openAddEquipmentTemplateDialog:
       crud.openAddTemplateDialog,
 
-    openEditLabourTemplateDialog:
+    openEditEquipmentTemplateDialog:
       crud.openEditTemplateDialog,
 
-    closeLabourTemplateDialog:
+    closeEquipmentTemplateDialog:
       crud.closeTemplateDialog,
 
-    isLabourTemplateRoleAvailable,
+    isEquipmentTemplateNameAvailable,
 
-    saveLabourTemplate:
+    saveEquipmentTemplate:
       crud.saveTemplate,
 
-    toggleLabourTemplateStatus:
+    toggleEquipmentTemplateStatus:
       crud.toggleTemplateStatus,
 
-    getLabourTemplateUsageCount:
+    getEquipmentTemplateUsageCount:
       crud.getTemplateUsageCount,
 
-    deleteLabourTemplate:
+    deleteEquipmentTemplate:
       crud.deleteTemplate,
   };
 }
